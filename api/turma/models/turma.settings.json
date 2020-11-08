@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "turmas",
+  "info": {
+    "name": "turma",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "turma": {
+      "type": "string"
+    },
+    "idprofessor": {
+      "type": "uid"
+    }
+  }
+}
