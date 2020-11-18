@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/tpc-alunos",
+      "handler": "tpc-aluno.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tpc-alunos/count",
+      "handler": "tpc-aluno.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tpc-alunos/:id",
+      "handler": "tpc-aluno.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/tpc-alunos",
+      "handler": "tpc-aluno.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/tpc-alunos/:id",
+      "handler": "tpc-aluno.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/tpc-alunos/:id",
+      "handler": "tpc-aluno.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

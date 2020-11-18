@@ -7,6 +7,19 @@ module.exports = ({ env }) => ({
         client: 'mysql',
         host: env('DATABASE_HOST', '127.0.0.1'),
         port: env.int('DATABASE_PORT', 3306),
+        database: env('DATABASE_NAME', 'hypati67_tpc'),
+        username: env('DATABASE_USERNAME', 'root'),
+        password: env('DATABASE_PASSWORD', 'benfica13'),
+        ssl: env.bool('DATABASE_SSL', false),
+      },
+      options: {}
+    },
+    aplicacoes: {
+      connector: 'bookshelf',
+      settings: {
+        client: 'mysql',
+        host: env('DATABASE_HOST', '127.0.0.1'),
+        port: env.int('DATABASE_PORT', 3306),
         database: env('DATABASE_NAME', 'hypati67_aplicacoes'),
         username: env('DATABASE_USERNAME', 'root'),
         password: env('DATABASE_PASSWORD', 'benfica13'),
@@ -26,6 +39,6 @@ module.exports = ({ env }) => ({
         ssl: env.bool('DATABASE_SSL', false),
       },
       options: {}
-    }
+    },
   },
 });

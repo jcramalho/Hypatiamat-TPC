@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "resolucoes",
+  "info": {
+    "name": "Resolucao",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "qRespondidas": {
+      "type": "integer"
+    },
+    "qCertas": {
+      "type": "integer"
+    },
+    "questaoAtual": {
+      "type": "string"
+    },
+    "classificacao": {
+      "type": "decimal"
+    },
+    "idAluno": {
+      "type": "integer"
+    },
+    "respostas": {
+      "collection": "resposta"
+    },
+    "data": {
+      "type": "datetime"
+    }
+  }
+}

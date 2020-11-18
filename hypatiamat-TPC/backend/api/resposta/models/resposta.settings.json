@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "resol_respostas",
+  "info": {
+    "name": "Resposta"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "codQuestao": {
+      "type": "string"
+    },
+    "resposta": {
+      "type": "text"
+    },
+    "correta": {
+      "type": "integer"
+    },
+    "idResolucao": {
+      "type": "integer"
+    }
+  }
+}

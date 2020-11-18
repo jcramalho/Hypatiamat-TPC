@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "connection": "aplicacoes",
+  "collectionName": "professores",
+  "info": {
+    "name": "professor",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "codigo": {
+      "type": "uid",
+      "private": false
+    },
+    "nome": {
+      "type": "string"
+    },
+    "escola": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string",
+      "private": true
+    }
+  }
+}

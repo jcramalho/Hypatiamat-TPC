@@ -1,8 +1,9 @@
 {
   "kind": "collectionType",
-  "collectionName": "professores",
+  "connection": "default",
+  "collectionName": "tpc_alunos",
   "info": {
-    "name": "professor",
+    "name": "TPC_aluno",
     "description": ""
   },
   "options": {
@@ -11,22 +12,17 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "codigo": {
-      "type": "uid",
-      "private": false
-    },
-    "nome": {
+    "codAluno": {
       "type": "string"
     },
-    "escola": {
+    "codTurma": {
       "type": "string"
     },
-    "email": {
-      "type": "string"
+    "idTPC": {
+      "type": "integer"
     },
-    "password": {
-      "type": "string",
-      "private": true
+    "resolucoes": {
+      "collection": "resolucao"
     }
   }
 }

@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "tpc_questoes",
+  "info": {
+    "name": "TPC_questao",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "idQuestao": {
+      "type": "integer",
+      "required": false
+    },
+    "idTPC": {
+      "type": "integer"
+    },
+    "codQuestao": {
+      "type": "string"
+    }
+  }
+}

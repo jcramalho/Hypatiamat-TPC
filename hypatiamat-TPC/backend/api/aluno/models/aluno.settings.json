@@ -1,5 +1,6 @@
 {
   "kind": "collectionType",
+  "connection": "aplicacoes",
   "collectionName": "alunos",
   "info": {
     "name": "aluno",

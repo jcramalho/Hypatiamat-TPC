@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "connection": "default",
+  "collectionName": "tpc",
+  "info": {
+    "name": "TPC",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "codTPC": {
+      "type": "uid"
+    },
+    "codProf": {
+      "type": "string"
+    },
+    "tentativas": {
+      "type": "integer"
+    },
+    "ativo": {
+      "type": "integer"
+    },
+    "tagname": {
+      "type": "text"
+    },
+    "dataInicio": {
+      "type": "datetime"
+    },
+    "dataFim": {
+      "type": "datetime"
+    },
+    "tpc_questoes": {
+      "collection": "tpc-questao"
+    },
+    "tpc_alunos": {
+      "collection": "tpc-aluno"
+    }
+  }
+}
