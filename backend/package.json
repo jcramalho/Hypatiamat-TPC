@@ -1,5 +1,5 @@
 {
-  "name": "hypatia-tpc",
+  "name": "backend",
   "private": true,
   "version": "0.1.0",
   "description": "A Strapi application",
@@ -9,36 +9,28 @@
     "build": "strapi build",
     "strapi": "strapi"
   },
-  "devDependencies": {
-    "eslint": "^7.13.0",
-    "eslint-config-standard": "^16.0.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "babel-eslint": "^10.1.0",
+    "strapi": "3.4.6",
+    "strapi-admin": "3.4.6",
+    "strapi-utils": "3.4.6",
+    "strapi-plugin-content-type-builder": "3.4.6",
+    "strapi-plugin-content-manager": "3.4.6",
+    "strapi-plugin-users-permissions": "3.4.6",
+    "strapi-plugin-email": "3.4.6",
+    "strapi-plugin-upload": "3.4.6",
+    "strapi-connector-bookshelf": "3.4.6",
     "knex": "<0.20.0",
-    "mysql": "latest",
-    "strapi": "3.2.5",
-    "strapi-admin": "3.2.5",
-    "strapi-connector-bookshelf": "3.2.5",
-    "strapi-plugin-content-manager": "3.2.5",
-    "strapi-plugin-content-type-builder": "3.2.5",
-    "strapi-plugin-email": "3.2.5",
-    "strapi-plugin-upload": "3.2.5",
-    "strapi-plugin-users-permissions": "3.2.5",
-    "strapi-utils": "3.2.5",
-    "uuid": "^8.3.1"
+    "mysql": "latest"
   },
   "author": {
     "name": "A Strapi developer"
   },
   "strapi": {
-    "uuid": "0ba42148-5250-4fc4-94d0-c48de70d49c7"
+    "uuid": "a2331d87-cce5-413d-8da2-1492164e9547"
   },
   "engines": {
-    "node": ">=10.0.0",
+    "node": ">=10.16.0 <=14.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT"

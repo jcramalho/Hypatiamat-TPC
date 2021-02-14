@@ -15,9 +15,6 @@
     "nome": {
       "type": "string"
     },
-    "email": {
-      "type": "string"
-    },
     "datanascimento": {
       "type": "string"
     },
@@ -30,15 +27,17 @@
     "numero": {
       "type": "integer"
     },
-    "password": {
-      "type": "string",
-      "private": true
-    },
     "codprofessor": {
       "type": "string"
     },
     "user": {
       "type": "uid"
+    },
+    "email": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
     }
   }
 }
