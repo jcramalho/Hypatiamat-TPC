@@ -38,6 +38,9 @@
     },
     "password": {
       "type": "string"
+    },
+    "escola": {
+      "type": "string"
     }
   }
 }

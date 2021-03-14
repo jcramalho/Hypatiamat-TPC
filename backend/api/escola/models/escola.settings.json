@@ -1,9 +1,9 @@
 {
   "kind": "collectionType",
   "connection": "aplicacoes",
-  "collectionName": "turmas",
+  "collectionName": "Escolas",
   "info": {
-    "name": "turma",
+    "name": "Escola",
     "description": ""
   },
   "options": {
@@ -12,10 +12,10 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "turma": {
+    "nome": {
       "type": "string"
     },
-    "idprofessor": {
+    "cod": {
       "type": "string"
     }
   }
