@@ -1,29 +1,17 @@
-'use strict';
+"use strict";
 
 /**
  * Read the documentation (https://strapi.io/documentation/v3.x/concepts/controllers.html#core-controllers)
  * to customize this controller
  */
 
-const { parseMultipartData, sanitizeEntity } = require('strapi-utils');
+const { sanitizeEntity } = require("strapi-utils");
 
 module.exports = {
+  async findProfTpcs(ctx) {
+    const { codProf } = ctx.params;
 
-
-  /**
-   * Create a record.
-   *
-   * @return {Object}
-   */
-
-  async create(ctx) {
-    let entity;
-    if (ctx.is('multipart')) {
-      const { data, files } = parseMultipartData(ctx);
-      entity = await strapi.services.tpc.create(data, { files });
-    } else {
-      entity = await strapi.services.tpc.create(ctx.request.body);
-    }
+    const entity = await strapi.services.tpc.find({ codProf });
     return sanitizeEntity(entity, { model: strapi.models.tpc });
   },
 };

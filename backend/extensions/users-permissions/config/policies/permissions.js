@@ -26,7 +26,6 @@ module.exports = async (ctx, next) => {
     ctx.request.header.usertype
   ) {
     try {
-      console.log(ctx);
       const { id } = await strapi.plugins[
         "users-permissions"
       ].services.jwt.getToken(ctx);

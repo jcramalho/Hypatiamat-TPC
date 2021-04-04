@@ -1,5 +1,5 @@
 const axios = require("axios");
-const url = "http://localhost:1337";
+const url = require("@/config/hosts").hostAPI;
 let timer;
 
 export default {
@@ -27,7 +27,7 @@ export default {
   actions: {
     async auth(context, payload) {
       try {
-        const response = await axios.post(url + "/auth/local", {
+        const response = await axios.post(url + "auth/local", {
           identifier: payload.username,
           password: payload.password,
         });

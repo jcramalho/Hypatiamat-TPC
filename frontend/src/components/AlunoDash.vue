@@ -33,6 +33,7 @@
 
 <script>
 const axios = require("axios");
+const url = require("@/config/hosts").hostAPI;
 
 export default {
   computed: {
@@ -58,10 +59,8 @@ export default {
       this.user = this.$store.getters.getUser;
     },
     async getEscola() {
-      const url = "http://localhost:1337";
-
       try {
-        const response = await axios.get(url + "/escolas/" + this.user.escola);
+        const response = await axios.get(url + "escolas/" + this.user.escola);
         this.escola = response.data.nome;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch Escola");

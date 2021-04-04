@@ -8,14 +8,14 @@
       <v-card-text>
         <v-form>
           <v-text-field
-            color="#008a5d"
+            color="#009263"
             label="Utilizador"
             prepend-icon="mdi-account-circle"
             v-model="username"
             :rules="rule"
           />
           <v-text-field
-            color="#008a5d"
+            color="#009263"
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             prepend-icon="mdi-lock"
@@ -27,7 +27,7 @@
         </v-form>
       </v-card-text>
       <v-card-actions>
-        <v-btn class="ml-1" dark large color="#008a5d" @click="submitForm"
+        <v-btn class="ml-1" dark large color="#009263" @click="submitForm"
           >Login</v-btn
         >
       </v-card-actions>

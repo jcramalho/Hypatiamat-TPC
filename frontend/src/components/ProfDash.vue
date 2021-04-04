@@ -14,10 +14,7 @@
       </v-card-title>
       <v-card-text>
         <ul>
-          <li>TP1</li>
-          <li>TPC2</li>
-          <li>TPC3</li>
-          <li>TPC4</li>
+          <li v-for="(tpc, index) in tpcs" :key="index">{{ tpc }}</li>
         </ul>
       </v-card-text>
       <v-card-actions>
@@ -37,8 +34,21 @@
 
 <script>
 import axios from "axios";
+const url = require("@/config/hosts").hostAPI;
 
 export default {
+  created() {
+    this.getUser();
+    this.getEscola();
+    this.getTpcs();
+  },
+  data() {
+    return {
+      tpcs: [],
+      user: null,
+      escola: null,
+    };
+  },
   computed: {
     name() {
       return this.user.nome;
@@ -47,25 +57,23 @@ export default {
       return this.escola;
     },
   },
-  created() {
-    this.getUser();
-    this.getEscola();
-  },
-  data() {
-    return {
-      user: null,
-      escola: null,
-    };
-  },
   methods: {
+    async getTpcs() {
+      try {
+        const response = await axios.get(url + "tpcs/prof/" + this.user.codigo);
+        this.tpcs = response.data;
+        console.log(response.data);
+      } catch (err) {
+        const error = new Error(err.message || "Failed to fetch TPCs");
+        throw error;
+      }
+    },
     getUser() {
       this.user = this.$store.getters.getUser;
     },
     async getEscola() {
-      const url = "http://localhost:1337";
-
       try {
-        const response = await axios.get(url + "/escolas/" + this.user.escola);
+        const response = await axios.get(url + "escolas/" + this.user.escola);
         this.escola = response.data.nome;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch Escola");

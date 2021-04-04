@@ -12,13 +12,6 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "idQuestao": {
-      "type": "integer",
-      "required": false
-    },
-    "idTPC": {
-      "type": "integer"
-    },
     "codQuestao": {
       "type": "string"
     }

@@ -13,24 +13,25 @@
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
           <v-text-field
-            color="green"
+            color="#009263"
             outlined
             type="text"
-            label="Nome do TPC"
+            label="Título do TPC"
             class="mb-n6"
             required
+            v-model="titulo"
           ></v-text-field>
         </v-col>
         <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
-          <v-btn large>
-            Config
+          <v-btn large class="white--text" color="#009263">
+            <v-icon class="mr-1"> mdi-cog </v-icon> Configurações
           </v-btn>
         </v-col>
       </v-row>
       <v-row class="mb-n6">
         <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="12">
           <v-combobox
-            color="green"
+            color="#009263"
             v-model="turmasSelected"
             :items="turmasProf"
             chips
@@ -43,12 +44,12 @@
             <template v-slot:selection="{ attrs, item, select, selected }">
               <v-chip
                 dark
-                color="green"
+                color="#009263"
                 v-bind="attrs"
                 :input-value="selected"
                 close
                 @click="select"
-                @click:close="remove(item)"
+                @click:close="removeTurma(item)"
               >
                 <strong>{{ item }}</strong
                 >&nbsp;
@@ -58,7 +59,7 @@
         </v-col>
         <v-col cols="12" xs="12" sm="12" md="12" lg="2" xl="5">
           <v-text-field
-            color="green"
+            color="#009263"
             outlined
             v-model="tentativas"
             type="number"
@@ -68,14 +69,14 @@
         <v-col cols="12" xs="12" sm="12" md="12" lg="3" xl="5">
           <v-dialog
             ref="dialog"
-            v-model="modal"
+            v-model="dateModal"
             :return-value.sync="date"
             width="290px"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 outlined
-                color="green"
+                color="#009263"
                 v-model="date"
                 label="Data Limite"
                 prepend-icon="mdi-calendar"
@@ -85,16 +86,16 @@
               ></v-text-field>
             </template>
             <v-date-picker
-              color="green"
+              color="#009263"
               v-model="date"
               scrollable
               locale="pt-PT"
             >
               <v-spacer></v-spacer>
-              <v-btn text color="green" @click="modal = false">
+              <v-btn text color="#009263" @click="dateModal = false">
                 Cancel
               </v-btn>
-              <v-btn text color="green" @click="$refs.dialog.save(date)">
+              <v-btn text color="#009263" @click="$refs.dialog.save(date)">
                 OK
               </v-btn>
             </v-date-picker>
@@ -102,110 +103,251 @@
         </v-col>
         <v-col cols="12" xs="12" sm="12" md="12" lg="3" xl="5">
           <v-dialog
-            ref="dialog"
-            v-model="modal"
-            :return-value.sync="date"
+            ref="dialog2"
+            v-model="timeModal"
+            :return-value.sync="time"
             width="290px"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                 outlined
-                color="green"
-                v-model="date"
-                label="Data Limite"
-                prepend-icon="mdi-calendar"
+                color="#009263"
+                v-model="time"
+                label="Hora Limite"
+                prepend-icon="mdi-clock-time-four-outline"
                 readonly
                 v-bind="attrs"
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker
-              color="green"
-              v-model="date"
+            <v-time-picker
               scrollable
-              locale="pt-PT"
+              color="#009263"
+              format="24hr"
+              v-model="time"
+              full-width
             >
               <v-spacer></v-spacer>
-              <v-btn text color="green" @click="modal = false">
+              <v-btn text color="#009263" @click="timeModal = false">
                 Cancel
               </v-btn>
-              <v-btn text color="green" @click="$refs.dialog.save(date)">
+              <v-btn text color="#009263" @click="$refs.dialog2.save(time)">
                 OK
               </v-btn>
-            </v-date-picker>
+            </v-time-picker>
           </v-dialog>
         </v-col>
       </v-row>
       <v-row class="mb-6">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
+        <v-col cols="12" xs="12" sm="12" md="12" lg="10" xl="5">
           <v-sheet>
-            <v-slide-group v-model="questao" show-arrows center-active>
-              <v-slide-item v-for="n in 4" :key="n" v-slot="{ active, toggle }">
+            <v-slide-group mandatory show-arrows center-active>
+              <v-slide-item
+                v-for="(q, index) in questoes"
+                :key="index"
+                v-slot="{ active, toggle }"
+              >
                 <v-chip
+                  ref="chips"
                   large
                   close
                   dark
-                  color="green"
+                  :color="corChip(q)"
                   class="mx-2"
                   :input-value="active"
-                  active-class="green black--text"
+                  active-class="black--text"
                   @click="toggle"
+                  v-on:click="questaoSelected(q, index)"
+                  @click:close="removeQuestao(index)"
                 >
-                  Options {{ n }}
+                  <span v-if="!q.cod"><i>Adicionar!</i></span>
+                  <span v-else>{{ q.cod }}</span>
                 </v-chip>
               </v-slide-item>
             </v-slide-group>
           </v-sheet>
         </v-col>
+        <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="2" xl="5">
+          <v-btn @click="novaQuestao" large class="white--text" color="#009263">
+            <v-icon class="mr-1"> mdi-plus-circle </v-icon> Adicionar
+          </v-btn>
+        </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <v-select
+          <v-combobox
+            color="#009263"
             outlined
             flat
             v-model="temaSelected"
             :items="temas"
             label="Temas"
-          ></v-select>
+            @change="changeTema"
+          ></v-combobox>
         </v-col>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <v-select
+          <v-combobox
+            color="#009263"
             v-model="subtemaSelected"
             outlined
             flat
             :items="subtemas"
             label="Subtemas"
-          ></v-select>
+            @change="changeSubtema(0)"
+          ></v-combobox>
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
+        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
           <v-card
-            class="mt-n5 mx-auto"
+            class="pre mt-n5 mx-auto"
             color="white"
             elevation="2"
             outlined
             rounded
           >
             <v-row>
-              <v-col cols="12" xs="12" sm="12" md="12" lg="10" xl="5">
-                <p>
-                  {{ questoesSelected[0] }}
-                </p>
-                <v-btn>Resoluçao</v-btn>
+              <v-col cols="12" xs="8" sm="8" md="8" lg="8" xl="8">
+                <v-row>
+                  <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
+                    <h2 style="color:#009263" class="text-center my-2">
+                      Questão
+                    </h2>
+                    <div v-if="hasQuestao === -1" class="mt-5 ml-5">
+                      <h3>
+                        Selecione um Tema e Subtema para visualizar as
+                        respetivas Questões!
+                      </h3>
+                    </div>
+                    <div v-else-if="hasQuestao === 0" class="mt-5 ml-5">
+                      <h3>
+                        O Tema/Subtema selecionado não possui questões
+                        disponíveis.
+                      </h3>
+                    </div>
+                    <div v-else v-html="questaoAtual" class="mt-5 ml-5"></div>
+
+                    <div class="mt-5 ml-8">
+                      <v-container v-if="tipoQuestao === 2">
+                        <v-row>
+                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
+                            <v-img
+                              height="200px"
+                              width="200px"
+                              contain
+                              :src="imgRespostas(0)"
+                              >1)</v-img
+                            >
+                          </v-col>
+                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
+                            <v-img
+                              height="200px"
+                              width="200px"
+                              contain
+                              :src="imgRespostas(1)"
+                              >2)</v-img
+                            >
+                          </v-col>
+                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
+                            <v-img
+                              height="200px"
+                              width="200px"
+                              contain
+                              :src="imgRespostas(2)"
+                              >3)</v-img
+                            >
+                          </v-col>
+                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
+                            <v-img
+                              height="200px"
+                              width="200px"
+                              contain
+                              :src="imgRespostas(3)"
+                              >4)</v-img
+                            >
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                      <v-container
+                        class="resposta mt-8"
+                        v-else-if="tipoQuestao === 1"
+                      >
+                        <v-text-field
+                          disabled
+                          color="#009263"
+                          outlined
+                          type="text"
+                          label="Resp. Aberta"
+                          :suffix="unidade"
+                        ></v-text-field>
+                      </v-container>
+                      <ul v-else>
+                        <li v-for="(resp, index) in respostas" :key="index">
+                          <b> Opção {{ index + 1 }}: </b>
+                          <span v-html="resp"></span>
+                        </li>
+                      </ul>
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-row style="position:absolute; bottom:0;">
+                  <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
+                    <div class="pt-6 my-2 mx-2">
+                      <v-dialog v-model="dialog" width="600px">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            small
+                            :style="{
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                            }"
+                            class="white--text"
+                            color="#009263"
+                            v-bind="attrs"
+                            v-on="on"
+                            :disabled="!hasResolucao"
+                          >
+                            Resolução
+                          </v-btn>
+                        </template>
+                        <v-card>
+                          <v-img contain :src="resolucao"></v-img>
+                          <v-card-actions class="text-center">
+                            <v-btn
+                              :style="{
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                              }"
+                              color="#009263"
+                              text
+                              @click="dialog = false"
+                            >
+                              OK
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
+                    </div>
+                  </v-col>
+                </v-row>
               </v-col>
               <v-col
                 class="text-end"
                 cols="12"
-                xs="12"
-                sm="12"
-                md="12"
-                lg="2"
-                xl="5"
+                xs="4"
+                sm="4"
+                md="4"
+                lg="4"
+                xl="4"
               >
-                <p>
-                  cenass2
-                </p>
+                <v-card>
+                  <v-img
+                    height="400px"
+                    width="400px"
+                    contain
+                    :src="imagem"
+                  ></v-img>
+                </v-card>
               </v-col>
             </v-row>
           </v-card>
@@ -214,25 +356,42 @@
       <v-row>
         <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
-            <v-btn>Voltar</v-btn>
+            <v-btn large class="white--text" color="#009263" @click="voltar"
+              >Voltar</v-btn
+            >
           </v-container>
         </v-col>
         <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container class="text-center">
-            <v-btn icon color="green">
-              <v-icon> mdi-arrow-left-bold-circle </v-icon>
+            <v-btn large icon color="#009263" @click="proxQuestao(false)">
+              <v-icon large>
+                mdi-arrow-left-bold-circle
+              </v-icon>
             </v-btn>
-            <v-btn>adicionar</v-btn>
+            <v-btn
+              @click="submitQuestao"
+              class="mx-1"
+              dark
+              large
+              color="#009263"
+              >Adicionar</v-btn
+            >
 
-            <v-btn icon color="green">
-              <v-icon> mdi-arrow-right-bold-circle </v-icon>
+            <v-btn large icon color="#009263" @click="proxQuestao(true)">
+              <v-icon large>
+                mdi-arrow-right-bold-circle
+              </v-icon>
             </v-btn>
-            <p class="mt-2">68/69</p>
+            <p v-if="questoesSelected.length !== 0" class="mt-2">
+              {{ contador }}
+            </p>
           </v-container>
         </v-col>
         <v-col class="text-right" cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
-            <v-btn>Criar</v-btn>
+            <v-btn large class="white--text" color="#009263" @click="criarTpc"
+              >Criar TPC</v-btn
+            >
           </v-container>
         </v-col>
       </v-row>
@@ -242,6 +401,7 @@
 
 <script>
 import axios from "axios";
+const url = require("@/config/hosts").hostAPI;
 
 export default {
   created() {
@@ -252,13 +412,18 @@ export default {
   },
   data() {
     return {
+      titulo: null,
+      dialog: false,
       userId: null,
       turmasProf: [],
       turmasSelected: [],
       tentativas: 1,
       date: null,
-      modal: false,
-      questao: null,
+      time: null,
+      dateModal: false,
+      timeModal: false,
+      questoes: [{}],
+      chipAtivoIdx: 0,
       temas: [],
       subtemas: [],
       temaSelected: null,
@@ -267,14 +432,223 @@ export default {
       catalogoQuestoes: [],
       questoesSelected: [],
       codTemaSelected: null,
+      counter: 0,
+      respostas: [],
+      hasQuestao: -1,
     };
   },
-  methods: {
-    async getTemas() {
-      const url = "http://localhost:1337";
+  computed: {
+    unidade() {
+      if (!this.questoesSelected[this.counter]) return "";
+      return this.questoesSelected[this.counter].unidade;
+    },
+    hasResolucao() {
+      if (!this.questoesSelected[this.counter]) return false;
+      return true;
+    },
+    resolucao() {
+      if (!this.questoesSelected[this.counter]) return "";
+      let img = this.questoesSelected[this.counter].resolucao;
+      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
+      return img;
+    },
+    imagem() {
+      if (!this.questoesSelected[this.counter]) return "";
+      let img = this.questoesSelected[this.counter].figura;
+      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      return img;
+    },
+    contador() {
+      return `${this.counter + 1}/${this.questoesSelected.length}`;
+    },
+    questaoAtual() {
+      if (!this.questoesSelected[this.counter]) return "";
 
+      return this.questoesSelected[this.counter].questao;
+    },
+    tipoQuestao() {
+      if (!this.questoesSelected[this.counter]) return 0;
+
+      return this.questoesSelected[this.counter].tipo;
+    },
+  },
+  methods: {
+    async criarTpc() {
+      //
+      // VERIFICAR INPUTS TODOS
+      //
       try {
-        const response = await axios.get(url + "/temas");
+        const questoesCod = this.questoes.map((el) => el.cod);
+        const questoesId = [];
+        for (const codQuestao of questoesCod) {
+          const response = await axios.post(url + "tpc-questoes", {
+            codQuestao,
+          });
+          questoesId.push(response.data.id);
+        }
+
+        let body = {
+          tagname: this.titulo,
+          codProf: this.userId,
+          tentativas: this.tentativas,
+          ativo: 1,
+          dataInicio: new Date(),
+          dataFim: new Date(`${this.date} ${this.time}`),
+          tpc_questoes: questoesId,
+          // FIX TPC_ALUNOS
+          tpc_alunos: [],
+        };
+
+        const response = await axios.post(url + "tpcs", body);
+        console.log(response);
+        this.$router.replace("/dashboard");
+      } catch (err) {
+        const error = new Error(err.message || "Failed to post TPC");
+        throw error;
+      }
+    },
+    imgRespostas(index) {
+      let img = this.respostas[index];
+      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      return img;
+    },
+    corChip(questao) {
+      if (!questao.cod) return "green";
+      return "#009263";
+    },
+    submitQuestao() {
+      if (!this.questoesSelected[this.counter]) return;
+      const chipIndex = this.chipAtivoIdx;
+      const questao = this.questoesSelected[this.counter];
+      questao.counter = this.counter;
+      this.$set(this.questoes, chipIndex, questao);
+    },
+    questaoSelected(q, ind) {
+      this.chipAtivoIdx = ind;
+      if (!q.cod) return;
+
+      this.codTemaSelected = q.tema;
+
+      const temaEntry = this.catalogoTemas.filter((el) => {
+        return el.codtema === this.codTemaSelected;
+      })[0];
+
+      this.temaSelected = temaEntry.tema;
+
+      this.changeTema();
+      this.subtemaSelected = temaEntry.subtemas.filter((el) => {
+        return el.codsubtema === q.subtema;
+      })[0].subtema;
+      this.changeSubtema(q.counter);
+    },
+    changeTema() {
+      this.respostas = [];
+      this.questoesSelected = [];
+      this.subtemaSelected = null;
+      const codTema = this.catalogoTemas.filter((el) =>
+        el.tema.includes(this.temaSelected)
+      )[0].codtema;
+      this.codTemaSelected = codTema;
+      let subtemas = this.catalogoTemas.filter((el) => {
+        return el.codtema === codTema;
+      })[0].subtemas;
+
+      this.subtemas = [];
+      subtemas.forEach((el) => {
+        this.subtemas.push(el.subtema);
+      });
+    },
+    changeSubtema(counter) {
+      if (this.subtemaSelected) {
+        let listSubtemas = this.catalogoTemas.filter((el) => {
+          return el.codtema === this.codTemaSelected;
+        })[0].subtemas;
+
+        let codSubtema = listSubtemas.filter((el) => {
+          return el.subtema === this.subtemaSelected;
+        })[0].codsubtema;
+
+        this.questoesSelected = this.catalogoQuestoes[codSubtema] || [];
+
+        if (this.questoesSelected.length === 0) this.hasQuestao = 0;
+        else this.hasQuestao = 1;
+
+        this.counter = counter !== 0 ? counter : 0;
+        this.getRespostas();
+      }
+    },
+    removeQuestao(ind) {
+      if (this.questoes.length > 1) {
+        if (this.chipAtivoIdx === this.questoes.length - 1) this.chipAtivoIdx--;
+        this.questoes.splice(ind, 1);
+        this.questoes = [...this.questoes];
+      }
+    },
+    async novaQuestao() {
+      const questao = {};
+      await this.questoes.push(questao);
+      let len = this.questoes.length - 1;
+      this.$refs.chips[len].click();
+    },
+    getRespostas() {
+      this.respostas = [];
+      let questao = this.questoesSelected[this.counter];
+      if (!questao) return "";
+      switch (questao.tipo) {
+        case 0:
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          this.respostas.push(questao.resposta3);
+          this.respostas.push(questao.resposta4);
+          break;
+        case 1:
+          this.respostas.push(questao.unidade);
+          break;
+        case 2:
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          this.respostas.push(questao.resposta3);
+          this.respostas.push(questao.resposta4);
+          break;
+        case 3:
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          break;
+        case 4:
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          this.respostas.push(questao.resposta3);
+          break;
+        case 5:
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          this.respostas.push(questao.resposta3);
+          this.respostas.push(questao.resposta4);
+          this.respostas.push(questao.resposta5);
+          break;
+        case 6:
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          this.respostas.push(questao.resposta3);
+          this.respostas.push(questao.resposta4);
+          this.respostas.push(questao.resposta5);
+          this.respostas.push(questao.resposta6);
+          break;
+      }
+    },
+    proxQuestao(flag) {
+      const nQuestoes = this.questoesSelected.length;
+      if (flag) {
+        if (this.counter + 1 < nQuestoes) this.counter++;
+      } else {
+        if (this.counter - 1 >= 0) this.counter--;
+      }
+      this.getRespostas();
+    },
+
+    async getTemas() {
+      try {
+        const response = await axios.get(url + "temas");
 
         Object.keys(response.data).forEach((el) => {
           let tema = response.data[el][0].tema;
@@ -291,11 +665,11 @@ export default {
           this.temas.push(tema);
         });
       } catch (err) {
-        const error = new Error(err.message || "Failed to query Turmas");
+        const error = new Error(err.message || "Failed to query Temas");
         throw error;
       }
     },
-    remove(item) {
+    removeTurma(item) {
       this.turmasSelected.splice(this.turmasSelected.indexOf(item), 1);
       this.turmasSelected = [...this.turmasSelected];
     },
@@ -303,10 +677,8 @@ export default {
       this.userId = this.$store.getters.getUserId;
     },
     async getTurmas() {
-      const url = "http://localhost:1337";
-
       try {
-        const response = await axios.get(url + "/turmas/prof/" + this.userId);
+        const response = await axios.get(url + "turmas/prof/" + this.userId);
         this.turmasProf = response.data.map((t) => t.turma);
       } catch (err) {
         const error = new Error(err.message || "Failed to query Turmas");
@@ -314,47 +686,37 @@ export default {
       }
     },
     async getQuestoes() {
-      const url = "http://localhost:1337";
-
       try {
-        const response = await axios.get(url + "/exercicios?_limit=-1");
+        const response = await axios.get(url + "exercicios?_limit=-1");
         this.catalogoQuestoes = response.data;
       } catch (err) {
-        const error = new Error(err.message || "Failed to query Turmas");
+        const error = new Error(err.message || "Failed to query Questoes");
         throw error;
       }
     },
-  },
-  watch: {
-    temaSelected(now) {
-      const codTema = this.catalogoTemas.filter((el) =>
-        el.tema.includes(now)
-      )[0].codtema;
-      this.codTemaSelected = codTema;
-      let subtemas = this.catalogoTemas.filter((el) => {
-        return el.codtema === codTema;
-      })[0].subtemas;
-
-      this.subtemas = [];
-      subtemas.forEach((el) => {
-        this.subtemas.push(el.subtema);
-      });
-    },
-    subtemaSelected(now) {
-      let listSubtemas = this.catalogoTemas.filter((el) => {
-        return el.codtema === this.codTemaSelected;
-      })[0].subtemas;
-
-      let codSubtema = listSubtemas.filter((el) => {
-        return el.subtema === now;
-      })[0].codsubtema;
-
-      this.questoesSelected = this.catalogoQuestoes[codSubtema] || [
-        "Não existem dados",
-      ];
+    voltar() {
+      this.$router.push("/dashboard");
     },
   },
 };
 </script>
 
-<style></style>
+<style>
+.pre {
+  white-space: pre-wrap;
+}
+.raiz {
+  white-space: nowrap;
+}
+.raiz-content {
+  text-decoration: overline;
+}
+sup {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.resposta {
+  width: 250px;
+}
+</style>

@@ -13,6 +13,7 @@ module.exports = {
     } else {
       entities = await strapi.services.exercicio.find(ctx.query);
     }
+    entities = await strapi.services.exercicio.specialChars(entities);
 
     let result = entities.reduce(function (list, ex) {
       list[ex.subtema] = list[ex.subtema] || [];
