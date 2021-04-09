@@ -18,11 +18,12 @@
     "codTurma": {
       "type": "string"
     },
-    "idTPC": {
-      "type": "integer"
-    },
     "resolucoes": {
       "collection": "resolucao"
+    },
+    "tpcs": {
+      "via": "tpc_alunos",
+      "collection": "tpc"
     }
   }
 }

@@ -1,11 +1,31 @@
 <template>
   <div>
-    <h3>HISTORICO</h3>
+    <component :is="historic"></component>
   </div>
 </template>
 
 <script>
-export default {};
+import ProfHist from "../components/ProfHist.vue";
+import AlunoHist from "../components/AlunoHist.vue";
+
+export default {
+  components: {
+    ProfHist,
+    AlunoHist,
+  },
+  data() {
+    return {};
+  },
+  computed: {
+    historic() {
+      const type = this.$store.getters.getUserType;
+      if (type === "aluno") {
+        return "AlunoHist";
+      }
+      return "ProfHist";
+    },
+  },
+};
 </script>
 
 <style></style>

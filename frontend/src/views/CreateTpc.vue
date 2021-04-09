@@ -3,10 +3,10 @@
     <v-container>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
-          <v-card-title primary-title class="justify-center green--text">
-            <h2>
+          <v-card-title class="justify-center green--text">
+            <h1>
               Criar Novo TPC
-            </h2>
+            </h1>
           </v-card-title>
         </v-col>
       </v-row>
@@ -33,7 +33,7 @@
           <v-combobox
             color="#009263"
             v-model="turmasSelected"
-            :items="turmasProf"
+            :items="Object.keys(turmasProf)"
             chips
             clearable
             multiple
@@ -41,19 +41,71 @@
             full-width
             prefix="Turmas"
           >
-            <template v-slot:selection="{ attrs, item, select, selected }">
-              <v-chip
-                dark
-                color="#009263"
-                v-bind="attrs"
-                :input-value="selected"
-                close
-                @click="select"
-                @click:close="removeTurma(item)"
-              >
-                <strong>{{ item }}</strong
-                >&nbsp;
-              </v-chip>
+            <template v-slot:selection="{ item }">
+              <v-dialog v-model="turmaDialog" scrollable max-width="500px">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-chip
+                    dark
+                    color="#009263"
+                    v-bind="attrs"
+                    v-on="on"
+                    close
+                    @click="editarAlunos(item)"
+                    @click:close="removeTurma(item)"
+                  >
+                    <strong>{{ item }}</strong
+                    >&nbsp;
+                  </v-chip>
+                </template>
+                <v-card>
+                  <v-card-title>Turma {{ item }}</v-card-title>
+                  <v-card-text style="height: 300px;">
+                    <v-list shaped>
+                      <v-list-item-group multiple>
+                        <template v-for="(item, ind) in alunos">
+                          <v-list-item
+                            :key="ind"
+                            :value="item"
+                            active-class="#009263"
+                          >
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title
+                                  v-text="item.nome"
+                                ></v-list-item-title>
+                              </v-list-item-content>
+
+                              <v-list-item-action>
+                                <v-checkbox
+                                  :input-value="(active = true)"
+                                  color="#009263"
+                                ></v-checkbox>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                        </template>
+                      </v-list-item-group>
+                    </v-list>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="turmaDialog = false"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="turmaDialog = false"
+                    >
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </template>
           </v-combobox>
         </v-col>
@@ -412,11 +464,13 @@ export default {
   },
   data() {
     return {
+      userId: null,
       titulo: null,
       dialog: false,
-      userId: null,
+      turmaDialog: false,
       turmasProf: [],
       turmasSelected: [],
+      alunos: [],
       tentativas: 1,
       date: null,
       time: null,
@@ -473,6 +527,9 @@ export default {
     },
   },
   methods: {
+    editarAlunos(turma) {
+      this.alunos = this.turmasProf[turma];
+    },
     async criarTpc() {
       //
       // VERIFICAR INPUTS TODOS
@@ -487,6 +544,18 @@ export default {
           questoesId.push(response.data.id);
         }
 
+        const alunosId = [];
+        for (const turma of this.turmasSelected) {
+          const alunos = this.turmasProf[turma];
+          for (const al of alunos) {
+            const response = await axios.post(url + "tpc-alunos", {
+              codAluno: al.user,
+              codTurma: turma,
+            });
+            alunosId.push(response.data.id);
+          }
+        }
+
         let body = {
           tagname: this.titulo,
           codProf: this.userId,
@@ -495,12 +564,10 @@ export default {
           dataInicio: new Date(),
           dataFim: new Date(`${this.date} ${this.time}`),
           tpc_questoes: questoesId,
-          // FIX TPC_ALUNOS
-          tpc_alunos: [],
+          tpc_alunos: alunosId,
         };
 
-        const response = await axios.post(url + "tpcs", body);
-        console.log(response);
+        await axios.post(url + "tpcs", body);
         this.$router.replace("/dashboard");
       } catch (err) {
         const error = new Error(err.message || "Failed to post TPC");
@@ -679,7 +746,7 @@ export default {
     async getTurmas() {
       try {
         const response = await axios.get(url + "turmas/prof/" + this.userId);
-        this.turmasProf = response.data.map((t) => t.turma);
+        this.turmasProf = response.data;
       } catch (err) {
         const error = new Error(err.message || "Failed to query Turmas");
         throw error;
@@ -701,7 +768,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .pre {
   white-space: pre-wrap;
 }

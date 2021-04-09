@@ -5,6 +5,8 @@ import TheDashboard from "../views/TheDashboard.vue";
 import CreateTpc from "../views/CreateTpc.vue";
 import TheHistoric from "../views/TheHistoric.vue";
 import TheStats from "../views/TheStats.vue";
+import DoTpc from "../views/DoTpc.vue";
+import TheResults from "../views/TheResults.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +29,18 @@ const routes = [
     path: "/create",
     name: "CreateTpc",
     component: CreateTpc,
+  },
+  {
+    path: "/tpc/:id",
+    name: "DoTpc",
+    component: DoTpc,
+    props: true,
+  },
+  {
+    path: "/resultados/:id",
+    name: "TheResults",
+    component: TheResults,
+    props: true,
   },
   {
     path: "/historic",

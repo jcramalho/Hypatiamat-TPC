@@ -5,6 +5,8 @@
  * to customize this controller
  */
 
+const { sanitizeEntity } = require("strapi-utils");
+
 module.exports = {
   async find(ctx) {
     let entities;
@@ -24,5 +26,11 @@ module.exports = {
     }, Object.create(null));
 
     return result;
+  },
+  async findOne(ctx) {
+    const { cod } = ctx.params;
+
+    const entity = await strapi.services.exercicio.findOne({ cod });
+    return sanitizeEntity(entity, { model: strapi.models.exercicio });
   },
 };

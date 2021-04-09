@@ -24,14 +24,14 @@
     "classificacao": {
       "type": "decimal"
     },
-    "idAluno": {
-      "type": "integer"
-    },
     "respostas": {
       "collection": "resposta"
     },
     "data": {
       "type": "datetime"
+    },
+    "idTpc": {
+      "type": "integer"
     }
   }
 }

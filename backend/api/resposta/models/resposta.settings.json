@@ -3,7 +3,8 @@
   "connection": "default",
   "collectionName": "respostas",
   "info": {
-    "name": "Resposta"
+    "name": "Resposta",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -18,9 +19,6 @@
       "type": "text"
     },
     "correta": {
-      "type": "integer"
-    },
-    "idResolucao": {
       "type": "integer"
     }
   }

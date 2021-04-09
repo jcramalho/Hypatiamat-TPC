@@ -5,13 +5,20 @@
  * to customize this controller
  */
 
-const { sanitizeEntity } = require("strapi-utils");
-
 module.exports = {
   async findProfTurmas(ctx) {
     const { idprofessor } = ctx.params;
 
-    const entity = await strapi.services.turma.find({ idprofessor });
-    return sanitizeEntity(entity, { model: strapi.models.turma });
+    const entities = await strapi.services.turma.find({ idprofessor });
+
+    const turmas = {};
+
+    for (const el of entities) {
+      let alunos = await strapi.services.aluno.find({ turma: el.turma });
+
+      turmas[el.turma] = alunos;
+    }
+
+    return turmas;
   },
 };

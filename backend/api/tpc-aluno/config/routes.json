@@ -18,7 +18,7 @@
     },
     {
       "method": "GET",
-      "path": "/tpc-alunos/:id",
+      "path": "/tpc-alunos/:codAluno",
       "handler": "tpc-aluno.findOne",
       "config": {
         "policies": []
@@ -34,7 +34,7 @@
     },
     {
       "method": "PUT",
-      "path": "/tpc-alunos/:id",
+      "path": "/tpc-alunos/:codAluno",
       "handler": "tpc-aluno.update",
       "config": {
         "policies": []

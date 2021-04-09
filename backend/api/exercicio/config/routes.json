@@ -18,7 +18,7 @@
     },
     {
       "method": "GET",
-      "path": "/exercicios/:id",
+      "path": "/exercicios/:cod",
       "handler": "exercicio.findOne",
       "config": {
         "policies": []

@@ -12,9 +12,6 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "codProf": {
-      "type": "string"
-    },
     "tentativas": {
       "type": "integer"
     },
@@ -31,10 +28,17 @@
       "type": "datetime"
     },
     "tpc_questoes": {
-      "collection": "tpc-questao"
+      "via": "tpcs",
+      "collection": "tpc-questao",
+      "dominant": true
     },
     "tpc_alunos": {
-      "collection": "tpc-aluno"
+      "collection": "tpc-aluno",
+      "via": "tpcs",
+      "dominant": true
+    },
+    "codProf": {
+      "type": "string"
     }
   }
 }

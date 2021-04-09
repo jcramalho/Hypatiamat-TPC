@@ -2,7 +2,7 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/resolucaos",
+      "path": "/resolucoes",
       "handler": "resolucao.find",
       "config": {
         "policies": []
@@ -10,7 +10,7 @@
     },
     {
       "method": "GET",
-      "path": "/resolucaos/count",
+      "path": "/resolucoes/count",
       "handler": "resolucao.count",
       "config": {
         "policies": []
@@ -18,7 +18,7 @@
     },
     {
       "method": "GET",
-      "path": "/resolucaos/:id",
+      "path": "/resolucoes/:id",
       "handler": "resolucao.findOne",
       "config": {
         "policies": []
@@ -26,7 +26,7 @@
     },
     {
       "method": "POST",
-      "path": "/resolucaos",
+      "path": "/resolucoes",
       "handler": "resolucao.create",
       "config": {
         "policies": []
@@ -34,7 +34,7 @@
     },
     {
       "method": "PUT",
-      "path": "/resolucaos/:id",
+      "path": "/resolucoes/:id",
       "handler": "resolucao.update",
       "config": {
         "policies": []
@@ -42,7 +42,7 @@
     },
     {
       "method": "DELETE",
-      "path": "/resolucaos/:id",
+      "path": "/resolucoes/:id",
       "handler": "resolucao.delete",
       "config": {
         "policies": []
