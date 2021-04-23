@@ -61,8 +61,6 @@ module.exports = async (ctx, next) => {
       role = ctx.state.user.role;
     }
 
-    console.log(ctx.state.user);
-
     if (role.type === "root") {
       return await next();
     }
