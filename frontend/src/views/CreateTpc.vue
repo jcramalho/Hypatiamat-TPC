@@ -252,11 +252,12 @@
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
           <v-card
-            class="pre mt-n5 mx-auto"
+            class="mt-n5 mx-auto"
             color="white"
             elevation="2"
             outlined
             rounded
+            height="520px"
           >
             <v-row>
               <v-col cols="12" xs="8" sm="8" md="8" lg="8" xl="8">
@@ -329,7 +330,7 @@
                           color="#009263"
                           outlined
                           type="text"
-                          label="Resp. Aberta"
+                          label="Resposta Aberta"
                           :suffix="unidade"
                         ></v-text-field>
                       </v-container>
@@ -383,15 +384,15 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col
-                class="text-end"
-                cols="12"
-                xs="4"
-                sm="4"
-                md="4"
-                lg="4"
-                xl="4"
-              >
+              <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
+                <div id="info">
+                  <span v-if="codQuestao !== ''">
+                    <b> Código: </b> {{ codQuestao }}</span
+                  >
+                  <span v-if="codQuestao !== ''"
+                    ><b>Nível {{ nivel }}</b></span
+                  >
+                </div>
                 <v-card>
                   <v-img
                     height="400px"
@@ -400,6 +401,9 @@
                     :src="imagem"
                   ></v-img>
                 </v-card>
+                <div v-if="temExame" id="exame">
+                  <span> <b> Exame: </b> {{ exame }}</span>
+                </div>
               </v-col>
             </v-row>
           </v-card>
@@ -492,6 +496,26 @@ export default {
     };
   },
   computed: {
+    exame() {
+      if (!this.questoesSelected[this.counter]) return "";
+      return this.questoesSelected[this.counter].idexame;
+    },
+    temExame() {
+      if (
+        this.questoesSelected[this.counter] &&
+        this.questoesSelected[this.counter].idexame
+      )
+        return 1;
+      return 0;
+    },
+    nivel() {
+      if (!this.questoesSelected[this.counter]) return "";
+      return this.questoesSelected[this.counter].niveldificuldade;
+    },
+    codQuestao() {
+      if (!this.questoesSelected[this.counter]) return "";
+      return this.questoesSelected[this.counter].cod;
+    },
     unidade() {
       if (!this.questoesSelected[this.counter]) return "";
       return this.questoesSelected[this.counter].unidade;
@@ -769,9 +793,6 @@ export default {
 </script>
 
 <style scoped>
-.pre {
-  white-space: pre-wrap;
-}
 .raiz {
   white-space: nowrap;
 }
@@ -784,6 +805,25 @@ sup {
 }
 
 .resposta {
-  width: 250px;
+  width: 700px;
+}
+#info {
+  height: 20px;
+  line-height: 22px;
+  padding: 5px 6px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+#info span:last-child {
+  position: absolute;
+  right: 6px;
+  color: #009263;
+}
+
+#exame {
+  padding: 5px 10px;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 </style>

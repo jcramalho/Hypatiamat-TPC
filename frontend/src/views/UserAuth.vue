@@ -8,6 +8,7 @@
       <v-card-text>
         <v-form>
           <v-text-field
+            v-on:keyup.enter="submitForm"
             color="#009263"
             label="Utilizador"
             prepend-icon="mdi-account-circle"
@@ -15,6 +16,7 @@
             :rules="rule"
           />
           <v-text-field
+            v-on:keyup.enter="submitForm"
             color="#009263"
             :type="showPassword ? 'text' : 'password'"
             label="Password"

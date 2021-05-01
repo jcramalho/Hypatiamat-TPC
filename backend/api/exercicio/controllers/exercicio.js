@@ -30,7 +30,10 @@ module.exports = {
   async findOne(ctx) {
     const { cod } = ctx.params;
 
-    const entity = await strapi.services.exercicio.findOne({ cod });
-    return sanitizeEntity(entity, { model: strapi.models.exercicio });
+    let entity = await strapi.services.exercicio.findOne({ cod });
+
+    entity = await strapi.services.exercicio.specialChars([entity]);
+
+    return sanitizeEntity(entity[0], { model: strapi.models.exercicio });
   },
 };

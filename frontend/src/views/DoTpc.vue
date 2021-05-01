@@ -40,11 +40,21 @@
       </v-row>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <v-text-field disabled label="Tema" outlined></v-text-field>
+          <v-text-field
+            v-model="tema"
+            readonly
+            label="Tema"
+            outlined
+          ></v-text-field>
         </v-col>
 
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
-          <v-text-field disabled label="Subtema" outlined></v-text-field>
+          <v-text-field
+            v-model="subtema"
+            readonly
+            label="Subtema"
+            outlined
+          ></v-text-field>
         </v-col>
       </v-row>
       <v-row>
@@ -64,7 +74,7 @@
                       Questão
                     </h2>
 
-                    <div v-html="questaoAtual" class="mt-5 ml-5"></div>
+                    <div v-html="questaoAtual" class="mt-5 ml-10"></div>
 
                     <div class="mt-5 ml-8">
                       <v-container v-if="tipoQuestao === 2">
@@ -100,13 +110,20 @@
                         v-else-if="tipoQuestao === 1"
                       >
                         <v-text-field
-                          v-model="opcoesSelected[codQuestao]"
                           color="#009263"
                           outlined
                           type="text"
-                          label="Resp. Aberta"
-                          :suffix="unidade"
+                          v-model="opcoesSelected[codQuestao]"
                         ></v-text-field>
+                        <div class="input">
+                          <span v-html="opcoesSelected[codQuestao]"> </span>
+                          <span class="unidade" v-html="unidade"></span>
+                        </div>
+
+                        <SimpleKeyboard
+                          @onChange="onChange"
+                          :input="opcoesSelected[codQuestao]"
+                        />
                       </div>
 
                       <v-container class="mt-n6" v-else fluid>
@@ -124,15 +141,13 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col
-                class="text-end"
-                cols="12"
-                xs="4"
-                sm="4"
-                md="4"
-                lg="4"
-                xl="4"
-              >
+              <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
+                <div id="info">
+                  <span> <b> Código: </b> {{ codQuestao }}</span>
+                  <span
+                    ><b>Nível {{ nivel }}</b></span
+                  >
+                </div>
                 <v-card>
                   <v-img
                     height="400px"
@@ -141,6 +156,9 @@
                     :src="imagem"
                   ></v-img>
                 </v-card>
+                <div v-if="temExame" id="exame">
+                  <span> <b> Exame: </b> {{ exame }}</span>
+                </div>
               </v-col>
             </v-row>
           </v-card>
@@ -199,23 +217,48 @@
 import axios from "axios";
 const host = require("@/config/hosts").hostAPI;
 
+import SimpleKeyboard from "../components/SimpleKeyboard.vue";
+
 export default {
+  components: {
+    SimpleKeyboard,
+  },
   props: ["id"],
   created() {
     this.getUserId();
     this.getQuestoes();
+    this.getTemas();
   },
   data() {
     return {
       userId: null,
       tpc: null,
       catalogoQuestoes: [],
+      catalogoTemas: [],
       respostas: [],
       opcoesSelected: {},
       counter: 0,
+      tema: "",
+      subtema: "",
     };
   },
   computed: {
+    exame() {
+      if (!this.catalogoQuestoes[this.counter]) return "";
+      return this.catalogoQuestoes[this.counter].idexame;
+    },
+    temExame() {
+      if (
+        this.catalogoQuestoes[this.counter] &&
+        this.catalogoQuestoes[this.counter].idexame
+      )
+        return 1;
+      return 0;
+    },
+    nivel() {
+      if (!this.catalogoQuestoes[this.counter]) return "";
+      return this.catalogoQuestoes[this.counter].niveldificuldade;
+    },
     titulo() {
       if (!this.tpc) return "";
       return this.tpc.tagname;
@@ -246,6 +289,49 @@ export default {
     },
   },
   methods: {
+    async getTemas() {
+      try {
+        const response = await axios.get(host + "temas");
+
+        Object.keys(response.data).forEach((el) => {
+          let tema = response.data[el][0].tema;
+          let subtemas = [];
+          response.data[el].forEach((item) => {
+            subtemas.push({
+              codsubtema: item.codsubtema,
+              subtema: item.subtema,
+            });
+          });
+
+          this.catalogoTemas.push({ codtema: el, tema: tema, subtemas });
+        });
+      } catch (err) {
+        const error = new Error(err.message || "Failed to query Temas");
+        throw error;
+      }
+    },
+    getTema() {
+      const questao = this.catalogoQuestoes[this.counter];
+
+      const temaEntry = this.catalogoTemas.filter((el) => {
+        return el.codtema === questao.tema;
+      })[0];
+
+      this.tema = temaEntry.tema;
+
+      const subtemaEntry = temaEntry.subtemas.filter((el) => {
+        return el.codsubtema === questao.subtema;
+      })[0];
+
+      this.subtema = subtemaEntry.subtema;
+    },
+    // Keyboard method
+    onChange(input) {
+      const cod = this.catalogoQuestoes[this.counter].cod;
+      this.$set(this.opcoesSelected, cod, input);
+    },
+
+    // Submeter Resol. TPC
     async submeter() {
       try {
         const resps = [];
@@ -254,8 +340,19 @@ export default {
             (el) => el.cod === cod
           )[0];
 
-          //Verificar se resposta é igual a sol(resposta1)
-          const correta = resp === questao.resposta1 ? 1 : 0;
+          //Verificar se resposta é igual a alguma soluçao
+
+          let correta = 0;
+
+          for (let i = 1; i < 7; i++) {
+            if (
+              questao[`resposta${i}`] !== "" &&
+              questao[`resposta${i}`] === resp
+            )
+              correta = 1;
+          }
+
+          // Criar resposta
 
           let bodyResp = {
             codQuestao: questao.cod,
@@ -268,6 +365,7 @@ export default {
           resps.push(resposta.data);
         }
 
+        //Criar resolucao
         const qRespondidas = this.catalogoQuestoes.length;
         const qCertas = resps.filter((r) => r.correta === 1).length;
         const classificacao = (qCertas / qRespondidas) * 100;
@@ -308,7 +406,6 @@ export default {
       } else {
         if (this.counter - 1 >= 0) this.counter--;
       }
-      this.getRespostas();
       this.$refs.chips[this.counter].click();
     },
     imgRespostas(img) {
@@ -326,8 +423,14 @@ export default {
           this.respostas.push(questao.resposta3);
           this.respostas.push(questao.resposta4);
           break;
+        // Resp. aberta
         case 1:
-          this.respostas.push(questao.unidade);
+          this.respostas.push(questao.resposta1);
+          this.respostas.push(questao.resposta2);
+          this.respostas.push(questao.resposta3);
+          this.respostas.push(questao.resposta4);
+          this.respostas.push(questao.resposta5);
+          this.respostas.push(questao.resposta6);
           break;
         case 2:
           this.respostas.push(questao.resposta1);
@@ -364,6 +467,7 @@ export default {
     questaoSelected(q, ind) {
       this.counter = ind;
       this.getRespostas();
+      this.getTema();
     },
     getUserId() {
       this.userId = this.$store.getters.getUserId;
@@ -377,8 +481,8 @@ export default {
 
           this.tpc = tpcData.data;
           this.catalogoQuestoes.push(questao.data);
-          this.opcoesSelected[questao.data.cod] = "";
           this.getRespostas();
+          this.getTema();
         }
       } catch (err) {
         const error = new Error(err.message || "Failed to query Questoes");
@@ -394,6 +498,45 @@ export default {
 
 <style scoped>
 .resposta {
-  width: 250px;
+  width: 700px;
+}
+.input {
+  background-color: white;
+  border: 2px solid #009263;
+  box-shadow: 1px 1px 1px 0 lightgray inset;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  margin-left: 5px;
+  padding: 2px 8px;
+  width: 690px;
+  height: 50px;
+  line-height: 45px;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: auto;
+}
+.unidade {
+  float: right;
+  vertical-align: middle;
+}
+#info {
+  height: 20px;
+  line-height: 22px;
+  padding: 5px 6px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+#info span:last-child {
+  position: absolute;
+  right: 6px;
+  color: #009263;
+}
+
+#exame {
+  padding: 5px 10px;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 </style>
