@@ -62,13 +62,14 @@ const axios = require("axios");
 const host = require("@/config/hosts").hostAPI;
 
 export default {
-  created() {
-    this.getUser();
+  async created() {
+    await this.getUser();
     this.getEscola();
     this.getTpcs();
   },
   computed: {
     name() {
+      if (!this.user) return "";
       return this.user.nome;
     },
     escolaName() {
@@ -86,6 +87,25 @@ export default {
     fazerTpc(id) {
       this.$router.push({ name: "DoTpc", params: { id } });
     },
+    async getUser() {
+      try {
+        const userId = this.$store.getters.getUserId;
+        const aluno = await axios.get(host + "alunos/" + userId);
+        this.user = aluno.data;
+      } catch (err) {
+        const error = new Error(err.message || "Failed to fetch User");
+        throw error;
+      }
+    },
+    async getEscola() {
+      try {
+        const response = await axios.get(host + "escolas/" + this.user.escola);
+        this.escola = response.data.nome;
+      } catch (err) {
+        const error = new Error(err.message || "Failed to fetch Escola");
+        throw error;
+      }
+    },
     async getTpcs() {
       try {
         const tpcsAluno = await axios.get(
@@ -101,18 +121,6 @@ export default {
         this.tpcs = tpcs;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");
-        throw error;
-      }
-    },
-    getUser() {
-      this.user = this.$store.getters.getUser;
-    },
-    async getEscola() {
-      try {
-        const response = await axios.get(host + "escolas/" + this.user.escola);
-        this.escola = response.data.nome;
-      } catch (err) {
-        const error = new Error(err.message || "Failed to fetch Escola");
         throw error;
       }
     },

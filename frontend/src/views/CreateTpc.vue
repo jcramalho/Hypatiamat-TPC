@@ -220,8 +220,13 @@
           </v-sheet>
         </v-col>
         <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="2" xl="5">
-          <v-btn @click="novaQuestao" large class="white--text" color="#009263">
-            <v-icon class="mr-1"> mdi-plus-circle </v-icon> Adicionar
+          <v-btn
+            @click="novaQuestao"
+            rounded
+            class="white--text"
+            color="#009263"
+          >
+            <v-icon> mdi-plus-circle </v-icon>
           </v-btn>
         </v-col>
       </v-row>
@@ -278,7 +283,7 @@
                         disponíveis.
                       </h3>
                     </div>
-                    <div v-else v-html="questaoAtual" class="mt-5 ml-5"></div>
+                    <div v-else v-html="questaoAtual" class="mt-5 ml-10"></div>
 
                     <div class="mt-5 ml-8">
                       <v-container v-if="tipoQuestao === 2">
@@ -321,19 +326,15 @@
                           </v-col>
                         </v-row>
                       </v-container>
-                      <v-container
-                        class="resposta mt-8"
+                      <div
+                        class="resposta mt-8 text-start"
                         v-else-if="tipoQuestao === 1"
                       >
-                        <v-text-field
-                          disabled
-                          color="#009263"
-                          outlined
-                          type="text"
-                          label="Resposta Aberta"
-                          :suffix="unidade"
-                        ></v-text-field>
-                      </v-container>
+                        <div class="input">
+                          <span> Resposta Aberta </span>
+                          <span class="unidade" v-html="unidade"></span>
+                        </div>
+                      </div>
                       <ul v-else>
                         <li v-for="(resp, index) in respostas" :key="index">
                           <b> Opção {{ index + 1 }}: </b>
@@ -555,9 +556,12 @@ export default {
       this.alunos = this.turmasProf[turma];
     },
     async criarTpc() {
-      //
       // VERIFICAR INPUTS TODOS
-      //
+      if (!this.titulo || !this.tentativas || !this.date || !this.time) {
+        alert("Preencher Campos todos!");
+        return;
+      }
+
       try {
         const questoesCod = this.questoes.map((el) => el.cod);
         const questoesId = [];
@@ -802,6 +806,27 @@ export default {
 sup {
   display: inline-block;
   text-decoration: none;
+}
+
+.input {
+  background-color: white;
+  border: 2px solid #009263;
+  box-shadow: 1px 1px 1px 0 lightgray inset;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  margin-left: 5px;
+  padding: 2px 8px;
+  width: 690px;
+  height: 50px;
+  line-height: 45px;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: auto;
+}
+.unidade {
+  float: right;
+  vertical-align: middle;
 }
 
 .resposta {

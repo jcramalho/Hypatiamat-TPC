@@ -109,12 +109,12 @@
                         class="resposta mt-8 text-start"
                         v-else-if="tipoQuestao === 1"
                       >
-                        <v-text-field
+                        <!-- <v-text-field
                           color="#009263"
                           outlined
                           type="text"
                           v-model="opcoesSelected[codQuestao]"
-                        ></v-text-field>
+                        ></v-text-field> -->
                         <div class="input">
                           <span v-html="opcoesSelected[codQuestao]"> </span>
                           <span class="unidade" v-html="unidade"></span>
@@ -203,7 +203,12 @@
         </v-col>
         <v-col class="text-right" cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
-            <v-btn @click="submeter" large class="white--text" color="#009263"
+            <v-btn
+              @click="submeter"
+              :disabled="podeSubmeter"
+              large
+              class="white--text"
+              color="#009263"
               >Submeter</v-btn
             >
           </v-container>
@@ -234,6 +239,7 @@ export default {
       userId: null,
       tpc: null,
       catalogoQuestoes: [],
+      catalogoRespostas: {},
       catalogoTemas: [],
       respostas: [],
       opcoesSelected: {},
@@ -243,6 +249,13 @@ export default {
     };
   },
   computed: {
+    podeSubmeter() {
+      const nQuestoes = this.catalogoQuestoes.length;
+      const qRespondidas = Object.keys(this.opcoesSelected).length;
+
+      if (qRespondidas !== nQuestoes) return true;
+      return false;
+    },
     exame() {
       if (!this.catalogoQuestoes[this.counter]) return "";
       return this.catalogoQuestoes[this.counter].idexame;
@@ -340,20 +353,23 @@ export default {
             (el) => el.cod === cod
           )[0];
 
-          //Verificar se resposta é igual a alguma soluçao
-
+          //Verificar se resposta é igual a soluçao
           let correta = 0;
-
-          for (let i = 1; i < 7; i++) {
-            if (
-              questao[`resposta${i}`] !== "" &&
-              questao[`resposta${i}`] === resp
-            )
-              correta = 1;
+          //Resp Aberta
+          if (questao.tipo === 1) {
+            for (let i = 1; i < 7; i++) {
+              if (
+                questao[`resposta${i}`] !== "" &&
+                questao[`resposta${i}`] === resp
+              )
+                correta = 1;
+            }
+            // Escolha Multipla
+          } else {
+            correta = questao.resposta1 === resp ? 1 : 0;
           }
 
-          // Criar resposta
-
+          //----------- Criar resposta
           let bodyResp = {
             codQuestao: questao.cod,
             resposta: resp,
@@ -365,7 +381,7 @@ export default {
           resps.push(resposta.data);
         }
 
-        //Criar resolucao
+        // ------------- Criar resolucao
         const qRespondidas = this.catalogoQuestoes.length;
         const qCertas = resps.filter((r) => r.correta === 1).length;
         const classificacao = (qCertas / qRespondidas) * 100;
@@ -412,61 +428,79 @@ export default {
       img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
       return img;
     },
-    getRespostas() {
+    showRespostas() {
       this.respostas = [];
+
       const questao = this.catalogoQuestoes[this.counter];
+      if (!questao) return;
+      this.catalogoRespostas[questao.cod].forEach((el) => {
+        this.respostas.push(el);
+      });
+    },
+    getRespostas(questao) {
+      let respostas = [];
       if (!questao) return;
       switch (questao.tipo) {
         case 0:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
-          this.respostas.push(questao.resposta3);
-          this.respostas.push(questao.resposta4);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
+          respostas.push(questao.resposta3);
+          respostas.push(questao.resposta4);
           break;
         // Resp. aberta
         case 1:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
-          this.respostas.push(questao.resposta3);
-          this.respostas.push(questao.resposta4);
-          this.respostas.push(questao.resposta5);
-          this.respostas.push(questao.resposta6);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
+          respostas.push(questao.resposta3);
+          respostas.push(questao.resposta4);
+          respostas.push(questao.resposta5);
+          respostas.push(questao.resposta6);
           break;
         case 2:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
-          this.respostas.push(questao.resposta3);
-          this.respostas.push(questao.resposta4);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
+          respostas.push(questao.resposta3);
+          respostas.push(questao.resposta4);
           break;
         case 3:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
           break;
         case 4:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
-          this.respostas.push(questao.resposta3);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
+          respostas.push(questao.resposta3);
           break;
         case 5:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
-          this.respostas.push(questao.resposta3);
-          this.respostas.push(questao.resposta4);
-          this.respostas.push(questao.resposta5);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
+          respostas.push(questao.resposta3);
+          respostas.push(questao.resposta4);
+          respostas.push(questao.resposta5);
           break;
         case 6:
-          this.respostas.push(questao.resposta1);
-          this.respostas.push(questao.resposta2);
-          this.respostas.push(questao.resposta3);
-          this.respostas.push(questao.resposta4);
-          this.respostas.push(questao.resposta5);
-          this.respostas.push(questao.resposta6);
+          respostas.push(questao.resposta1);
+          respostas.push(questao.resposta2);
+          respostas.push(questao.resposta3);
+          respostas.push(questao.resposta4);
+          respostas.push(questao.resposta5);
+          respostas.push(questao.resposta6);
           break;
       }
+      if (questao.tipo !== 1) respostas = this.shuffle(respostas);
+      this.catalogoRespostas[questao.cod] = respostas;
+    },
+    // Durstenfeld shuffle array
+    shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
     },
     questaoSelected(q, ind) {
       this.counter = ind;
-      this.getRespostas();
+      this.showRespostas();
       this.getTema();
     },
     getUserId() {
@@ -481,9 +515,10 @@ export default {
 
           this.tpc = tpcData.data;
           this.catalogoQuestoes.push(questao.data);
-          this.getRespostas();
-          this.getTema();
+          this.getRespostas(questao.data);
         }
+        this.showRespostas();
+        this.getTema();
       } catch (err) {
         const error = new Error(err.message || "Failed to query Questoes");
         throw error;

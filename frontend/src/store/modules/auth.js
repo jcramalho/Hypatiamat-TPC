@@ -9,7 +9,6 @@ export default {
       token: null,
       didAutoLogout: false,
       userType: null,
-      user: null,
     };
   },
   mutations: {
@@ -18,7 +17,6 @@ export default {
       state.token = payload.token;
       state.userType = payload.userType;
       state.didAutoLogout = false;
-      state.user = payload.user;
     },
     setAutoLogout(state) {
       state.didAutoLogout = true;
@@ -60,7 +58,6 @@ export default {
           userId,
           token: response.data.token.jwt,
           userType: response.data.user.type,
-          user: response.data.user,
         });
       } catch (err) {
         const error = new Error(
@@ -128,9 +125,6 @@ export default {
     },
     didAutoLogout(state) {
       return state.didAutoLogout;
-    },
-    getUser(state) {
-      return state.user;
     },
   },
 };
