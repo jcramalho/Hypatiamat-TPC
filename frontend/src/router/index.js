@@ -7,6 +7,7 @@ import TheHistoric from "../views/TheHistoric.vue";
 import TheStats from "../views/TheStats.vue";
 import DoTpc from "../views/DoTpc.vue";
 import TheResults from "../views/TheResults.vue";
+import SeeTPC from "../views/SeeTPC.vue";
 
 Vue.use(VueRouter);
 
@@ -37,6 +38,12 @@ const routes = [
     props: true,
   },
   {
+    path: "/ver-tpc/:id",
+    name: "SeeTPC",
+    component: SeeTPC,
+    props: true,
+  },
+  {
     path: "/resultados/:id",
     name: "TheResults",
     component: TheResults,
@@ -58,6 +65,9 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  },
 });
 
 export default router;

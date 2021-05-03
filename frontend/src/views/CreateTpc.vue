@@ -257,7 +257,7 @@
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
           <v-card
-            class="mt-n5 mx-auto"
+            class="mt-n12 mx-auto"
             color="white"
             elevation="2"
             outlined
@@ -335,12 +335,14 @@
                           <span class="unidade" v-html="unidade"></span>
                         </div>
                       </div>
-                      <ul v-else>
-                        <li v-for="(resp, index) in respostas" :key="index">
-                          <b> Opção {{ index + 1 }}: </b>
-                          <span v-html="resp"></span>
-                        </li>
-                      </ul>
+                      <v-container v-else>
+                        <ul>
+                          <li v-for="(resp, index) in respostas" :key="index">
+                            <b> Opção {{ index + 1 }}: </b>
+                            <span v-html="resp"></span>
+                          </li>
+                        </ul>
+                      </v-container>
                     </div>
                   </v-col>
                 </v-row>

@@ -34,7 +34,7 @@
                       transform: 'translateY(20%) translateX(40%)',
                     }"
                   >
-                    <v-btn icon color="#009263">
+                    <v-btn icon @click="checkTPC(item.id)" dark color="#009263">
                       <v-icon large>
                         mdi-magnify
                       </v-icon></v-btn
@@ -73,7 +73,7 @@
 </template>
 
 <script>
-import axios from "axios";
+const axios = require("axios");
 const host = require("@/config/hosts").hostAPI;
 
 export default {
@@ -99,6 +99,9 @@ export default {
     },
   },
   methods: {
+    checkTPC(id) {
+      this.$router.push({ name: "SeeTPC", params: { id } });
+    },
     results(id) {
       this.$router.push({ name: "TheResults", params: { id } });
     },

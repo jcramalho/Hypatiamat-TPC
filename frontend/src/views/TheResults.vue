@@ -13,9 +13,48 @@
           dense
           :headers="headers"
           :items="results"
-          item-key="codAluno"
           class="elevation-1"
-        ></v-data-table>
+        >
+          <template v-slot:[`item.action`]="{ item }">
+            <v-dialog :retain-focus="false" v-model="dialogResp" width="500">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  @click="verResolucao(item.codAluno)"
+                  v-on="on"
+                  small
+                  dark
+                  color="#009263"
+                  >Respostas</v-btn
+                >
+              </template>
+
+              <v-card>
+                <v-card-title class="headline green">
+                  Respostas
+                </v-card-title>
+
+                <v-card-text>
+                  <br />
+                  <ul>
+                    <li v-for="(resp, index) in respostas" :key="index">
+                      Questão: {{ resp.codQuestao }} | Resposta:
+                      {{ resp.resposta }} | Correta?: {{ resp.correta }}
+                    </li>
+                  </ul>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="green" text @click="dialogResp = false">
+                    OK
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </template></v-data-table
+        >
       </v-card-text>
       <v-card-actions>
         <v-row justify="start" class="mt-5 ml-4">
@@ -40,6 +79,8 @@ export default {
   },
   data() {
     return {
+      respostas: [],
+      dialogResp: false,
       userId: null,
       headers: [
         {
@@ -52,12 +93,30 @@ export default {
         { text: "qRespondidas", value: "qRespondidas" },
         { text: "qCertas", value: "qCertas" },
         { text: "classificação", value: "classificacao" },
+        { text: "Respostas", value: "action" },
       ],
       results: [],
     };
   },
   computed: {},
   methods: {
+    async verResolucao(codAluno) {
+      try {
+        this.respostas = [];
+        const aluno = await axios.get(host + "tpc-alunos/" + codAluno);
+
+        const resolId = aluno.data.resolucoes.filter((el) => {
+          return el.idTpc === this.id;
+        })[0].id;
+
+        const resolucao = await axios.get(host + "resolucoes/" + resolId);
+
+        this.respostas = resolucao.data.respostas;
+      } catch (err) {
+        const error = new Error(err.message || "Failed to query Respostas");
+        throw error;
+      }
+    },
     async getResults() {
       try {
         const tpcs = await axios.get(host + "tpcs/" + this.id);

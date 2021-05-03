@@ -8,8 +8,119 @@
           </v-card-title>
         </v-col>
       </v-row>
+
       <v-row>
-        <span></span>
+        <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
+          <v-text-field
+            color="#009263"
+            outlined
+            type="text"
+            label="Título do TPC"
+            class="mb-n6"
+            readonly
+            v-model="titulo"
+          ></v-text-field>
+        </v-col>
+        <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
+          <v-btn large class="white--text" color="#009263">
+            <v-icon class="mr-1"> mdi-cog </v-icon> Configurações
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-row class="mb-n6">
+        <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="12">
+          <v-combobox
+            color="#009263"
+            chips
+            clearable
+            multiple
+            outlined
+            full-width
+            readonly
+            prefix="Turmas"
+          >
+            <template v-slot:selection="{ item }">
+              <v-dialog v-model="turmaDialog" scrollable max-width="500px">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-chip dark color="#009263" v-bind="attrs" v-on="on" close>
+                    <strong>{{ item }}</strong
+                    >&nbsp;
+                  </v-chip>
+                </template>
+                <v-card>
+                  <v-card-title>Turma {{ item }}</v-card-title>
+                  <v-card-text style="height: 300px;">
+                    <v-list shaped>
+                      <!-- <v-list-item-group multiple>
+                        <template v-for="(item, ind) in alunos">
+                          <v-list-item
+                            :key="ind"
+                            :value="item"
+                            active-class="#009263"
+                          >
+                            <template v-slot:default="{ active }">
+                              <v-list-item-content>
+                                <v-list-item-title
+                                  v-text="item.nome"
+                                ></v-list-item-title>
+                              </v-list-item-content>
+
+                              <v-list-item-action>
+                                <v-checkbox
+                                  :input-value="(active = true)"
+                                  color="#009263"
+                                ></v-checkbox>
+                              </v-list-item-action>
+                            </template>
+                          </v-list-item>
+                        </template>
+                      </v-list-item-group> -->
+                    </v-list>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-btn color="blue darken-1" text>
+                      Close
+                    </v-btn>
+                    <v-btn color="blue darken-1" text>
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </template>
+          </v-combobox>
+        </v-col>
+        <v-col cols="12" xs="12" sm="12" md="12" lg="2" xl="5">
+          <v-text-field
+            color="#009263"
+            outlined
+            readonly
+            type="number"
+            label="Tentativas"
+            v-model="tentativas"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" xs="12" sm="12" md="12" lg="3" xl="5">
+          <v-text-field
+            outlined
+            color="#009263"
+            label="Data Limite"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-model="date"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="12" xs="12" sm="12" md="12" lg="3" xl="5">
+          <v-text-field
+            outlined
+            color="#009263"
+            v-model="time"
+            label="Hora Limite"
+            prepend-icon="mdi-clock-time-four-outline"
+            readonly
+          ></v-text-field>
+        </v-col>
       </v-row>
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
@@ -65,6 +176,7 @@
             elevation="2"
             outlined
             rounded
+            height="520px"
           >
             <v-row>
               <v-col cols="12" xs="8" sm="8" md="8" lg="8" xl="8">
@@ -78,68 +190,83 @@
 
                     <div class="mt-5 ml-8">
                       <v-container v-if="tipoQuestao === 2">
-                        <v-radio-group v-model="opcoesSelected[codQuestao]">
-                          <v-row>
-                            <v-col
-                              v-for="(resp, index) in respostas"
-                              :key="index"
-                              cols="3"
-                              xs="3"
-                              sm="3"
-                              md="3"
-                              lg="3"
-                              xl="5"
+                        <v-row>
+                          <v-col
+                            v-for="(resp, index) in respostas"
+                            :key="index"
+                            cols="3"
+                            xs="3"
+                            sm="3"
+                            md="3"
+                            lg="3"
+                            xl="5"
+                          >
+                            <v-img
+                              height="200px"
+                              width="200px"
+                              contain
+                              :src="imgRespostas(resp)"
+                              >{{ index + 1 }})</v-img
                             >
-                              <v-img
-                                height="200px"
-                                width="200px"
-                                contain
-                                :src="imgRespostas(resp)"
-                                ><v-radio
-                                  color="#009263"
-                                  :label="`${index + 1})`"
-                                  :value="resp"
-                                ></v-radio
-                              ></v-img>
-                            </v-col>
-                          </v-row>
-                        </v-radio-group>
+                          </v-col>
+                        </v-row>
                       </v-container>
                       <div
                         class="resposta mt-8 text-start"
                         v-else-if="tipoQuestao === 1"
                       >
-                        <!-- <v-text-field
-                          color="#009263"
-                          outlined
-                          type="text"
-                          v-model="opcoesSelected[codQuestao]"
-                        ></v-text-field> -->
                         <div class="input">
-                          <span v-html="opcoesSelected[codQuestao]"> </span>
+                          <span> Resposta Aberta </span>
                           <span class="unidade" v-html="unidade"></span>
                         </div>
-
-                        <SimpleKeyboard
-                          @onChange="onChange"
-                          :input="opcoesSelected[codQuestao]"
-                        />
                       </div>
-
-                      <v-container class="mt-n6" v-else fluid>
-                        <v-radio-group v-model="opcoesSelected[codQuestao]">
-                          <v-radio
-                            color="#009263"
-                            v-for="(resp, index) in respostas"
-                            :key="index"
-                            :value="resp"
-                          >
-                            <template slot="label">
-                              <span v-html="resp"></span>
-                            </template>
-                          </v-radio>
-                        </v-radio-group>
+                      <v-container v-else>
+                        <ul>
+                          <li v-for="(resp, index) in respostas" :key="index">
+                            <b> Opção {{ index + 1 }}: </b>
+                            <span v-html="resp"></span>
+                          </li>
+                        </ul>
                       </v-container>
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-row style="position:absolute; bottom:0;">
+                  <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
+                    <div class="pt-6 my-2 mx-2">
+                      <v-dialog v-model="dialogResol" width="600px">
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            small
+                            :style="{
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                            }"
+                            class="white--text"
+                            color="#009263"
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            Resolução
+                          </v-btn>
+                        </template>
+                        <v-card>
+                          <v-img contain :src="resolucao"></v-img>
+                          <v-card-actions class="text-center">
+                            <v-btn
+                              :style="{
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                              }"
+                              color="#009263"
+                              text
+                              @click="dialogResol = false"
+                            >
+                              OK
+                            </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-dialog>
                     </div>
                   </v-col>
                 </v-row>
@@ -207,13 +334,16 @@
         <v-col class="text-right" cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
             <v-btn
-              @click="submeter"
-              :disabled="podeSubmeter"
+              @click="deleteTpc"
+              rounded
               large
               class="white--text"
               color="#009263"
-              >Submeter</v-btn
             >
+              <v-icon large>
+                mdi-delete
+              </v-icon>
+            </v-btn>
           </v-container>
         </v-col>
       </v-row></v-container
@@ -225,20 +355,17 @@
 import axios from "axios";
 const host = require("@/config/hosts").hostAPI;
 
-import SimpleKeyboard from "../components/SimpleKeyboard.vue";
-
 export default {
-  components: {
-    SimpleKeyboard,
-  },
   props: ["id"],
   created() {
     this.getUserId();
-    this.getQuestoes();
+    this.getTpc();
     this.getTemas();
   },
   data() {
     return {
+      dialogResol: false,
+
       userId: null,
       tpc: null,
       catalogoQuestoes: [],
@@ -252,12 +379,25 @@ export default {
     };
   },
   computed: {
-    podeSubmeter() {
-      const nQuestoes = this.catalogoQuestoes.length;
-      const qRespondidas = Object.keys(this.opcoesSelected).length;
-
-      if (qRespondidas !== nQuestoes) return true;
-      return false;
+    resolucao() {
+      if (!this.catalogoQuestoes[this.counter]) return "";
+      let img = this.catalogoQuestoes[this.counter].resolucao;
+      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
+      return img;
+    },
+    time() {
+      if (!this.tpc) return "";
+      let time = this.tpc.dataFim.split("T")[1].replace(":00.000Z", "");
+      return time;
+    },
+    date() {
+      if (!this.tpc) return "";
+      let date = this.tpc.dataFim.split("T")[0];
+      return date;
+    },
+    tentativas() {
+      if (!this.tpc) return "";
+      return this.tpc.tentativas;
     },
     exame() {
       if (!this.catalogoQuestoes[this.counter]) return "";
@@ -341,78 +481,15 @@ export default {
 
       this.subtema = subtemaEntry.subtema;
     },
-    // Keyboard method
-    onChange(input) {
-      const cod = this.catalogoQuestoes[this.counter].cod;
-      this.$set(this.opcoesSelected, cod, input);
-    },
 
-    // Submeter Resol. TPC
-    async submeter() {
+    // Eliminar TPC
+    async deleteTpc() {
       try {
-        const resps = [];
-        for (let [cod, resp] of Object.entries(this.opcoesSelected)) {
-          const questao = this.catalogoQuestoes.filter(
-            (el) => el.cod === cod
-          )[0];
-
-          //Verificar se resposta é igual a soluçao
-          let correta = 0;
-          //Resp Aberta
-          if (questao.tipo === 1) {
-            for (let i = 1; i < 7; i++) {
-              if (
-                questao[`resposta${i}`] !== "" &&
-                questao[`resposta${i}`] === resp
-              )
-                correta = 1;
-            }
-            // Escolha Multipla
-          } else {
-            correta = questao.resposta1 === resp ? 1 : 0;
-          }
-
-          //----------- Criar resposta
-          let bodyResp = {
-            codQuestao: questao.cod,
-            resposta: resp,
-            correta,
-          };
-
-          const resposta = await axios.post(host + "respostas", bodyResp);
-
-          resps.push(resposta.data);
+        const verify = confirm("Eliminar TPC?");
+        if (verify) {
+          await axios.delete(host + "tpcs/" + this.id);
+          this.$router.replace("/dashboard");
         }
-
-        // ------------- Criar resolucao
-        const qRespondidas = this.catalogoQuestoes.length;
-        const qCertas = resps.filter((r) => r.correta === 1).length;
-        const classificacao = (qCertas / qRespondidas) * 100;
-        const respostas = resps.map((r) => r.id);
-
-        let bodyResol = {
-          idTpc: this.id,
-          qRespondidas,
-          qCertas,
-          questaoAtual: "",
-          classificacao,
-          respostas,
-          data: new Date(),
-        };
-
-        const resolucao = await axios.post(host + "resolucoes", bodyResol);
-
-        const resolsAluno = await axios.get(host + "tpc-alunos/" + this.userId);
-
-        let allResol = resolsAluno.data.resolucoes.map((resol) => resol.id);
-
-        allResol.push(resolucao.data.id);
-
-        await axios.put(host + "tpc-alunos/" + this.userId, {
-          resolucoes: allResol,
-        });
-
-        this.$router.replace("/dashboard");
       } catch (err) {
         const error = new Error(err.message || "Failed to post Resolucao");
         throw error;
@@ -490,17 +567,9 @@ export default {
           respostas.push(questao.resposta6);
           break;
       }
-      if (questao.tipo !== 1) respostas = this.shuffle(respostas);
       this.catalogoRespostas[questao.cod] = respostas;
     },
-    // Durstenfeld shuffle array
-    shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    },
+
     questaoSelected(q, ind) {
       this.counter = ind;
       this.showRespostas();
@@ -509,11 +578,12 @@ export default {
     getUserId() {
       this.userId = this.$store.getters.getUserId;
     },
-    async getQuestoes() {
+    async getTpc() {
       try {
         const tpcData = await axios.get(host + "tpcs/" + this.id);
-        const questoesCod = tpcData.data["tpc_questoes"];
+
         this.tpc = tpcData.data;
+        const questoesCod = tpcData.data["tpc_questoes"];
         for (const q of questoesCod) {
           const questao = await axios.get(host + "exercicios/" + q.codQuestao);
 
@@ -535,9 +605,6 @@ export default {
 </script>
 
 <style scoped>
-.resposta {
-  width: 700px;
-}
 .input {
   background-color: white;
   border: 2px solid #009263;
@@ -557,6 +624,10 @@ export default {
 .unidade {
   float: right;
   vertical-align: middle;
+}
+
+.resposta {
+  width: 700px;
 }
 #info {
   height: 20px;
