@@ -18,6 +18,9 @@
     },
     "idprofessor": {
       "type": "string"
+    },
+    "anoletivo": {
+      "type": "string"
     }
   }
 }

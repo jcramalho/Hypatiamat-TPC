@@ -5,17 +5,24 @@
  * to customize this controller
  */
 
+const anoletivo = require("../../../config/confs").anoletivo;
+
 module.exports = {
   async findProfTurmas(ctx) {
     const { idprofessor } = ctx.params;
 
-    const entities = await strapi.services.turma.find({ idprofessor });
+    const entities = await strapi.services.turma.find({
+      idprofessor,
+      anoletivo,
+    });
 
     const turmas = {};
 
     for (const el of entities) {
-      let alunos = await strapi.services.aluno.find({ turma: el.turma });
-
+      let alunos = await strapi.services.aluno.find({
+        turma: el.turma,
+        codprofessor: idprofessor,
+      });
       turmas[el.turma] = alunos;
     }
 

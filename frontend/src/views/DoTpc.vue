@@ -350,69 +350,74 @@ export default {
     // Submeter Resol. TPC
     async submeter() {
       try {
-        const resps = [];
-        for (let [cod, resp] of Object.entries(this.opcoesSelected)) {
-          const questao = this.catalogoQuestoes.filter(
-            (el) => el.cod === cod
-          )[0];
+        const verify = confirm("Enviar Resolução?");
+        if (verify) {
+          const resps = [];
+          for (let [cod, resp] of Object.entries(this.opcoesSelected)) {
+            const questao = this.catalogoQuestoes.filter(
+              (el) => el.cod === cod
+            )[0];
 
-          //Verificar se resposta é igual a soluçao
-          let correta = 0;
-          //Resp Aberta
-          if (questao.tipo === 1) {
-            for (let i = 1; i < 7; i++) {
-              if (
-                questao[`resposta${i}`] !== "" &&
-                questao[`resposta${i}`] === resp
-              )
-                correta = 1;
+            //Verificar se resposta é igual a soluçao
+            let correta = 0;
+            //Resp Aberta
+            if (questao.tipo === 1) {
+              for (let i = 1; i < 7; i++) {
+                if (
+                  questao[`resposta${i}`] !== "" &&
+                  questao[`resposta${i}`] === resp
+                )
+                  correta = 1;
+              }
+              // Escolha Multipla
+            } else {
+              correta = questao.resposta1 === resp ? 1 : 0;
             }
-            // Escolha Multipla
-          } else {
-            correta = questao.resposta1 === resp ? 1 : 0;
+
+            //----------- Criar resposta
+            let bodyResp = {
+              codQuestao: questao.cod,
+              resposta: resp,
+              correta,
+            };
+
+            const resposta = await axios.post(host + "respostas", bodyResp);
+
+            resps.push(resposta.data);
           }
 
-          //----------- Criar resposta
-          let bodyResp = {
-            codQuestao: questao.cod,
-            resposta: resp,
-            correta,
+          // ------------- Criar resolucao
+          const qRespondidas = this.catalogoQuestoes.length;
+          const qCertas = resps.filter((r) => r.correta === 1).length;
+          const classificacao = (qCertas / qRespondidas) * 100;
+          const respostas = resps.map((r) => r.id);
+
+          let bodyResol = {
+            idTpc: this.id,
+            qRespondidas,
+            qCertas,
+            questaoAtual: "",
+            classificacao,
+            respostas,
+            data: new Date(),
           };
 
-          const resposta = await axios.post(host + "respostas", bodyResp);
+          const resolucao = await axios.post(host + "resolucoes", bodyResol);
 
-          resps.push(resposta.data);
+          const resolsAluno = await axios.get(
+            host + "tpc-alunos/" + this.userId
+          );
+
+          let allResol = resolsAluno.data.resolucoes.map((resol) => resol.id);
+
+          allResol.push(resolucao.data.id);
+
+          await axios.put(host + "tpc-alunos/" + this.userId, {
+            resolucoes: allResol,
+          });
+
+          this.$router.replace("/dashboard");
         }
-
-        // ------------- Criar resolucao
-        const qRespondidas = this.catalogoQuestoes.length;
-        const qCertas = resps.filter((r) => r.correta === 1).length;
-        const classificacao = (qCertas / qRespondidas) * 100;
-        const respostas = resps.map((r) => r.id);
-
-        let bodyResol = {
-          idTpc: this.id,
-          qRespondidas,
-          qCertas,
-          questaoAtual: "",
-          classificacao,
-          respostas,
-          data: new Date(),
-        };
-
-        const resolucao = await axios.post(host + "resolucoes", bodyResol);
-
-        const resolsAluno = await axios.get(host + "tpc-alunos/" + this.userId);
-
-        let allResol = resolsAluno.data.resolucoes.map((resol) => resol.id);
-
-        allResol.push(resolucao.data.id);
-
-        await axios.put(host + "tpc-alunos/" + this.userId, {
-          resolucoes: allResol,
-        });
-
-        this.$router.replace("/dashboard");
       } catch (err) {
         const error = new Error(err.message || "Failed to post Resolucao");
         throw error;

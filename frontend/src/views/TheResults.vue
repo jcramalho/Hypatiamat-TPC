@@ -16,7 +16,12 @@
           class="elevation-1"
         >
           <template v-slot:[`item.action`]="{ item }">
-            <v-dialog :retain-focus="false" v-model="dialogResp" width="500">
+            <v-dialog
+              content-class="elevation-0"
+              :retain-focus="false"
+              v-model="dialogResp"
+              width="500"
+            >
               <template v-slot:activator="{ on }">
                 <v-btn
                   @click="verResolucao(item.codAluno)"

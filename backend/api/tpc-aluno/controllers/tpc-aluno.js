@@ -32,6 +32,9 @@ module.exports = {
     const { codAluno } = ctx.params;
 
     const entity = await strapi.services["tpc-aluno"].findOne({ codAluno });
+
+    if (!entity) return ctx.send("Not Found");
+
     return sanitizeEntity(entity, { model: strapi.models["tpc-aluno"] });
   },
 

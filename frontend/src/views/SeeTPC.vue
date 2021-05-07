@@ -152,6 +152,7 @@
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
           <v-text-field
+            color="#009263"
             v-model="tema"
             readonly
             label="Tema"
@@ -161,6 +162,7 @@
 
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
           <v-text-field
+            color="#009263"
             v-model="subtema"
             readonly
             label="Subtema"
@@ -338,7 +340,7 @@
               rounded
               large
               class="white--text"
-              color="#009263"
+              color="#cc0000"
             >
               <v-icon large>
                 mdi-delete
@@ -487,11 +489,52 @@ export default {
       try {
         const verify = confirm("Eliminar TPC?");
         if (verify) {
-          await axios.delete(host + "tpcs/" + this.id);
+          const tpc = await axios.delete(host + "tpcs/" + this.id);
+
+          // eliminar resolucoes de alunos
+          for (const al of tpc.data["tpc_alunos"]) {
+            const tpcAluno = await axios.get(
+              host + "tpc-alunos/" + al.codAluno
+            );
+
+            // eliminar tpc e resol. de aluno
+            let allTpcIds = tpcAluno.data.tpcs
+              .filter((el) => {
+                return el.id !== this.id;
+              })
+              .map((el) => el.id);
+
+            let allResolIds = tpcAluno.data.resolucoes
+              .filter((el) => {
+                return el.idTpc !== this.id;
+              })
+              .map((el) => el.id);
+
+            await axios.put(host + "tpc-alunos/" + al.codAluno, {
+              tpcs: allTpcIds,
+              resolucoes: allResolIds,
+            });
+
+            //eliminar resolucoes
+            let resolToDel = tpcAluno.data.resolucoes
+              .filter((el) => {
+                return el.idTpc === this.id;
+              })
+              .map((el) => el.id);
+
+            for (const resolId of resolToDel) {
+              const resol = await axios.delete(host + "resolucoes/" + resolId);
+
+              //eliminar respostas
+              for (const resp of resol.data.respostas) {
+                await axios.delete(host + "respostas/" + resp.id);
+              }
+            }
+          }
           this.$router.replace("/dashboard");
         }
       } catch (err) {
-        const error = new Error(err.message || "Failed to post Resolucao");
+        const error = new Error(err.message || "Failed to delete TPC");
         throw error;
       }
     },

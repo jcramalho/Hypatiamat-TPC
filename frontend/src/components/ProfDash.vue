@@ -23,9 +23,13 @@
                   <v-list-item-title
                     ><b>{{ item.tagname }}</b></v-list-item-title
                   >
-                  <span
-                    >Tentativas: {{ item.tentativas }}, Data Limite:
-                    {{ item.dataFim }}</span
+                  <b
+                    ><span style="color:green;">Tentativas:</span>
+                    {{ item.tentativas }}
+                  </b>
+                  <b
+                    ><span style="color:green;">Data Limite: </span>
+                    {{ item.dataFim }}</b
                   >
                 </v-list-item-content>
                 <div>

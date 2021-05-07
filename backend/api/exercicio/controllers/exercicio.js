@@ -15,6 +15,10 @@ module.exports = {
     } else {
       entities = await strapi.services.exercicio.find(ctx.query);
     }
+
+    // remover questoes de pintar
+    entities = entities.filter((el) => el.tipo !== 33);
+
     entities = await strapi.services.exercicio.specialChars(entities);
 
     let result = entities.reduce(function (list, ex) {

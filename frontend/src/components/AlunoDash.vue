@@ -13,7 +13,7 @@
         </h2>
       </v-card-title>
       <v-card-text>
-        <v-list>
+        <v-list v-if="tpcs.length > 0">
           <v-list-item-group color="#009263">
             <template v-for="item in tpcs">
               <v-list-item :key="item.id">
@@ -42,6 +42,11 @@
             </template>
           </v-list-item-group>
         </v-list>
+        <v-container v-else>
+          <h2 style="text-align: center;">
+            {{ noTpcs }}
+          </h2>
+        </v-container>
       </v-card-text>
       <v-card-actions>
         <v-row justify="space-around" class="mt-5">
@@ -68,6 +73,10 @@ export default {
     this.getTpcs();
   },
   computed: {
+    noTpcs() {
+      if (this.tpcsFlag === "loading") return "";
+      return this.tpcsFlag;
+    },
     name() {
       if (!this.user) return "";
       return this.user.nome;
@@ -81,6 +90,7 @@ export default {
       tpcs: [],
       user: null,
       escola: null,
+      tpcsFlag: "loading",
     };
   },
   methods: {
@@ -111,14 +121,17 @@ export default {
         const tpcsAluno = await axios.get(
           host + "tpc-alunos/" + this.user.user
         );
-        let tpcs = tpcsAluno.data.tpcs;
-        const resolucoes = tpcsAluno.data.resolucoes;
+        if (tpcsAluno.data !== "Not Found") {
+          let tpcs = tpcsAluno.data.tpcs;
+          const resolucoes = tpcsAluno.data.resolucoes;
 
-        // Filtrar TPCs por fazer apenas (sem resol)
-        for (const res of resolucoes) {
-          tpcs = tpcs.filter((tpc) => tpc.id !== res.idTpc);
-        }
-        this.tpcs = tpcs;
+          // Filtrar TPCs por fazer apenas (sem resol)
+          for (const res of resolucoes) {
+            tpcs = tpcs.filter((tpc) => tpc.id !== res.idTpc);
+          }
+          this.tpcs = tpcs;
+          this.tpcsFlag = "";
+        } else this.tpcsFlag = "De momento não tem TPCs para realizar.";
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");
         throw error;

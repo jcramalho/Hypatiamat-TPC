@@ -73,14 +73,17 @@ export default {
     async getTpcs() {
       try {
         const tpcsAluno = await axios.get(host + "tpc-alunos/" + this.userId);
-        let tpcs = tpcsAluno.data.tpcs;
-        const resolucoes = tpcsAluno.data.resolucoes;
 
-        // Filtrar TPCs feitos (com resol)
-        const resolsId = resolucoes.map((r) => r.idTpc);
-        tpcs = tpcs.filter((tpc) => resolsId.includes(tpc.id));
-        this.tpcs = tpcs;
-        this.resolucoes = resolucoes;
+        if (tpcsAluno.data !== "Not Found") {
+          let tpcs = tpcsAluno.data.tpcs;
+          const resolucoes = tpcsAluno.data.resolucoes;
+
+          // Filtrar TPCs feitos (com resol)
+          const resolsId = resolucoes.map((r) => r.idTpc);
+          tpcs = tpcs.filter((tpc) => resolsId.includes(tpc.id));
+          this.tpcs = tpcs;
+          this.resolucoes = resolucoes;
+        }
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");
         throw error;

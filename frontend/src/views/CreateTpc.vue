@@ -18,8 +18,8 @@
             type="text"
             label="Título do TPC"
             class="mb-n6"
-            required
             v-model="titulo"
+            :rules="textRules"
           ></v-text-field>
         </v-col>
         <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="6" xl="6">
@@ -31,7 +31,9 @@
       <v-row class="mb-n6">
         <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="12">
           <v-combobox
+            @click:clear="clearTurmas"
             color="#009263"
+            item-color="#009263"
             v-model="turmasSelected"
             :items="Object.keys(turmasProf)"
             chips
@@ -42,7 +44,13 @@
             prefix="Turmas"
           >
             <template v-slot:selection="{ item }">
-              <v-dialog v-model="turmaDialog" scrollable max-width="500px">
+              <v-dialog
+                content-class="elevation-0"
+                :retain-focus="false"
+                v-model="turmaDialog"
+                scrollable
+                max-width="500px"
+              >
                 <template v-slot:activator="{ on, attrs }">
                   <v-chip
                     dark
@@ -53,35 +61,48 @@
                     @click="editarAlunos(item)"
                     @click:close="removeTurma(item)"
                   >
-                    <strong>{{ item }}</strong
-                    >&nbsp;
+                    <strong v-if="allAlunosFlag[item] === false"
+                      >{{ item }}*</strong
+                    >
+                    <strong v-else>{{ item }}</strong>
                   </v-chip>
                 </template>
                 <v-card>
-                  <v-card-title>Turma {{ item }}</v-card-title>
+                  <v-card-title>Turma {{ turmaCod }}</v-card-title>
+
                   <v-card-text style="height: 300px;">
                     <v-list shaped>
                       <v-list-item-group multiple>
-                        <template v-for="(item, ind) in alunos">
+                        <div
+                          class="mr-2"
+                          style="display: flex; justify-content: flex-end"
+                        >
+                          <v-checkbox
+                            @change="changeAll(turmaCod)"
+                            :input-value="allAlunosFlag[turmaCod]"
+                            color="#009263"
+                          ></v-checkbox>
+                        </div>
+                        <v-divider></v-divider>
+                        <template v-for="(al, ind) in turmasProf[turmaCod]">
                           <v-list-item
                             :key="ind"
-                            :value="item"
+                            :value="al"
                             active-class="#009263"
                           >
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title
-                                  v-text="item.nome"
-                                ></v-list-item-title>
-                              </v-list-item-content>
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                {{ al.nome }}</v-list-item-title
+                              >
+                            </v-list-item-content>
 
-                              <v-list-item-action>
-                                <v-checkbox
-                                  :input-value="(active = true)"
-                                  color="#009263"
-                                ></v-checkbox>
-                              </v-list-item-action>
-                            </template>
+                            <v-list-item-action>
+                              <v-checkbox
+                                @change="changeActive(al)"
+                                :input-value="al.active"
+                                color="#009263"
+                              ></v-checkbox>
+                            </v-list-item-action>
                           </v-list-item>
                         </template>
                       </v-list-item-group>
@@ -90,18 +111,15 @@
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-btn
-                      color="blue darken-1"
+                      :style="{
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                      }"
+                      color="#009263"
                       text
                       @click="turmaDialog = false"
                     >
-                      Close
-                    </v-btn>
-                    <v-btn
-                      color="blue darken-1"
-                      text
-                      @click="turmaDialog = false"
-                    >
-                      Save
+                      Guardar
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -116,6 +134,7 @@
             v-model="tentativas"
             type="number"
             label="Tentativas"
+            :rules="tentativasRules"
           ></v-text-field>
         </v-col>
         <v-col cols="12" xs="12" sm="12" md="12" lg="3" xl="5">
@@ -135,6 +154,7 @@
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                :rules="textRules"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -142,11 +162,9 @@
               v-model="date"
               scrollable
               locale="pt-PT"
+              :min="new Date().toISOString().substr(0, 10)"
             >
               <v-spacer></v-spacer>
-              <v-btn text color="#009263" @click="dateModal = false">
-                Cancel
-              </v-btn>
               <v-btn text color="#009263" @click="$refs.dialog.save(date)">
                 OK
               </v-btn>
@@ -170,6 +188,7 @@
                 readonly
                 v-bind="attrs"
                 v-on="on"
+                :rules="textRules"
               ></v-text-field>
             </template>
             <v-time-picker
@@ -180,9 +199,6 @@
               full-width
             >
               <v-spacer></v-spacer>
-              <v-btn text color="#009263" @click="timeModal = false">
-                Cancel
-              </v-btn>
               <v-btn text color="#009263" @click="$refs.dialog2.save(time)">
                 OK
               </v-btn>
@@ -191,7 +207,7 @@
         </v-col>
       </v-row>
       <v-row class="mb-6">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="10" xl="5">
+        <v-col cols="12" xs="12" sm="12" md="12" lg="11" xl="5">
           <v-sheet>
             <v-slide-group mandatory show-arrows center-active>
               <v-slide-item
@@ -219,7 +235,7 @@
             </v-slide-group>
           </v-sheet>
         </v-col>
-        <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="2" xl="5">
+        <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="1" xl="5">
           <v-btn
             @click="novaQuestao"
             rounded
@@ -234,6 +250,7 @@
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
           <v-combobox
             color="#009263"
+            item-color="green"
             outlined
             flat
             v-model="temaSelected"
@@ -245,6 +262,7 @@
         <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
           <v-combobox
             color="#009263"
+            item-color="green"
             v-model="subtemaSelected"
             outlined
             flat
@@ -338,7 +356,7 @@
                       <v-container v-else>
                         <ul>
                           <li v-for="(resp, index) in respostas" :key="index">
-                            <b> Opção {{ index + 1 }}: </b>
+                            <b> {{ index + 1 }}) </b>
                             <span v-html="resp"></span>
                           </li>
                         </ul>
@@ -474,10 +492,11 @@ export default {
       userId: null,
       titulo: null,
       dialog: false,
+      turmaCod: "",
       turmaDialog: false,
       turmasProf: [],
       turmasSelected: [],
-      alunos: [],
+      allAlunosFlag: {},
       tentativas: 1,
       date: null,
       time: null,
@@ -496,6 +515,8 @@ export default {
       counter: 0,
       respostas: [],
       hasQuestao: -1,
+      tentativasRules: [(v) => v && v > 0],
+      textRules: [(v) => !!v],
     };
   },
   computed: {
@@ -554,12 +575,45 @@ export default {
     },
   },
   methods: {
+    clearTurmas() {
+      this.turmasSelected.forEach((el) => this.resetAllTrue(el));
+      this.turmasSelected = [];
+    },
+    resetAllTrue(turma) {
+      this.allAlunosFlag[turma] = true;
+      this.turmasProf[turma].map((el) => (el.active = true));
+    },
+    changeAll(turma) {
+      this.allAlunosFlag[turma] = !this.allAlunosFlag[turma];
+      this.turmasProf[turma].map(
+        (el) => (el.active = this.allAlunosFlag[turma])
+      );
+    },
+    changeActive(aluno) {
+      aluno.active = !aluno.active;
+
+      if (
+        this.turmasProf[this.turmaCod].filter((e) => e.active === false)
+          .length === 0
+      ) {
+        this.allAlunosFlag[this.turmaCod] = true;
+      } else {
+        this.allAlunosFlag[this.turmaCod] = false;
+      }
+    },
+
     editarAlunos(turma) {
-      this.alunos = this.turmasProf[turma];
+      this.turmaCod = turma;
     },
     async criarTpc() {
       // VERIFICAR INPUTS TODOS
-      if (!this.titulo || !this.tentativas || !this.date || !this.time) {
+      if (
+        !this.titulo ||
+        !this.tentativas ||
+        !this.date ||
+        !this.time ||
+        this.turmasSelected.length == 0
+      ) {
         alert("Preencher Campos todos!");
         return;
       }
@@ -578,11 +632,13 @@ export default {
         for (const turma of this.turmasSelected) {
           const alunos = this.turmasProf[turma];
           for (const al of alunos) {
-            const response = await axios.post(url + "tpc-alunos", {
-              codAluno: al.user,
-              codTurma: turma,
-            });
-            alunosId.push(response.data.id);
+            if (al.active) {
+              const response = await axios.post(url + "tpc-alunos", {
+                codAluno: al.user,
+                codTurma: turma,
+              });
+              alunosId.push(response.data.id);
+            }
           }
         }
 
@@ -615,6 +671,12 @@ export default {
     },
     submitQuestao() {
       if (!this.questoesSelected[this.counter]) return;
+      if (
+        this.questoes.find(
+          (x) => x.cod === this.questoesSelected[this.counter].cod
+        )
+      )
+        return alert("Já selecionou esta pergunta!");
       const chipIndex = this.chipAtivoIdx;
       const questao = this.questoesSelected[this.counter];
       questao.counter = this.counter;
@@ -769,6 +831,7 @@ export default {
     removeTurma(item) {
       this.turmasSelected.splice(this.turmasSelected.indexOf(item), 1);
       this.turmasSelected = [...this.turmasSelected];
+      this.resetAllTrue(item);
     },
     getUserId() {
       this.userId = this.$store.getters.getUserId;
@@ -776,7 +839,19 @@ export default {
     async getTurmas() {
       try {
         const response = await axios.get(url + "turmas/prof/" + this.userId);
-        this.turmasProf = response.data;
+
+        let turmas = {};
+        Object.entries(response.data).forEach(([turma, alunos]) => {
+          const al = alunos.map(({ user, nome }) => ({
+            user,
+            nome,
+            active: true,
+          }));
+          turmas[turma] = al;
+          this.allAlunosFlag[turma] = true;
+        });
+
+        this.turmasProf = turmas;
       } catch (err) {
         const error = new Error(err.message || "Failed to query Turmas");
         throw error;

@@ -60,16 +60,17 @@ export default {
   },
   methods: {
     onChange(input) {
+      input = input.replace(/&times;/gi, "x");
       this.$emit("onChange", input);
+      this.keyboard.setInput(input);
     },
     onKeyPress(button) {
-      if (button === "{bksp}") {
+      if (button === "{bksp}" && this.input) {
         let parsed = this.input.match(/(&#*\w*\d*;)$|(<sup>.<\/sup>)$/gi);
         if (parsed) {
-          var last = this.input.lastIndexOf(parsed[0]);
+          let last = this.input.lastIndexOf(parsed[0]);
           let newText = this.input.substring(0, last + 1);
-          this.keyboard.setInput(newText);
-          this.$emit("onChange", newText);
+          this.onChange(newText);
         }
       }
     },

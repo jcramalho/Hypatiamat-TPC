@@ -92,6 +92,13 @@ module.exports = {
             );
 
             el[`resposta${i}`] = el[`resposta${i}`].replace(
+              /([-|+])xpto/g,
+              function (_, token) {
+                return `${token}&infin;`;
+              }
+            );
+
+            el[`resposta${i}`] = el[`resposta${i}`].replace(
               /<raiz>(.*?)<raiz>/g,
               function (_, token) {
                 return `<span class="raiz">
