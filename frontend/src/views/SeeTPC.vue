@@ -17,7 +17,7 @@
             type="text"
             label="Título do TPC"
             class="mb-n6"
-            readonly
+            disabled
             v-model="titulo"
           ></v-text-field>
         </v-col>
@@ -36,8 +36,8 @@
             multiple
             outlined
             full-width
-            readonly
             prefix="Turmas"
+            readonly
           >
             <template v-slot:selection="{ item }">
               <v-dialog v-model="turmaDialog" scrollable max-width="500px">
@@ -95,7 +95,7 @@
           <v-text-field
             color="#009263"
             outlined
-            readonly
+            disabled
             type="number"
             label="Tentativas"
             v-model="tentativas"
@@ -107,7 +107,7 @@
             color="#009263"
             label="Data Limite"
             prepend-icon="mdi-calendar"
-            readonly
+            disabled
             v-model="date"
           ></v-text-field>
         </v-col>
@@ -118,7 +118,7 @@
             v-model="time"
             label="Hora Limite"
             prepend-icon="mdi-clock-time-four-outline"
-            readonly
+            disabled
           ></v-text-field>
         </v-col>
       </v-row>
@@ -154,9 +154,9 @@
           <v-text-field
             color="#009263"
             v-model="tema"
-            readonly
             label="Tema"
             outlined
+            readonly
           ></v-text-field>
         </v-col>
 
@@ -164,9 +164,9 @@
           <v-text-field
             color="#009263"
             v-model="subtema"
-            readonly
             label="Subtema"
             outlined
+            readonly
           ></v-text-field>
         </v-col>
       </v-row>
@@ -208,7 +208,7 @@
                               width="200px"
                               contain
                               :src="imgRespostas(resp)"
-                              >{{ index + 1 }})</v-img
+                              ><b> {{ index + 1 }})</b></v-img
                             >
                           </v-col>
                         </v-row>
@@ -225,7 +225,7 @@
                       <v-container v-else>
                         <ul>
                           <li v-for="(resp, index) in respostas" :key="index">
-                            <b> Opção {{ index + 1 }}: </b>
+                            <b> {{ index + 1 }}) </b>
                             <span v-html="resp"></span>
                           </li>
                         </ul>
@@ -354,7 +354,8 @@
 </template>
 
 <script>
-import axios from "axios";
+const axios = require("axios");
+const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
 
 export default {
@@ -374,7 +375,6 @@ export default {
       catalogoRespostas: {},
       catalogoTemas: [],
       respostas: [],
-      opcoesSelected: {},
       counter: 0,
       tema: "",
       subtema: "",
@@ -487,52 +487,81 @@ export default {
     // Eliminar TPC
     async deleteTpc() {
       try {
-        const verify = confirm("Eliminar TPC?");
-        if (verify) {
-          const tpc = await axios.delete(host + "tpcs/" + this.id);
-
-          // eliminar resolucoes de alunos
-          for (const al of tpc.data["tpc_alunos"]) {
-            const tpcAluno = await axios.get(
-              host + "tpc-alunos/" + al.codAluno
-            );
-
-            // eliminar tpc e resol. de aluno
-            let allTpcIds = tpcAluno.data.tpcs
-              .filter((el) => {
-                return el.id !== this.id;
-              })
-              .map((el) => el.id);
-
-            let allResolIds = tpcAluno.data.resolucoes
-              .filter((el) => {
-                return el.idTpc !== this.id;
-              })
-              .map((el) => el.id);
-
-            await axios.put(host + "tpc-alunos/" + al.codAluno, {
-              tpcs: allTpcIds,
-              resolucoes: allResolIds,
+        // Confirmar eliminacao
+        Swal.fire({
+          title: "Eliminar TPC?",
+          text: "Todas as resoluções relativas ao TPC serão apagadas!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#009263",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "A eliminar TPC...",
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              willOpen: () => {
+                Swal.showLoading();
+              },
             });
 
-            //eliminar resolucoes
-            let resolToDel = tpcAluno.data.resolucoes
-              .filter((el) => {
-                return el.idTpc === this.id;
-              })
-              .map((el) => el.id);
+            // eliminar tpc
+            const tpc = await axios.delete(host + "tpcs/" + this.id);
 
-            for (const resolId of resolToDel) {
-              const resol = await axios.delete(host + "resolucoes/" + resolId);
+            // eliminar resolucoes de alunos
+            for (const al of tpc.data["tpc_alunos"]) {
+              const tpcAluno = await axios.get(
+                host + "tpc-alunos/" + al.codAluno
+              );
 
-              //eliminar respostas
-              for (const resp of resol.data.respostas) {
-                await axios.delete(host + "respostas/" + resp.id);
+              // eliminar tpc e resol. de aluno
+              let allTpcIds = tpcAluno.data.tpcs
+                .filter((el) => {
+                  return el.id !== this.id;
+                })
+                .map((el) => el.id);
+
+              let allResolIds = tpcAluno.data.resolucoes
+                .filter((el) => {
+                  return el.idTpc !== this.id;
+                })
+                .map((el) => el.id);
+
+              await axios.put(host + "tpc-alunos/" + al.codAluno, {
+                tpcs: allTpcIds,
+                resolucoes: allResolIds,
+              });
+
+              //eliminar resolucoes
+              let resolToDel = tpcAluno.data.resolucoes
+                .filter((el) => {
+                  return el.idTpc === this.id;
+                })
+                .map((el) => el.id);
+
+              for (const resolId of resolToDel) {
+                const resol = await axios.delete(
+                  host + "resolucoes/" + resolId
+                );
+
+                //eliminar respostas
+                for (const resp of resol.data.respostas) {
+                  await axios.delete(host + "respostas/" + resp.id);
+                }
               }
             }
+            Swal.close();
+            Swal.fire({
+              icon: "success",
+              title: "TPC eliminado com sucesso!",
+              confirmButtonColor: "#009263",
+            });
+            this.$router.replace("/dashboard");
           }
-          this.$router.replace("/dashboard");
-        }
+        });
       } catch (err) {
         const error = new Error(err.message || "Failed to delete TPC");
         throw error;

@@ -68,7 +68,12 @@
                   </v-chip>
                 </template>
                 <v-card>
-                  <v-card-title>Turma {{ turmaCod }}</v-card-title>
+                  <v-card-title
+                    style="background-color: #009263;"
+                    class="white--text"
+                  >
+                    <b>Turma {{ turmaCod }}</b>
+                  </v-card-title>
 
                   <v-card-text style="height: 300px;">
                     <v-list shaped>
@@ -268,7 +273,7 @@
             flat
             :items="subtemas"
             label="Subtemas"
-            @change="changeSubtema(0)"
+            @change="changeSubtema()"
           ></v-combobox>
         </v-col>
       </v-row>
@@ -301,45 +306,33 @@
                         disponíveis.
                       </h3>
                     </div>
+                    <div v-else-if="hasQuestaoConfig === 0" class="mt-5 ml-5">
+                      <h3>
+                        Não existem questões disponíveis para as configurações
+                        de exame/nível de dificuldade escolhidas.
+                      </h3>
+                    </div>
                     <div v-else v-html="questaoAtual" class="mt-5 ml-10"></div>
 
                     <div class="mt-5 ml-8">
                       <v-container v-if="tipoQuestao === 2">
                         <v-row>
-                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
+                          <v-col
+                            v-for="(resp, index) in respostas"
+                            :key="index"
+                            cols="3"
+                            xs="3"
+                            sm="3"
+                            md="3"
+                            lg="3"
+                            xl="5"
+                          >
                             <v-img
                               height="200px"
                               width="200px"
                               contain
-                              :src="imgRespostas(0)"
-                              >1)</v-img
-                            >
-                          </v-col>
-                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
-                            <v-img
-                              height="200px"
-                              width="200px"
-                              contain
-                              :src="imgRespostas(1)"
-                              >2)</v-img
-                            >
-                          </v-col>
-                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
-                            <v-img
-                              height="200px"
-                              width="200px"
-                              contain
-                              :src="imgRespostas(2)"
-                              >3)</v-img
-                            >
-                          </v-col>
-                          <v-col cols="3" xs="3" sm="3" md="3" lg="3" xl="5">
-                            <v-img
-                              height="200px"
-                              width="200px"
-                              contain
-                              :src="imgRespostas(3)"
-                              >4)</v-img
+                              :src="imgRespostas(resp)"
+                              ><b>{{ index + 1 }})</b></v-img
                             >
                           </v-col>
                         </v-row>
@@ -406,13 +399,39 @@
                 </v-row>
               </v-col>
               <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
-                <div id="info">
-                  <span v-if="codQuestao !== ''">
-                    <b> Código: </b> {{ codQuestao }}</span
-                  >
-                  <span v-if="codQuestao !== ''"
-                    ><b>Nível {{ nivel }}</b></span
-                  >
+                <div id="container" v-if="hasQuestao !== 1"></div>
+                <div id="container" v-else>
+                  <div class="codquestao">
+                    <span>
+                      <b> {{ codQuestao }}</b>
+                    </span>
+                  </div>
+
+                  <div class="selectExame">
+                    <v-checkbox
+                      @change="changeNivelExames"
+                      v-model="onlyExames"
+                      color="#009263"
+                      dense
+                      label="Exame"
+                      ><span slot="label" class="black--text"
+                        >Exame</span
+                      ></v-checkbox
+                    >
+                  </div>
+
+                  <div class="selectNivel">
+                    <v-select
+                      @change="changeNivelExames"
+                      v-model="nivelSelect"
+                      :items="nivelItems"
+                      single-line
+                      color="#009263"
+                      item-color="green"
+                      prefix="Nível"
+                      dense
+                    ></v-select>
+                  </div>
                 </div>
                 <v-card>
                   <v-img
@@ -477,8 +496,9 @@
 </template>
 
 <script>
-import axios from "axios";
-const url = require("@/config/hosts").hostAPI;
+const axios = require("axios");
+const Swal = require("sweetalert2");
+const host = require("@/config/hosts").hostAPI;
 
 export default {
   created() {
@@ -489,6 +509,9 @@ export default {
   },
   data() {
     return {
+      nivelSelect: "*",
+      nivelItems: ["*", 1, 2, 3, 4],
+      onlyExames: false,
       userId: null,
       titulo: null,
       dialog: false,
@@ -515,6 +538,7 @@ export default {
       counter: 0,
       respostas: [],
       hasQuestao: -1,
+      hasQuestaoConfig: -1,
       tentativasRules: [(v) => v && v > 0],
       textRules: [(v) => !!v],
     };
@@ -575,6 +599,41 @@ export default {
     },
   },
   methods: {
+    changeNivelExames() {
+      let listSubtemas = this.catalogoTemas.filter((el) => {
+        return el.codtema === this.codTemaSelected;
+      })[0].subtemas;
+
+      let codSubtema = listSubtemas.filter((el) => {
+        return el.subtema === this.subtemaSelected;
+      })[0].codsubtema;
+
+      this.questoesSelected = this.catalogoQuestoes[codSubtema] || [];
+
+      // Só exames
+      if (this.onlyExames)
+        this.questoesSelected = this.questoesSelected.filter(
+          (el) => el.idexame !== ""
+        );
+
+      // Só nivel x
+      switch (this.nivelSelect) {
+        case "*":
+          break;
+        default:
+          this.questoesSelected = this.questoesSelected.filter(
+            (el) => el.niveldificuldade === this.nivelSelect
+          );
+          break;
+      }
+
+      if (this.questoesSelected.length === 0) {
+        this.hasQuestaoConfig = 0;
+      } else this.hasQuestaoConfig = 1;
+
+      this.counter = 0;
+      this.getRespostas();
+    },
     clearTurmas() {
       this.turmasSelected.forEach((el) => this.resetAllTrue(el));
       this.turmasSelected = [];
@@ -606,62 +665,101 @@ export default {
       this.turmaCod = turma;
     },
     async criarTpc() {
-      // VERIFICAR INPUTS TODOS
-      if (
-        !this.titulo ||
-        !this.tentativas ||
-        !this.date ||
-        !this.time ||
-        this.turmasSelected.length == 0
-      ) {
-        alert("Preencher Campos todos!");
-        return;
-      }
-
       try {
-        const questoesCod = this.questoes.map((el) => el.cod);
-        const questoesId = [];
-        for (const codQuestao of questoesCod) {
-          const response = await axios.post(url + "tpc-questoes", {
-            codQuestao,
+        // Verificar inputs
+        if (
+          !this.titulo ||
+          this.tentativas < 1 ||
+          !this.date ||
+          !this.time ||
+          this.turmasSelected.length == 0
+        ) {
+          return Swal.fire({
+            icon: "error",
+            title: "Existem campos por preencher!",
+            confirmButtonColor: "#009263",
           });
-          questoesId.push(response.data.id);
         }
 
-        const alunosId = [];
-        for (const turma of this.turmasSelected) {
-          const alunos = this.turmasProf[turma];
-          for (const al of alunos) {
-            if (al.active) {
-              const response = await axios.post(url + "tpc-alunos", {
-                codAluno: al.user,
-                codTurma: turma,
+        if (this.questoes.find((el) => Object.keys(el).length === 0))
+          return Swal.fire({
+            icon: "error",
+            title: "Existem questões por adicionar na lista!",
+            confirmButtonColor: "#009263",
+          });
+
+        Swal.fire({
+          title: "Criar TPC?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#009263",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            // Loading modal
+            Swal.fire({
+              title: "A criar TPC...",
+              showConfirmButton: false,
+              allowOutsideClick: false,
+              willOpen: () => {
+                Swal.showLoading();
+              },
+            });
+
+            const questoesCod = this.questoes.map((el) => el.cod);
+            const questoesId = [];
+            for (const codQuestao of questoesCod) {
+              const response = await axios.post(host + "tpc-questoes", {
+                codQuestao,
               });
-              alunosId.push(response.data.id);
+              questoesId.push(response.data.id);
             }
+
+            const alunosId = [];
+            for (const turma of this.turmasSelected) {
+              const alunos = this.turmasProf[turma];
+              for (const al of alunos) {
+                if (al.active) {
+                  const response = await axios.post(host + "tpc-alunos", {
+                    nome: al.nome,
+                    codAluno: al.user,
+                    codTurma: turma,
+                  });
+                  alunosId.push(response.data.id);
+                }
+              }
+            }
+
+            let body = {
+              tagname: this.titulo,
+              codProf: this.userId,
+              tentativas: this.tentativas,
+              ativo: 1,
+              dataInicio: new Date(),
+              dataFim: new Date(`${this.date} ${this.time}`),
+              tpc_questoes: questoesId,
+              tpc_alunos: alunosId,
+            };
+
+            await axios.post(host + "tpcs", body);
+
+            Swal.close();
+            Swal.fire({
+              icon: "success",
+              title: "TPC criado com sucesso!",
+              confirmButtonColor: "#009263",
+            });
+            this.$router.replace("/dashboard");
           }
-        }
-
-        let body = {
-          tagname: this.titulo,
-          codProf: this.userId,
-          tentativas: this.tentativas,
-          ativo: 1,
-          dataInicio: new Date(),
-          dataFim: new Date(`${this.date} ${this.time}`),
-          tpc_questoes: questoesId,
-          tpc_alunos: alunosId,
-        };
-
-        await axios.post(url + "tpcs", body);
-        this.$router.replace("/dashboard");
+        });
       } catch (err) {
         const error = new Error(err.message || "Failed to post TPC");
         throw error;
       }
     },
-    imgRespostas(index) {
-      let img = this.respostas[index];
+    imgRespostas(img) {
       img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
       return img;
     },
@@ -676,13 +774,19 @@ export default {
           (x) => x.cod === this.questoesSelected[this.counter].cod
         )
       )
-        return alert("Já selecionou esta pergunta!");
+        return Swal.fire({
+          title: "Já selecionou esta questão!",
+          icon: "warning",
+          confirmButtonColor: "#009263",
+        });
       const chipIndex = this.chipAtivoIdx;
       const questao = this.questoesSelected[this.counter];
-      questao.counter = this.counter;
       this.$set(this.questoes, chipIndex, questao);
     },
     questaoSelected(q, ind) {
+      this.nivelSelect = "*";
+      this.onlyExames = false;
+      this.hasQuestaoConfig = -1;
       this.chipAtivoIdx = ind;
       if (!q.cod) return;
 
@@ -698,9 +802,13 @@ export default {
       this.subtemaSelected = temaEntry.subtemas.filter((el) => {
         return el.codsubtema === q.subtema;
       })[0].subtema;
-      this.changeSubtema(q.counter);
+      this.changeSubtema(q);
     },
     changeTema() {
+      this.nivelSelect = "*";
+      this.onlyExames = false;
+      this.hasQuestaoConfig = -1;
+      this.hasQuestao = -1;
       this.respostas = [];
       this.questoesSelected = [];
       this.subtemaSelected = null;
@@ -717,7 +825,11 @@ export default {
         this.subtemas.push(el.subtema);
       });
     },
-    changeSubtema(counter) {
+    changeSubtema(questao) {
+      this.nivelSelect = "*";
+      this.onlyExames = false;
+      this.hasQuestaoConfig = -1;
+      this.hasQuestao = -1;
       if (this.subtemaSelected) {
         let listSubtemas = this.catalogoTemas.filter((el) => {
           return el.codtema === this.codTemaSelected;
@@ -732,7 +844,12 @@ export default {
         if (this.questoesSelected.length === 0) this.hasQuestao = 0;
         else this.hasQuestao = 1;
 
-        this.counter = counter !== 0 ? counter : 0;
+        if (questao)
+          this.counter = this.questoesSelected.findIndex(
+            (el) => el === questao
+          );
+        else this.counter = 0;
+
         this.getRespostas();
       }
     },
@@ -807,7 +924,7 @@ export default {
 
     async getTemas() {
       try {
-        const response = await axios.get(url + "temas");
+        const response = await axios.get(host + "temas");
 
         Object.keys(response.data).forEach((el) => {
           let tema = response.data[el][0].tema;
@@ -838,7 +955,7 @@ export default {
     },
     async getTurmas() {
       try {
-        const response = await axios.get(url + "turmas/prof/" + this.userId);
+        const response = await axios.get(host + "turmas/prof/" + this.userId);
 
         let turmas = {};
         Object.entries(response.data).forEach(([turma, alunos]) => {
@@ -859,7 +976,7 @@ export default {
     },
     async getQuestoes() {
       try {
-        const response = await axios.get(url + "exercicios?_limit=-1");
+        const response = await axios.get(host + "exercicios?_limit=-1");
         this.catalogoQuestoes = response.data;
       } catch (err) {
         const error = new Error(err.message || "Failed to query Questoes");
@@ -909,18 +1026,29 @@ sup {
 .resposta {
   width: 700px;
 }
-#info {
-  height: 20px;
-  line-height: 22px;
-  padding: 5px 6px;
-  font-size: 14px;
-  margin-bottom: 15px;
+
+#container {
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
-#info span:last-child {
-  position: absolute;
-  right: 6px;
-  color: #009263;
+.codquestao {
+  width: 100px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.selectExame {
+  width: 120px;
+  margin-top: -14px;
+}
+
+.selectNivel {
+  width: 80px;
+  margin-top: -2px;
 }
 
 #exame {

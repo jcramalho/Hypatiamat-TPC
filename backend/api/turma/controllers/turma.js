@@ -23,7 +23,10 @@ module.exports = {
         turma: el.turma,
         codprofessor: idprofessor,
       });
-      turmas[el.turma] = alunos;
+      if (alunos.length > 0) {
+        alunos.sort((a, b) => a.nome.localeCompare(b.nome));
+        turmas[el.turma] = alunos;
+      }
     }
 
     return turmas;

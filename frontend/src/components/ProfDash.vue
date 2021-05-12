@@ -23,13 +23,14 @@
                   <v-list-item-title
                     ><b>{{ item.tagname }}</b></v-list-item-title
                   >
+
                   <b
-                    ><span style="color:green;">Tentativas:</span>
-                    {{ item.tentativas }}
+                    ><span style="color:green;">Nº Respostas: </span>
+                    {{ respFormat(item) }}
                   </b>
                   <b
-                    ><span style="color:green;">Data Limite: </span>
-                    {{ item.dataFim }}</b
+                    ><span style="color:#960000;">Data Limite: </span>
+                    {{ dataFormat(item.dataFim) }}</b
                   >
                 </v-list-item-content>
                 <div>
@@ -103,6 +104,15 @@ export default {
     },
   },
   methods: {
+    respFormat(tpc) {
+      return `${tpc.totalResp}/${tpc.totalAlunos}`;
+    },
+    dataFormat(datetime) {
+      let date = new Date(datetime);
+
+      return `${date.getDate()}-${date.getMonth() +
+        1}-${date.getFullYear()} ● ${date.getHours()}h${date.getMinutes()}`;
+    },
     checkTPC(id) {
       this.$router.push({ name: "SeeTPC", params: { id } });
     },

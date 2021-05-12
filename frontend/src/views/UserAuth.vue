@@ -21,7 +21,7 @@
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             prepend-icon="mdi-lock"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
             @click:append="showPassword = !showPassword"
             v-model="password"
             :rules="rule"
@@ -38,6 +38,8 @@
 </template>
 
 <script>
+const Swal = require("sweetalert2");
+
 export default {
   data() {
     return {
@@ -51,7 +53,12 @@ export default {
   methods: {
     async submitForm() {
       if (!this.username || !this.password) {
-        alert("Credencias invalidas!!");
+        Swal.fire({
+          icon: "error",
+          confirmButtonColor: "#009263",
+          title: "Não preencheu os dois campos!",
+          width: 450,
+        });
         return;
       }
       try {
@@ -60,10 +67,20 @@ export default {
           password: this.password,
         });
 
+        Swal.fire({
+          icon: "success",
+          confirmButtonColor: "#009263",
+          title: "Login efetuado com sucesso.",
+          width: 450,
+        });
         this.$router.replace("/dashboard");
       } catch (err) {
-        this.error = err.message || "Failed to authenticate, try later.";
-        alert(this.error);
+        Swal.fire({
+          icon: "error",
+          confirmButtonColor: "#009263",
+          title: "Credenciais erradas!",
+          width: 450,
+        });
       }
     },
   },

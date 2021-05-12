@@ -10,56 +10,62 @@
       </v-card-title>
       <v-card-text>
         <v-data-table
+          :footer-props="{
+            'items-per-page-text': 'Mostrar',
+            'items-per-page-options': [30, 60, -1],
+            'items-per-page-all-text': 'Todos',
+          }"
           dense
           :headers="headers"
           :items="results"
           class="elevation-1"
         >
-          <template v-slot:[`item.action`]="{ item }">
+          <template v-slot:top>
             <v-dialog
               content-class="elevation-0"
               :retain-focus="false"
               v-model="dialogResp"
-              width="500"
+              width="1000px"
             >
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click="verResolucao(item.codAluno)"
-                  v-on="on"
-                  small
-                  dark
-                  color="#009263"
-                  >Respostas</v-btn
-                >
-              </template>
-
               <v-card>
-                <v-card-title class="headline green">
-                  Respostas
+                <v-card-title
+                  style="background-color: #009263;"
+                  class="white--text"
+                >
+                  Aluno: {{ atualAlunoNome }}
                 </v-card-title>
 
                 <v-card-text>
-                  <br />
-                  <ul>
-                    <li v-for="(resp, index) in respostas" :key="index">
-                      Questão: {{ resp.codQuestao }} | Resposta:
-                      {{ resp.resposta }} | Correta?: {{ resp.correta }}
-                    </li>
-                  </ul>
+                  <AlunoResol
+                    v-if="dialogResp"
+                    :tpcId="id"
+                    :codAluno="atualAlunoCod"
+                  />
                 </v-card-text>
-
                 <v-divider></v-divider>
-
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="green" text @click="dialogResp = false">
+                <v-card-actions class="justify-center">
+                  <v-btn color="#009263" text @click="dialogResp = false">
                     OK
                   </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
-          </template></v-data-table
-        >
+          </template>
+          <template v-slot:[`item.action`]="{ item }">
+            <v-btn
+              @click="verResolucao(item)"
+              icon
+              class="ml-4"
+              small
+              dark
+              color="#009263"
+            >
+              <v-icon large>
+                mdi-magnify
+              </v-icon></v-btn
+            >
+          </template>
+        </v-data-table>
       </v-card-text>
       <v-card-actions>
         <v-row justify="start" class="mt-5 ml-4">
@@ -76,14 +82,21 @@
 const axios = require("axios");
 const host = require("@/config/hosts").hostAPI;
 
+import AlunoResol from "../components/AlunoResol.vue";
+
 export default {
   props: ["id"],
+  components: {
+    AlunoResol,
+  },
   created() {
     this.getUserId();
     this.getResults();
   },
   data() {
     return {
+      atualAlunoNome: "",
+      atualAlunoCod: null,
       respostas: [],
       dialogResp: false,
       userId: null,
@@ -91,36 +104,24 @@ export default {
         {
           text: "Aluno",
           align: "start",
-          sortable: false,
-          value: "codAluno",
+          value: "nome",
         },
         { text: "Turma", value: "codTurma" },
-        { text: "qRespondidas", value: "qRespondidas" },
-        { text: "qCertas", value: "qCertas" },
-        { text: "classificação", value: "classificacao" },
-        { text: "Respostas", value: "action" },
+        { text: "Q. Respondidas", value: "qRespondidas" },
+        { text: "Q. Corretas", value: "qCertas" },
+        { text: "Classificação", value: "classificacao" },
+
+        { text: "Respostas", value: "action", sortable: false },
       ],
       results: [],
     };
   },
   computed: {},
   methods: {
-    async verResolucao(codAluno) {
-      try {
-        this.respostas = [];
-        const aluno = await axios.get(host + "tpc-alunos/" + codAluno);
-
-        const resolId = aluno.data.resolucoes.filter((el) => {
-          return el.idTpc === this.id;
-        })[0].id;
-
-        const resolucao = await axios.get(host + "resolucoes/" + resolId);
-
-        this.respostas = resolucao.data.respostas;
-      } catch (err) {
-        const error = new Error(err.message || "Failed to query Respostas");
-        throw error;
-      }
+    verResolucao(aluno) {
+      this.atualAlunoCod = aluno.codAluno;
+      this.atualAlunoNome = aluno.nome;
+      this.dialogResp = true;
     },
     async getResults() {
       try {
@@ -136,6 +137,7 @@ export default {
           );
           if (resolucoes.length !== 0) {
             this.results.push({
+              nome: al.nome,
               codAluno: al.codAluno,
               codTurma: al.codTurma,
               qRespondidas: resolucoes[0].qRespondidas,

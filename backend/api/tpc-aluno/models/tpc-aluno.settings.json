@@ -13,6 +13,9 @@
     "draftAndPublish": false
   },
   "attributes": {
+    "nome": {
+      "type": "string"
+    },
     "codAluno": {
       "type": "string"
     },
