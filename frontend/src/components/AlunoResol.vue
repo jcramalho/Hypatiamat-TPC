@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-container>
-      <v-row class="mt-n4">
+      <v-row class="my-n4">
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
           <v-sheet>
             <v-slide-group mandatory show-arrows center-active>
@@ -21,7 +21,9 @@
                   @click="toggle"
                   v-on:click="questaoSelected(q, index)"
                 >
-                  <span>{{ q.cod }}</span>
+                  <span>
+                    <b> {{ q.cod }}</b>
+                  </span>
                 </v-chip>
               </v-slide-item>
             </v-slide-group>
@@ -108,7 +110,7 @@
                         v-else-if="tipoQuestao === 1"
                       >
                         <div class="input">
-                          <span> {{ respostaAluno }} </span>
+                          <span v-html="respostaAluno"> </span>
                           <span class="unidade" v-html="unidade"></span>
                         </div>
                       </div>
@@ -146,7 +148,7 @@
                 <v-row style="position:absolute; bottom:0;">
                   <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
                     <div class="pt-6 my-2 mx-2">
-                      <v-dialog v-model="dialogResol" width="600px">
+                      <v-dialog v-model="dialogResol" width="900px">
                         <template v-slot:activator="{ on, attrs }">
                           <v-btn
                             small
@@ -185,7 +187,9 @@
               </v-col>
               <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
                 <div id="info">
-                  <span> <b> Código: </b> {{ codQuestao }}</span>
+                  <span>
+                    <b> {{ codQuestao }} </b>
+                  </span>
                   <span
                     ><b>Nível {{ nivel }}</b></span
                   >
@@ -364,10 +368,10 @@ export default {
 
         // Ultima tentativa de resolucao
         const resolucao = aluno.data.resolucoes
-          .filter((r) => r.idTpc === this.tpcId)
+          .filter((r) => r.idTpc == this.tpcId)
           .reduce((a, b) => (a.data > b.data ? a : b), {});
 
-        if (Object.keys(resolucao).length !== 0) {
+        if (Object.keys(resolucao).length > 0) {
           const resol = await axios.get(host + "resolucoes/" + resolucao.id);
 
           resol.data.respostas.forEach((resp) => {

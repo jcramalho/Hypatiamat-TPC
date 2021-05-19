@@ -37,6 +37,36 @@ module.exports = {
 
     return sanitizeEntity(entity, { model: strapi.models["tpc-aluno"] });
   },
+  async findAlunoTpcs(ctx) {
+    const { codAluno } = ctx.params;
+
+    const entity = await strapi.services["tpc-aluno"].findOne({ codAluno });
+
+    if (!entity) return ctx.send("Not Found");
+
+    let tpcs = entity.tpcs;
+    let resolucoes = entity.resolucoes;
+    if (ctx.query.time === "active") {
+      tpcs = tpcs.filter((tpc) => {
+        return new Date(tpc.dataFim) > new Date();
+      });
+
+      for (const tpc of tpcs) {
+        const nResol = resolucoes.filter((res) => {
+          return res.idTpc === tpc.id;
+        }).length;
+
+        tpc.nResol = nResol;
+      }
+      tpcs.sort((a, b) => a.dataFim.localeCompare(b.dataFim));
+    } else if (ctx.query.time === "expired") {
+      tpcs = tpcs.filter((tpc) => {
+        return new Date(tpc.dataFim) <= new Date();
+      });
+      tpcs.sort((a, b) => b.dataFim.localeCompare(a.dataFim));
+    }
+    return tpcs;
+  },
 
   async update(ctx) {
     const { codAluno } = ctx.params;

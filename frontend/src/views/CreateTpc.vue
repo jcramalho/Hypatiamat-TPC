@@ -76,41 +76,39 @@
                   </v-card-title>
 
                   <v-card-text style="height: 300px;">
-                    <v-list shaped>
-                      <v-list-item-group multiple>
-                        <div
-                          class="mr-2"
-                          style="display: flex; justify-content: flex-end"
+                    <v-list>
+                      <div
+                        class="mr-2"
+                        style="display: flex; justify-content: flex-end"
+                      >
+                        <v-checkbox
+                          @change="changeAll(turmaCod)"
+                          :input-value="allAlunosFlag[turmaCod]"
+                          color="#009263"
+                        ></v-checkbox>
+                      </div>
+                      <v-divider></v-divider>
+                      <template v-for="(al, ind) in turmasProf[turmaCod]">
+                        <v-list-item
+                          :key="ind"
+                          :value="al"
+                          active-class="#009263"
                         >
-                          <v-checkbox
-                            @change="changeAll(turmaCod)"
-                            :input-value="allAlunosFlag[turmaCod]"
-                            color="#009263"
-                          ></v-checkbox>
-                        </div>
-                        <v-divider></v-divider>
-                        <template v-for="(al, ind) in turmasProf[turmaCod]">
-                          <v-list-item
-                            :key="ind"
-                            :value="al"
-                            active-class="#009263"
-                          >
-                            <v-list-item-content>
-                              <v-list-item-title>
-                                {{ al.nome }}</v-list-item-title
-                              >
-                            </v-list-item-content>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{ al.nome }}</v-list-item-title
+                            >
+                          </v-list-item-content>
 
-                            <v-list-item-action>
-                              <v-checkbox
-                                @change="changeActive(al)"
-                                :input-value="al.active"
-                                color="#009263"
-                              ></v-checkbox>
-                            </v-list-item-action>
-                          </v-list-item>
-                        </template>
-                      </v-list-item-group>
+                          <v-list-item-action>
+                            <v-checkbox
+                              @change="changeActive(al)"
+                              :input-value="al.active"
+                              color="#009263"
+                            ></v-checkbox>
+                          </v-list-item-action>
+                        </v-list-item>
+                      </template>
                     </v-list>
                   </v-card-text>
                   <v-divider></v-divider>
@@ -212,8 +210,11 @@
         </v-col>
       </v-row>
       <v-row class="mb-6">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="11" xl="5">
-          <v-sheet>
+        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
+          <v-container class="my-n6" v-if="questoes.length === 0">
+            <h3 style="color:#960000;">Adicionar Questões!</h3>
+          </v-container>
+          <v-sheet class="my-n6" v-else>
             <v-slide-group mandatory show-arrows center-active>
               <v-slide-item
                 v-for="(q, index) in questoes"
@@ -225,7 +226,7 @@
                   large
                   close
                   dark
-                  :color="corChip(q)"
+                  color="#009263"
                   class="mx-2"
                   :input-value="active"
                   active-class="black--text"
@@ -233,22 +234,13 @@
                   v-on:click="questaoSelected(q, index)"
                   @click:close="removeQuestao(index)"
                 >
-                  <span v-if="!q.cod"><i>Adicionar!</i></span>
-                  <span v-else>{{ q.cod }}</span>
+                  <span>
+                    <b>{{ q.cod }}</b>
+                  </span>
                 </v-chip>
               </v-slide-item>
             </v-slide-group>
           </v-sheet>
-        </v-col>
-        <v-col class="text-end" cols="12" xs="12" sm="12" md="12" lg="1" xl="5">
-          <v-btn
-            @click="novaQuestao"
-            rounded
-            class="white--text"
-            color="#009263"
-          >
-            <v-icon> mdi-plus-circle </v-icon>
-          </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -292,22 +284,22 @@
                 <v-row>
                   <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
                     <h2 style="color:#009263" class="text-center my-2">
-                      Questão
+                      <span v-if="!addDisabled">Questão</span>
                     </h2>
                     <div v-if="hasQuestao === -1" class="mt-5 ml-5">
-                      <h3>
+                      <h3 style="color:green;">
                         Selecione um Tema e Subtema para visualizar as
                         respetivas Questões!
                       </h3>
                     </div>
                     <div v-else-if="hasQuestao === 0" class="mt-5 ml-5">
-                      <h3>
+                      <h3 style="color:green;">
                         O Tema/Subtema selecionado não possui questões
                         disponíveis.
                       </h3>
                     </div>
                     <div v-else-if="hasQuestaoConfig === 0" class="mt-5 ml-5">
-                      <h3>
+                      <h3 style="color:green;">
                         Não existem questões disponíveis para as configurações
                         de exame/nível de dificuldade escolhidas.
                       </h3>
@@ -360,7 +352,7 @@
                 <v-row style="position:absolute; bottom:0;">
                   <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
                     <div class="pt-6 my-2 mx-2">
-                      <v-dialog v-model="dialog" width="600px">
+                      <v-dialog v-model="dialog" width="900px">
                         <template v-slot:activator="{ on, attrs }">
                           <v-btn
                             small
@@ -449,7 +441,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="mt-n4">
         <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
             <v-btn large class="white--text" color="#009263" @click="voltar"
@@ -459,22 +451,35 @@
         </v-col>
         <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container class="text-center">
-            <v-btn large icon color="#009263" @click="proxQuestao(false)">
-              <v-icon large>
+            <v-btn
+              :disabled="addDisabled"
+              icon
+              color="#009263"
+              @click="proxQuestao(false)"
+            >
+              <v-icon x-large>
                 mdi-arrow-left-bold-circle
               </v-icon>
             </v-btn>
             <v-btn
+              class="white--text mx-1"
+              :disabled="addDisabled"
+              rounded
               @click="submitQuestao"
-              class="mx-1"
-              dark
               large
               color="#009263"
-              >Adicionar</v-btn
+            >
+              <v-icon>mdi-plus-circle</v-icon>
+              {{ codQuestao }}</v-btn
             >
 
-            <v-btn large icon color="#009263" @click="proxQuestao(true)">
-              <v-icon large>
+            <v-btn
+              :disabled="addDisabled"
+              icon
+              color="#009263"
+              @click="proxQuestao(true)"
+            >
+              <v-icon x-large>
                 mdi-arrow-right-bold-circle
               </v-icon>
             </v-btn>
@@ -525,8 +530,8 @@ export default {
       time: null,
       dateModal: false,
       timeModal: false,
-      questoes: [{}],
-      chipAtivoIdx: 0,
+      questoes: [],
+      addChipIdx: 0,
       temas: [],
       subtemas: [],
       temaSelected: null,
@@ -544,6 +549,15 @@ export default {
     };
   },
   computed: {
+    addDisabled() {
+      if (
+        this.hasQuestao === -1 ||
+        this.hasQuestao === 0 ||
+        this.hasQuestaoConfig === 0
+      )
+        return true;
+      return false;
+    },
     exame() {
       if (!this.questoesSelected[this.counter]) return "";
       return this.questoesSelected[this.counter].idexame;
@@ -681,12 +695,13 @@ export default {
           });
         }
 
-        if (this.questoes.find((el) => Object.keys(el).length === 0))
+        if (this.questoes.length === 0) {
           return Swal.fire({
             icon: "error",
-            title: "Existem questões por adicionar na lista!",
+            title: "Não adicionou qualquer questão à lista do TPC!",
             confirmButtonColor: "#009263",
           });
+        }
 
         Swal.fire({
           title: "Criar TPC?",
@@ -763,11 +778,8 @@ export default {
       img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
       return img;
     },
-    corChip(questao) {
-      if (!questao.cod) return "green";
-      return "#009263";
-    },
-    submitQuestao() {
+
+    async submitQuestao() {
       if (!this.questoesSelected[this.counter]) return;
       if (
         this.questoes.find(
@@ -779,15 +791,17 @@ export default {
           icon: "warning",
           confirmButtonColor: "#009263",
         });
-      const chipIndex = this.chipAtivoIdx;
+
+      const chipIndex = this.addChipIdx;
       const questao = this.questoesSelected[this.counter];
-      this.$set(this.questoes, chipIndex, questao);
+      await this.$set(this.questoes, chipIndex, questao);
+      this.$refs.chips[chipIndex].click();
+      this.addChipIdx++;
     },
-    questaoSelected(q, ind) {
+    questaoSelected(q) {
       this.nivelSelect = "*";
       this.onlyExames = false;
       this.hasQuestaoConfig = -1;
-      this.chipAtivoIdx = ind;
       if (!q.cod) return;
 
       this.codTemaSelected = q.tema;
@@ -853,19 +867,12 @@ export default {
         this.getRespostas();
       }
     },
-    removeQuestao(ind) {
-      if (this.questoes.length > 1) {
-        if (this.chipAtivoIdx === this.questoes.length - 1) this.chipAtivoIdx--;
-        this.questoes.splice(ind, 1);
-        this.questoes = [...this.questoes];
-      }
+    async removeQuestao(ind) {
+      this.addChipIdx--;
+      this.questoes.splice(ind, 1);
+      this.questoes = [...this.questoes];
     },
-    async novaQuestao() {
-      const questao = {};
-      await this.questoes.push(questao);
-      let len = this.questoes.length - 1;
-      this.$refs.chips[len].click();
-    },
+
     getRespostas() {
       this.respostas = [];
       let questao = this.questoesSelected[this.counter];

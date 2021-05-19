@@ -4,7 +4,7 @@
       <v-row>
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
           <v-card-title class="justify-center green--text">
-            <h1>TPC - {{ titulo }}</h1>
+            <h1>TPC: {{ titulo }}</h1>
           </v-card-title>
         </v-col>
       </v-row>
@@ -31,59 +31,84 @@
         <v-col cols="12" xs="12" sm="12" md="12" lg="4" xl="12">
           <v-combobox
             color="#009263"
+            item-color="#009263"
+            v-model="turmasSelected"
             chips
-            clearable
             multiple
             outlined
             full-width
             prefix="Turmas"
-            readonly
           >
             <template v-slot:selection="{ item }">
-              <v-dialog v-model="turmaDialog" scrollable max-width="500px">
+              <v-dialog
+                content-class="elevation-0"
+                :retain-focus="false"
+                v-model="turmaDialog"
+                scrollable
+                max-width="500px"
+              >
                 <template v-slot:activator="{ on, attrs }">
-                  <v-chip dark color="#009263" v-bind="attrs" v-on="on" close>
-                    <strong>{{ item }}</strong
-                    >&nbsp;
+                  <v-chip
+                    dark
+                    color="#009263"
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="verTurma(item)"
+                  >
+                    <strong v-if="allAlunosFlag[item] === false"
+                      >{{ item }}*</strong
+                    >
+                    <strong v-else>{{ item }}</strong>
                   </v-chip>
                 </template>
                 <v-card>
-                  <v-card-title>Turma {{ item }}</v-card-title>
+                  <v-card-title
+                    style="background-color: #009263;"
+                    class="white--text"
+                  >
+                    <b>Turma {{ turmaCod }}</b>
+                  </v-card-title>
+
                   <v-card-text style="height: 300px;">
                     <v-list shaped>
-                      <!-- <v-list-item-group multiple>
-                        <template v-for="(item, ind) in alunos">
+                      <v-list-item-group multiple>
+                        <template v-for="(al, ind) in turmas[turmaCod]">
                           <v-list-item
+                            disabled
                             :key="ind"
-                            :value="item"
+                            :value="al"
                             active-class="#009263"
                           >
-                            <template v-slot:default="{ active }">
-                              <v-list-item-content>
-                                <v-list-item-title
-                                  v-text="item.nome"
-                                ></v-list-item-title>
-                              </v-list-item-content>
+                            <v-list-item-content>
+                              <v-list-item-title>
+                                {{ al.nome }}</v-list-item-title
+                              >
+                            </v-list-item-content>
 
-                              <v-list-item-action>
-                                <v-checkbox
-                                  :input-value="(active = true)"
-                                  color="#009263"
-                                ></v-checkbox>
-                              </v-list-item-action>
-                            </template>
+                            <v-list-item-action>
+                              <v-checkbox
+                                disabled
+                                :input-value="al.active"
+                                color="#009263"
+                              ></v-checkbox>
+                            </v-list-item-action>
                           </v-list-item>
                         </template>
-                      </v-list-item-group> -->
+                      </v-list-item-group>
                     </v-list>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-card-actions>
-                    <v-btn color="blue darken-1" text>
-                      Close
-                    </v-btn>
-                    <v-btn color="blue darken-1" text>
-                      Save
+                    <v-btn
+                      :style="{
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                      }"
+                      color="#009263"
+                      text
+                      @click="turmaDialog = false"
+                    >
+                      OK
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -122,7 +147,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="my-n4">
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
           <v-sheet>
             <v-slide-group mandatory show-arrows center-active>
@@ -142,7 +167,9 @@
                   @click="toggle"
                   v-on:click="questaoSelected(q, index)"
                 >
-                  <span>{{ q.cod }}</span>
+                  <span>
+                    <b>{{ q.cod }}</b>
+                  </span>
                 </v-chip>
               </v-slide-item>
             </v-slide-group>
@@ -275,7 +302,9 @@
               </v-col>
               <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
                 <div id="info">
-                  <span> <b> Código: </b> {{ codQuestao }}</span>
+                  <span>
+                    <b>{{ codQuestao }} </b>
+                  </span>
                   <span
                     ><b>Nível {{ nivel }}</b></span
                   >
@@ -296,7 +325,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="mt-n4">
         <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
             <v-btn @click="voltar" large class="white--text" color="#009263"
@@ -368,9 +397,13 @@ export default {
   data() {
     return {
       dialogResol: false,
-
       userId: null,
       tpc: null,
+      turmas: {},
+      turmasSelected: [],
+      turmaCod: "",
+      turmaDialog: false,
+      allAlunosFlag: {},
       catalogoQuestoes: [],
       catalogoRespostas: {},
       catalogoTemas: [],
@@ -389,13 +422,21 @@ export default {
     },
     time() {
       if (!this.tpc) return "";
-      let time = this.tpc.dataFim.split("T")[1].replace(":00.000Z", "");
-      return time;
+
+      const datetime = new Date(this.tpc.dataFim);
+      const hours = (datetime.getHours() < 10 ? "0" : "") + datetime.getHours();
+      const minutes =
+        (datetime.getMinutes() < 10 ? "0" : "") + datetime.getMinutes();
+      return `${hours}:${minutes}`;
     },
     date() {
       if (!this.tpc) return "";
-      let date = this.tpc.dataFim.split("T")[0];
-      return date;
+
+      const datetime = new Date(this.tpc.dataFim);
+      const month =
+        (datetime.getMonth() + 1 < 10 ? "0" : "") + (datetime.getMonth() + 1);
+      const day = (datetime.getDate() < 10 ? "0" : "") + datetime.getDate();
+      return `${datetime.getFullYear()}-${month}-${day}`;
     },
     tentativas() {
       if (!this.tpc) return "";
@@ -447,6 +488,9 @@ export default {
     },
   },
   methods: {
+    verTurma(turma) {
+      this.turmaCod = turma;
+    },
     async getTemas() {
       try {
         const response = await axios.get(host + "temas");
@@ -655,6 +699,8 @@ export default {
         const tpcData = await axios.get(host + "tpcs/" + this.id);
 
         this.tpc = tpcData.data;
+
+        // questoes
         const questoesCod = tpcData.data["tpc_questoes"];
         for (const q of questoesCod) {
           const questao = await axios.get(host + "exercicios/" + q.codQuestao);
@@ -664,13 +710,59 @@ export default {
         }
         this.showRespostas();
         this.getTema();
+
+        // alunos
+        const alunos = tpcData.data["tpc_alunos"];
+
+        let turmasTpc = alunos.reduce(function(list, al) {
+          list[al.codTurma] = list[al.codTurma] || [];
+          list[al.codTurma].push({
+            ...al,
+          });
+          return list;
+        }, Object.create(null));
+
+        let turmasProf = await axios.get(
+          host + "turmas/prof/" + tpcData.data.codProf
+        );
+
+        turmasProf = turmasProf.data;
+
+        let filterTurmas = Object.keys(turmasProf)
+          .filter((turma) => Object.keys(turmasTpc).includes(turma))
+          .reduce((obj, turma) => {
+            obj[turma] = turmasProf[turma];
+            return obj;
+          }, {});
+
+        for (const [turma, alunos] of Object.entries(filterTurmas)) {
+          const als = [];
+          alunos.map((al) => {
+            const verify = turmasTpc[turma].find(
+              (aluno) => aluno.codAluno === al.user
+            );
+            al.active = verify ? true : false;
+
+            als.push({ codAluno: al.user, nome: al.nome, active: al.active });
+          });
+          filterTurmas[turma] = als;
+
+          this.allAlunosFlag[turma] = als.find((al) => al.active === false)
+            ? false
+            : true;
+        }
+
+        this.turmas = filterTurmas;
+        this.turmasSelected = Object.keys(filterTurmas);
       } catch (err) {
-        const error = new Error(err.message || "Failed to query Questoes");
+        const error = new Error(err.message || "Failed to query TPC");
         throw error;
       }
     },
     voltar() {
-      this.$router.push("/dashboard");
+      window.history.length > 2
+        ? this.$router.go(-1)
+        : this.$router.push("/dashboard");
     },
   },
 };

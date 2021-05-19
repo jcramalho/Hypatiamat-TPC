@@ -11,7 +11,7 @@
       <v-row>
         <span></span>
       </v-row>
-      <v-row>
+      <v-row class="my-n4">
         <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
           <v-sheet>
             <v-slide-group mandatory show-arrows center-active>
@@ -31,7 +31,9 @@
                   @click="toggle"
                   v-on:click="questaoSelected(q, index)"
                 >
-                  <span>{{ q.cod }}</span>
+                  <span>
+                    <b>{{ q.cod }}</b>
+                  </span>
                 </v-chip>
               </v-slide-item>
             </v-slide-group>
@@ -142,7 +144,9 @@
               </v-col>
               <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
                 <div id="info">
-                  <span> <b> Código: </b> {{ codQuestao }}</span>
+                  <span>
+                    <b> {{ codQuestao }} </b>
+                  </span>
                   <span
                     ><b>Nível {{ nivel }}</b></span
                   >
@@ -163,7 +167,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row class="mt-n4">
         <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="5">
           <v-container>
             <v-btn @click="voltar" large class="white--text" color="#009263"
@@ -377,13 +381,33 @@ export default {
               let correta = 0;
               //Resp Aberta
               if (questao.tipo === 1) {
-                for (let i = 1; i < 7; i++) {
-                  if (
-                    questao[`resposta${i}`] !== "" &&
-                    questao[`resposta${i}`] === resp
-                  )
-                    correta = 1;
+                switch (questao.auxiliar) {
+                  case 0:
+                    for (let i = 1; i < 7; i++) {
+                      if (
+                        questao[`resposta${i}`] !== "" &&
+                        questao[`resposta${i}`] === resp
+                      ) {
+                        correta = 1;
+                        break;
+                      }
+                    }
+                    break;
+                  case 22:
+                    correta =
+                      resp === `${questao.resposta1}/${questao.resposta2}`
+                        ? 1
+                        : 0;
+                    break;
+                  case 1000:
+                    if (
+                      questao.resposta1 === resp ||
+                      questao.resposta2 === resp
+                    )
+                      correta = 1;
+                    break;
                 }
+
                 // Escolha Multipla
               } else {
                 correta = questao.resposta1 === resp ? 1 : 0;

@@ -25,6 +25,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/tpc-alunos/:codAluno/tpcs",
+      "handler": "tpc-aluno.findAlunoTpcs",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/tpc-alunos",
       "handler": "tpc-aluno.create",

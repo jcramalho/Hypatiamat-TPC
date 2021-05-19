@@ -10,10 +10,22 @@ const { sanitizeEntity } = require("strapi-utils");
 module.exports = {
   async findProfTpcs(ctx) {
     const { codProf } = ctx.params;
-    const entity = await strapi.services.tpc.find({ codProf });
+    let entities = await strapi.services.tpc.find({ codProf });
+
+    if (ctx.query.time === "active") {
+      entities = entities.filter((tpc) => {
+        return new Date(tpc.dataFim) > new Date();
+      });
+      entities.sort((a, b) => a.dataFim.localeCompare(b.dataFim));
+    } else if (ctx.query.time === "expired") {
+      entities = entities.filter((tpc) => {
+        return new Date(tpc.dataFim) <= new Date();
+      });
+      entities.sort((a, b) => b.dataFim.localeCompare(a.dataFim));
+    }
 
     let tpcs = [];
-    for (const tpc of entity) {
+    for (const tpc of entities) {
       const totalAlunos = tpc["tpc_alunos"].length;
       let totalResp = 0;
 

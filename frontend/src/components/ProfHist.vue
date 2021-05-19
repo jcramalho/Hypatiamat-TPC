@@ -13,47 +13,51 @@
         </h2>
       </v-card-title>
       <v-card-text>
-        <v-list>
-          <v-list-item-group color="#009263">
-            <template v-for="item in tpcs">
-              <v-list-item :key="item.id">
-                <v-list-item-content>
-                  <v-list-item-title
-                    ><b>{{ item.tagname }}</b></v-list-item-title
-                  >
-                  <span
-                    >Tentativas: {{ item.tentativas }}, Data Limite:
-                    {{ item.dataFim }}</span
-                  >
-                </v-list-item-content>
-                <div>
-                  <v-list-item-action
-                    :style="{
-                      transform: 'translateY(20%) translateX(40%)',
-                    }"
-                  >
-                    <v-btn icon color="#009263">
-                      <v-icon large>
-                        mdi-magnify
-                      </v-icon></v-btn
-                    >
-                  </v-list-item-action>
+        <v-list v-if="tpcs.length > 0">
+          <template v-for="item in tpcs">
+            <v-list-item :key="item.id">
+              <v-list-item-content>
+                <v-list-item-title>
+                  <b>{{ item.tagname }}</b>
+                </v-list-item-title>
 
-                  <v-list-item-action>
-                    <v-btn
-                      @click="results(item.id)"
-                      rounded
-                      dark
-                      color="#009263"
-                      >Resultados</v-btn
-                    >
-                  </v-list-item-action>
-                </div>
-              </v-list-item>
-              <v-divider :key="`div${item.id}`"></v-divider>
-            </template>
-          </v-list-item-group>
+                <b
+                  ><span style="color:green;">Nº Respostas: </span>
+                  {{ respFormat(item) }}
+                </b>
+                <b
+                  ><span style="color:#960000;">Data Limite: </span>
+                  {{ dataFormat(item.dataFim) }}</b
+                >
+              </v-list-item-content>
+              <div>
+                <v-list-item-action
+                  :style="{
+                    transform: 'translateY(20%) translateX(40%)',
+                  }"
+                >
+                  <v-btn icon @click="checkTPC(item.id)" dark color="#009263">
+                    <v-icon large>
+                      mdi-magnify
+                    </v-icon></v-btn
+                  >
+                </v-list-item-action>
+
+                <v-list-item-action>
+                  <v-btn @click="results(item.id)" rounded dark color="#009263"
+                    >Resultados</v-btn
+                  >
+                </v-list-item-action>
+              </div>
+            </v-list-item>
+            <v-divider :key="`div${item.id}`"></v-divider>
+          </template>
         </v-list>
+        <v-container v-else>
+          <h2 style="text-align: center;">
+            {{ noTpcs }}
+          </h2>
+        </v-container>
       </v-card-text>
       <v-card-actions>
         <v-row justify="start" class="mt-5 ml-4">
@@ -81,9 +85,14 @@ export default {
       tpcs: [],
       user: null,
       escola: null,
+      tpcsFlag: "loading",
     };
   },
   computed: {
+    noTpcs() {
+      if (this.tpcsFlag === "loading") return "";
+      return this.tpcsFlag;
+    },
     name() {
       if (!this.user) return "";
       return this.user.nome;
@@ -93,6 +102,29 @@ export default {
     },
   },
   methods: {
+    respFormat(tpc) {
+      return `${tpc.totalResp}/${tpc.totalAlunos}`;
+    },
+    dataFormat(date) {
+      const datetime = new Date(date);
+      // data
+      const month =
+        (datetime.getMonth() + 1 < 10 ? "0" : "") + (datetime.getMonth() + 1);
+      const day = (datetime.getDate() < 10 ? "0" : "") + datetime.getDate();
+
+      const data = `${day}-${month}-${datetime.getFullYear()}`;
+
+      // tempo
+      const hours = (datetime.getHours() < 10 ? "0" : "") + datetime.getHours();
+      const minutes =
+        (datetime.getMinutes() < 10 ? "0" : "") + datetime.getMinutes();
+
+      const tempo = `${hours}:${minutes}`;
+      return `${data} ● ${tempo}`;
+    },
+    checkTPC(id) {
+      this.$router.push({ name: "SeeTPC", params: { id } });
+    },
     results(id) {
       this.$router.push({ name: "TheResults", params: { id } });
     },
@@ -116,15 +148,18 @@ export default {
       }
     },
     async getTpcs() {
-      // try {
-      //   const response = await axios.get(
-      //     host + "tpcs/prof/" + this.user.codigo
-      //   );
-      //   this.tpcs = response.data;
-      // } catch (err) {
-      //   const error = new Error(err.message || "Failed to fetch TPCs");
-      //   throw error;
-      // }
+      try {
+        const response = await axios.get(
+          host + "tpcs/prof/" + this.user.codigo + "?time=expired"
+        );
+        this.tpcs = response.data;
+
+        if (this.tpcs.length === 0)
+          this.tpcsFlag = "De momento não tem TPCs expirados.";
+      } catch (err) {
+        const error = new Error(err.message || "Failed to fetch TPCs");
+        throw error;
+      }
     },
   },
 };

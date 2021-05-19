@@ -1,15 +1,16 @@
 <template>
   <v-container>
     <v-card class="mx-auto mb-5">
-      <v-card-title> Professor {{ userId }}</v-card-title>
+      <v-card-title> {{ profNome }}</v-card-title>
       <v-card-text> </v-card-text>
     </v-card>
     <v-card class="mx-auto pb-5">
       <v-card-title class="justify-center green--text">
-        <h2>Resultados TPC {{ this.id }}</h2>
+        <h2>Resultados TPC: {{ this.tpcNome }}</h2>
       </v-card-title>
       <v-card-text>
         <v-data-table
+          no-data-text="Não existem resoluções"
           :footer-props="{
             'items-per-page-text': 'Mostrar',
             'items-per-page-options': [30, 60, -1],
@@ -69,7 +70,7 @@
       </v-card-text>
       <v-card-actions>
         <v-row justify="start" class="mt-5 ml-4">
-          <v-btn to="/dashboard" dark color="#009263" x-large>
+          <v-btn @click="voltar" dark color="#009263" x-large>
             Voltar
           </v-btn>
         </v-row>
@@ -95,6 +96,8 @@ export default {
   },
   data() {
     return {
+      user: null,
+      tpcNome: "",
       atualAlunoNome: "",
       atualAlunoCod: null,
       respostas: [],
@@ -116,8 +119,18 @@ export default {
       results: [],
     };
   },
-  computed: {},
+  computed: {
+    profNome() {
+      if (!this.user) return "";
+      return this.user.nome;
+    },
+  },
   methods: {
+    voltar() {
+      window.history.length > 2
+        ? this.$router.go(-1)
+        : this.$router.push("/dashboard");
+    },
     verResolucao(aluno) {
       this.atualAlunoCod = aluno.codAluno;
       this.atualAlunoNome = aluno.nome;
@@ -127,23 +140,30 @@ export default {
       try {
         const tpcs = await axios.get(host + "tpcs/" + this.id);
 
+        this.tpcNome = tpcs.data.tagname;
+
         const alunos = tpcs.data["tpc_alunos"];
 
+        let ind = 0;
         for (const al of alunos) {
           const aluno = await axios.get(host + "tpc-alunos/" + al.codAluno);
 
-          const resolucoes = aluno.data.resolucoes.filter(
-            (r) => r.idTpc === this.id
-          );
-          if (resolucoes.length !== 0) {
-            this.results.push({
+          // Ultima tentativa de resolucao do aluno
+          const resol = aluno.data.resolucoes
+            .filter((r) => r.idTpc == this.id)
+            .reduce((a, b) => (a.data > b.data ? a : b), {});
+
+          if (Object.keys(resol).length > 0) {
+            const result = {
               nome: al.nome,
               codAluno: al.codAluno,
               codTurma: al.codTurma,
-              qRespondidas: resolucoes[0].qRespondidas,
-              qCertas: resolucoes[0].qCertas,
-              classificacao: resolucoes[0].classificacao,
-            });
+              qRespondidas: resol.qRespondidas,
+              qCertas: resol.qCertas,
+              classificacao: resol.classificacao,
+            };
+            this.$set(this.results, ind, result);
+            ind++;
           }
         }
       } catch (err) {
@@ -151,8 +171,11 @@ export default {
         throw error;
       }
     },
-    getUserId() {
+    async getUserId() {
       this.userId = this.$store.getters.getUserId;
+
+      const prof = await axios.get(host + "professores/" + this.userId);
+      this.user = prof.data;
     },
   },
 };
