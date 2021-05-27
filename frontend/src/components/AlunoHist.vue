@@ -1,114 +1,184 @@
 <template>
-  <v-container>
-    <v-card class="mx-auto mb-5">
-      <v-card-title> {{ nomeAluno }} </v-card-title>
-      <v-card-text> </v-card-text>
-    </v-card>
-    <v-card class="mx-auto pb-5">
-      <v-card-title class="justify-center green--text">
-        <h2>
-          TPCs Expirados
-        </h2>
-      </v-card-title>
-      <v-card-text>
-        <v-list v-if="tpcs.length > 0">
-          <template v-for="item in tpcs">
-            <v-list-item :key="item.id">
-              <v-list-item-content>
-                <v-list-item-title
-                  ><b>{{ item.tagname }}</b></v-list-item-title
+  <v-app id="inspire">
+    <v-main class="grey lighten-3">
+      <v-container>
+        <v-card class="pa-5">
+          <v-card-title class="justify-center green--text">
+            <h2>
+              TPCs Expirados
+            </h2>
+          </v-card-title>
+          <center>
+            <v-btn v-if="!show" text @click="show = !show"
+              ><span>Mostrar Ajuda</span
+              ><v-icon color="#009263"> mdi-help-circle </v-icon>
+            </v-btn>
+            <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
+          </center>
+          <v-slide-y-transition>
+            <v-card
+              v-show="show"
+              class="elevation-6 pa-3"
+              style="border: 2px solid green !important;"
+              color="grey lighten-3"
+            >
+              <v-row>
+                <v-col cols="12">
+                  <span>
+                    1. Aqui pode visualizar a lista de TPCs que já não se
+                    encontram ativos, por ordem daquele que expirou mais
+                    recentemente.
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span>
+                    2. Para cada TPC, temos as seguintes informações: o
+                    <b>Título do TPC</b>; a classificação resultante da sua
+                    resolução (<b style="color:green;">Classificação</b>); assim
+                    como a data e hora limite de expiração do TPC (<b
+                      style="color:#960000;"
+                      >Data Limite</b
+                    >).
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span>
+                    3. Pode aceder à página de informações de cada TPC em
+                    <v-btn icon dark color="#009263">
+                      <v-icon>
+                        mdi-magnify
+                      </v-icon></v-btn
+                    >, assim como visualizar a sua tentativa de resolução e
+                    respetivas respostas ao TPC em
+                    <v-btn small rounded dark color="#009263">Resolução</v-btn>.
+                    Caso não tenha realizado qualquer tentativa de resolução,
+                    irá aparecer o ícone de TPC não realizado
+                    <v-icon color="red">mdi-close-circle</v-icon>.
+                  </span>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-slide-y-transition>
+          <v-card-text>
+            <v-container v-if="loading">
+              <center>
+                <v-img
+                  :src="require('@/assets/loading.gif')"
+                  width="150px"
+                  heigth="150px"
                 >
+                </v-img>
+              </center>
+            </v-container>
+            <v-list v-else-if="tpcs.length > 0">
+              <template v-for="item in tpcs">
+                <v-list-item :key="item.id">
+                  <v-list-item-content>
+                    <v-list-item-title
+                      ><b>{{ item.tagname }}</b></v-list-item-title
+                    >
 
-                <b>
-                  <span style="color:green;">Classificação: </span>
-                  {{ classificacao(item.id) }}
-                </b>
-                <b
-                  ><span style="color:#960000;">Expirou a: </span>
-                  {{ dataFormat(item.dataFim) }}</b
-                >
-              </v-list-item-content>
-              <div>
-                <v-list-item-action>
-                  <v-dialog
-                    v-if="temResol(item.id)"
-                    content-class="elevation-0"
-                    :retain-focus="false"
-                    v-model="dialogResp"
-                    width="1000px"
-                  >
-                    <template #activator="{ on: dialog }">
-                      <v-tooltip top>
-                        <template #activator="{ on: tooltip }">
-                          <v-btn
-                            @click="verResolucao(item)"
-                            icon
-                            color="#009263"
-                            dark
-                            v-on="{ ...tooltip, ...dialog }"
-                            ><v-icon x-large> mdi-magnify</v-icon></v-btn
-                          >
-                        </template>
-                        <span>Ver Resolução</span>
-                      </v-tooltip>
-                    </template>
+                    <b>
+                      <span style="color:green;">Classificação: </span>
+                      {{ classificacao(item.id) }}
+                    </b>
+                    <b
+                      ><span style="color:#960000;">Expirou a: </span>
+                      {{ dataFormat(item.dataFim) }}</b
+                    >
+                  </v-list-item-content>
 
-                    <v-card>
-                      <v-card-title
-                        style="background-color: #009263;"
-                        class="white--text"
-                      >
-                        Aluno: {{ nomeAluno }}
-                      </v-card-title>
-
-                      <v-card-text>
-                        <AlunoResol
-                          v-if="dialogResp"
-                          :tpcId="tpcAtual.id"
-                          :codAluno="userId"
-                        />
-                      </v-card-text>
-
-                      <v-divider></v-divider>
-
-                      <v-card-actions class="justify-center">
-                        <v-btn color="#009263" text @click="dialogResp = false">
-                          OK
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                  <div v-else>
+                  <v-list-item-action>
                     <v-tooltip top>
-                      <template v-slot:activator="{ on }">
-                        <v-btn v-on="on" icon color="red" dark
-                          ><v-icon x-large>mdi-close-circle</v-icon></v-btn
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn
+                          v-bind="attrs"
+                          v-on="on"
+                          small
+                          @click="checkTPC(item.id)"
+                          icon
+                          dark
+                          color="#009263"
+                          ><v-icon x-large> mdi-magnify</v-icon></v-btn
                         >
                       </template>
-                      <span>Não Resolveu</span>
+                      <span>Ver TPC</span>
                     </v-tooltip>
-                  </div>
-                </v-list-item-action>
-              </div>
-            </v-list-item>
-            <v-divider :key="`div${item.id}`"></v-divider>
-          </template>
-        </v-list>
-        <v-container v-else>
-          <h2 style="text-align: center;">
-            {{ noTpcs }}
-          </h2>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-row justify="start" class="mt-5 ml-4">
-          <v-btn to="/dashboard" dark color="#009263" x-large>
-            Voltar
-          </v-btn>
-        </v-row>
-      </v-card-actions>
-    </v-card>
-  </v-container>
+                  </v-list-item-action>
+                  <v-list-item-action>
+                    <v-dialog
+                      v-if="temResol(item.id)"
+                      content-class="elevation-0"
+                      :retain-focus="false"
+                      v-model="dialogResp"
+                      max-width="1200px"
+                    >
+                      <template #activator="{ on: dialog }">
+                        <v-btn
+                          small
+                          @click="verResolucao(item)"
+                          color="#009263"
+                          dark
+                          v-on="{ ...dialog }"
+                          rounded
+                          >Resolução</v-btn
+                        >
+                      </template>
+
+                      <v-card>
+                        <v-card-title
+                          style="background-color: #009263;"
+                          class="white--text"
+                        >
+                          Aluno: {{ nomeAluno }}
+                        </v-card-title>
+
+                        <v-card-text>
+                          <AlunoResol
+                            v-if="dialogResp"
+                            :tpcId="tpcAtual.id"
+                            :codAluno="userId"
+                          />
+                        </v-card-text>
+
+                        <v-divider></v-divider>
+
+                        <v-card-actions class="justify-center">
+                          <v-btn
+                            color="#009263"
+                            text
+                            @click="dialogResp = false"
+                          >
+                            OK
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                    <div class="mx-8" v-else>
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-icon x-large color="red" v-bind="attrs" v-on="on"
+                            >mdi-close-circle</v-icon
+                          >
+                        </template>
+                        <span>Não Resolveu</span>
+                      </v-tooltip>
+                    </div>
+                  </v-list-item-action>
+                </v-list-item>
+                <v-divider :key="`div${item.id}`"></v-divider>
+              </template>
+            </v-list>
+            <v-container v-else>
+              <h2 style="text-align: center;">
+                {{ noTpcs }}
+              </h2>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -127,6 +197,7 @@ export default {
   },
   data() {
     return {
+      show: false,
       tpcs: [],
       resolucoes: [],
       user: null,
@@ -134,6 +205,7 @@ export default {
       dialogResp: false,
       tpcsFlag: "loading",
       tpcAtual: null,
+      loading: false,
     };
   },
   computed: {
@@ -147,6 +219,9 @@ export default {
     },
   },
   methods: {
+    checkTPC(id) {
+      this.$router.push({ name: "SeeTPC", params: { id } });
+    },
     temResol(idTpc) {
       const resol = this.resolucoes.filter((r) => r.idTpc === idTpc);
       if (resol.length === 0) return false;
@@ -183,6 +258,7 @@ export default {
     },
     async getTpcs() {
       try {
+        this.loading = true;
         const tpcsAluno = await axios.get(
           host + "tpc-alunos/" + this.userId + "/tpcs?time=expired"
         );
@@ -195,7 +271,7 @@ export default {
           this.resolucoes = aluno.data.resolucoes;
           this.tpcsFlag = "";
         }
-
+        this.loading = false;
         if (this.tpcs.length === 0)
           this.tpcsFlag = "De momento não tem TPCs expirados.";
       } catch (err) {

@@ -1,8 +1,8 @@
 <template>
   <v-card>
     <v-container>
-      <v-row class="my-n4">
-        <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
+      <v-row>
+        <v-col cols="12" sm="12" md="12" lg="12" xl="12">
           <v-sheet>
             <v-slide-group mandatory show-arrows center-active>
               <v-slide-item
@@ -31,7 +31,7 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
+        <v-col cols="12" sm="6" md="6" lg="6" xl="6">
           <v-text-field
             color="#009263"
             v-model="tema"
@@ -41,7 +41,7 @@
           ></v-text-field>
         </v-col>
 
-        <v-col cols="12" xs="12" sm="12" md="12" lg="6" xl="5">
+        <v-col cols="12" sm="6" md="6" lg="6" xl="6">
           <v-text-field
             color="#009263"
             v-model="subtema"
@@ -59,20 +59,17 @@
             elevation="2"
             outlined
             rounded
-            height="520px"
+            min-height="500px"
           >
             <v-row>
-              <v-col cols="12" xs="8" sm="8" md="8" lg="8" xl="8">
+              <v-col cols="8" sm="8" md="8" lg="8" xl="8">
                 <v-row>
-                  <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="12">
+                  <v-col cols="12" sm="12" md="12" lg="12" xl="12">
                     <h2 style="color:#009263" class="text-center my-2">
                       Questão
                     </h2>
 
-                    <div
-                      v-html="questaoAtual"
-                      class="mt-5 ml-10 bodyText"
-                    ></div>
+                    <div v-html="questaoAtual" class="mt-5 ml-8 mr-2"></div>
 
                     <div class="mt-5 ml-8">
                       <v-container v-if="tipoQuestao === 2">
@@ -81,38 +78,34 @@
                             <v-col
                               v-for="(resp, index) in respostas"
                               :key="index"
-                              cols="3"
-                              xs="3"
+                              cols="6"
                               sm="3"
                               md="3"
                               lg="3"
-                              xl="5"
+                              xl="3"
                             >
+                              <v-radio
+                                color="#009263"
+                                :label="`${index + 1})`"
+                                :value="resp"
+                              >
+                              </v-radio>
                               <v-img
                                 height="200px"
                                 width="200px"
                                 contain
                                 :src="imgRespostas(resp)"
                               >
-                                <v-radio
-                                  color="#009263"
-                                  :label="`${index + 1})`"
-                                  :value="resp"
-                                >
-                                </v-radio>
                               </v-img>
                             </v-col>
                           </v-row>
                         </v-radio-group>
                       </v-container>
-                      <div
-                        class="resposta mt-8 text-start"
-                        v-else-if="tipoQuestao === 1"
-                      >
-                        <div class="input">
+                      <div class="mt-8 mr-2" v-else-if="tipoQuestao === 1">
+                        <v-container class="input my-2">
                           <span v-html="respostaAluno"> </span>
                           <span class="unidade" v-html="unidade"></span>
-                        </div>
+                        </v-container>
                       </div>
                       <v-container v-else class="mt-n6" fluid>
                         <v-radio-group v-model="respostaAluno" disabled>
@@ -145,10 +138,10 @@
                     </v-container>
                   </v-col>
                 </v-row>
-                <v-row style="position:absolute; bottom:0;">
-                  <v-col cols="12" xs="12" sm="12" md="12" lg="12" xl="5">
-                    <div class="pt-6 my-2 mx-2">
-                      <v-dialog v-model="dialogResol" width="900px">
+                <v-row class="mt-8">
+                  <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+                    <div style="position:absolute; bottom:0;" class="pa-2">
+                      <v-dialog v-model="dialogResol" :width="resolWidth()">
                         <template v-slot:activator="{ on, attrs }">
                           <v-btn
                             small
@@ -185,22 +178,27 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="12" xs="4" sm="4" md="4" lg="4" xl="4">
-                <div id="info">
-                  <span>
-                    <b> {{ codQuestao }} </b>
-                  </span>
-                  <span
-                    ><b>Nível {{ nivel }}</b></span
-                  >
-                </div>
+              <v-col class="mt-n3" cols="4" sm="4" md="4" lg="4" xl="4">
+                <v-container fluid>
+                  <v-row no-gutters>
+                    <v-col align="left" cols="12" sm="6" lg="6">
+                      <div class="codquestao">
+                        <span>
+                          <b> {{ codQuestao }}</b>
+                        </span>
+                      </div>
+                    </v-col>
+                    <v-col align="right" cols="12" sm="6" lg="6">
+                      <div class="selectNivel">
+                        <span
+                          ><b>Nível {{ nivel }}</b></span
+                        >
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-container>
                 <v-card>
-                  <v-img
-                    height="400px"
-                    width="400px"
-                    contain
-                    :src="imagem"
-                  ></v-img>
+                  <v-img max-height="400px" contain :src="imagem"></v-img>
                 </v-card>
                 <div v-if="temExame" id="exame">
                   <span> <b> Exame: </b> {{ exame }}</span>
@@ -307,6 +305,23 @@ export default {
     },
   },
   methods: {
+    resolWidth() {
+      if (!this.catalogoQuestoes[this.counter]) return "";
+      let img = this.catalogoQuestoes[this.counter].resolucao;
+      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
+
+      this.imgSize(img, (w) => {
+        this.resolCard = `${w}px`;
+      });
+      return this.resolCard;
+    },
+    imgSize(url, callback) {
+      var img = new Image();
+      img.onload = function() {
+        callback(img.width);
+      };
+      img.src = url;
+    },
     questaoSelected(q, ind) {
       this.counter = ind;
       this.showRespostas();
@@ -453,20 +468,12 @@ export default {
 </script>
 
 <style scoped>
-.bodyText {
-  font-size: 16px;
-}
-
 .input {
   background-color: white;
   border: 2px solid #009263;
   box-shadow: 1px 1px 1px 0 lightgray inset;
-  margin-top: 5px;
-  margin-bottom: 20px;
-  margin-left: 5px;
   padding: 2px 8px;
-  width: 550px;
-  height: 50px;
+  height: 55px;
   line-height: 45px;
   display: inline-block;
   vertical-align: middle;
@@ -480,21 +487,14 @@ export default {
   vertical-align: middle;
 }
 
-.resposta {
-  width: 700px;
-}
-
-#info {
-  height: 20px;
-  line-height: 22px;
-  padding: 5px 6px;
+.selectExame {
   font-size: 14px;
-  margin-bottom: 15px;
+  padding: 5px 6px;
+
+  margin-top: -16px;
 }
 
-#info span:last-child {
-  position: absolute;
-  right: 6px;
+.selectNivel {
   color: #009263;
 }
 

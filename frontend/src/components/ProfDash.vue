@@ -1,78 +1,137 @@
 <template>
-  <v-container>
-    <v-card class="mx-auto mb-5">
-      <v-card-title>
-        {{ name }}
-      </v-card-title>
-      <v-card-text>
-        {{ escola }}
-      </v-card-text>
-    </v-card>
-    <v-card class="mx-auto pb-5">
-      <v-card-title class="justify-center green--text">
-        <h2>
-          TPCs Ativos
-        </h2>
-      </v-card-title>
-      <v-card-text>
-        <v-list v-if="tpcs.length > 0">
-          <template v-for="item in tpcs">
-            <v-list-item :key="item.id">
-              <v-list-item-content>
-                <v-list-item-title>
-                  <b>{{ item.tagname }}</b>
-                </v-list-item-title>
-                <b
-                  ><span style="color:green;">Nº Respostas: </span>
-                  {{ respFormat(item) }}
-                </b>
-                <b
-                  ><span style="color:#960000;">Data Limite: </span>
-                  {{ dataFormat(item.dataFim) }}</b
-                >
-              </v-list-item-content>
-              <div>
-                <v-list-item-action
-                  :style="{
-                    transform: 'translateY(20%) translateX(40%)',
-                  }"
-                >
-                  <v-btn icon @click="checkTPC(item.id)" dark color="#009263">
-                    <v-icon large>
-                      mdi-magnify
-                    </v-icon></v-btn
+  <v-app id="inspire">
+    <v-main class="grey lighten-3">
+      <v-container>
+        <v-card class="pa-5">
+          <v-container>
+            <v-card-title class="justify-center green--text">
+              <h2>
+                TPCs Ativos
+              </h2>
+            </v-card-title>
+            <center>
+              <v-btn v-if="!show" text @click="show = !show"
+                ><span>Mostrar Ajuda</span
+                ><v-icon color="#009263"> mdi-help-circle </v-icon>
+              </v-btn>
+              <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
+            </center>
+            <v-slide-y-transition>
+              <v-card
+                v-show="show"
+                class="elevation-6 pa-3"
+                style="border: 2px solid green !important;"
+                color="grey lighten-3"
+              >
+                <v-row>
+                  <v-col cols="12">
+                    <span>
+                      1. Aqui pode visualizar a lista de TPCs que estão ativos,
+                      por ordem daquele que expirará primeiro.
+                    </span>
+                  </v-col>
+                  <v-col cols="12">
+                    <span>
+                      2. Para cada TPC, temos as seguintes informações: o
+                      <b>Título do TPC</b>; a contagem dos alunos que já
+                      realizaram pelo menos uma tentativa de resolução (<b
+                        style="color:green;"
+                        >Nº Respostas</b
+                      >); assim como a data e hora limite de expiração do TPC
+                      (<b style="color:#960000;">Data Limite</b>).
+                    </span>
+                  </v-col>
+                  <v-col cols="12">
+                    <span>
+                      3. Pode aceder à página de informações de cada TPC em
+                      <v-btn icon dark color="#009263">
+                        <v-icon>
+                          mdi-magnify
+                        </v-icon></v-btn
+                      >, assim como à página de resultados dos alunos que já
+                      realizaram o TPC em
+                      <v-btn small rounded dark color="#009263"
+                        >Resultados</v-btn
+                      >.
+                    </span>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-slide-y-transition>
+            <br v-if="show" />
+            <v-card-text>
+              <v-container v-if="loading">
+                <center>
+                  <v-img
+                    :src="require('@/assets/loading.gif')"
+                    width="150px"
+                    heigth="150px"
                   >
-                </v-list-item-action>
-
-                <v-list-item-action>
-                  <v-btn @click="results(item.id)" rounded dark color="#009263"
-                    >Resultados</v-btn
-                  >
-                </v-list-item-action>
-              </div>
-            </v-list-item>
-            <v-divider :key="`div${item.id}`"></v-divider>
-          </template>
-        </v-list>
-        <v-container v-else>
-          <h2 style="text-align: center;">
-            {{ noTpcs }}
-          </h2>
-        </v-container>
-      </v-card-text>
-      <v-card-actions>
-        <v-row justify="space-around" class="mt-5">
-          <v-btn to="/create" dark color="#008a5d" x-large>Criar TPC</v-btn>
-          <v-btn to="/historic" dark color="#008a5d" x-large>
-            Histórico
-          </v-btn>
-          <v-btn to="/stats" dark color="#008a5d" x-large>
-            Estatísticas
-          </v-btn>
-        </v-row>
-      </v-card-actions>
-    </v-card>
-  </v-container>
+                  </v-img>
+                </center>
+              </v-container>
+              <v-list v-else-if="tpcs.length > 0">
+                <template v-for="item in tpcs">
+                  <v-list-item :key="item.id">
+                    <v-list-item-content>
+                      <v-list-item-title>
+                        <b
+                          ><span>{{ item.tagname }}</span></b
+                        >
+                      </v-list-item-title>
+                      <b
+                        ><span style="color:green;">Nº Respostas: </span>
+                        {{ respFormat(item) }}
+                      </b>
+                      <b
+                        ><span style="color:#960000;">Data Limite: </span>
+                        {{ dataFormat(item.dataFim) }}</b
+                      >
+                    </v-list-item-content>
+                    <v-list-item-action>
+                      <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            v-bind="attrs"
+                            v-on="on"
+                            icon
+                            @click="checkTPC(item.id)"
+                            dark
+                            color="#009263"
+                          >
+                            <v-icon large>
+                              mdi-magnify
+                            </v-icon></v-btn
+                          >
+                        </template>
+                        <span>Ver TPC</span>
+                      </v-tooltip>
+                    </v-list-item-action>
+                    <v-list-item-action>
+                      <v-btn
+                        small
+                        @click="results(item.id)"
+                        rounded
+                        dark
+                        color="#009263"
+                        >Resultados</v-btn
+                      >
+                    </v-list-item-action>
+                  </v-list-item>
+                  <v-divider :key="`div${item.id}`"></v-divider>
+                </template>
+              </v-list>
+              <v-container v-else>
+                <h2 style="text-align: center;">
+                  {{ noTpcs }}
+                </h2>
+              </v-container>
+            </v-card-text>
+          </v-container>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -82,28 +141,21 @@ const host = require("@/config/hosts").hostAPI;
 export default {
   async created() {
     await this.getUser();
-    this.getEscola();
     this.getTpcs();
   },
   data() {
     return {
+      show: false,
       tpcs: [],
       user: null,
-      escola: null,
       tpcsFlag: "loading",
+      loading: false,
     };
   },
   computed: {
     noTpcs() {
       if (this.tpcsFlag === "loading") return "";
       return this.tpcsFlag;
-    },
-    name() {
-      if (!this.user) return "";
-      return this.user.nome;
-    },
-    escolaName() {
-      return this.escola;
     },
   },
   methods: {
@@ -143,17 +195,9 @@ export default {
         throw error;
       }
     },
-    async getEscola() {
-      try {
-        const response = await axios.get(host + "escolas/" + this.user.escola);
-        this.escola = response.data.nome;
-      } catch (err) {
-        const error = new Error(err.message || "Failed to fetch Escola");
-        throw error;
-      }
-    },
     async getTpcs() {
       try {
+        this.loading = true;
         const response = await axios.get(
           host + "tpcs/prof/" + this.user.codigo + "?time=active"
         );
@@ -161,6 +205,7 @@ export default {
 
         if (this.tpcs.length === 0)
           this.tpcsFlag = "De momento não tem TPCs ativos.";
+        this.loading = false;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");
         throw error;

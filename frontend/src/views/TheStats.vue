@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1>ESTATISTICAS</h1>
+  <div class="grey lighten-3">
+    <h1><center>ESTATISTICAS</center></h1>
   </div>
 </template>
 

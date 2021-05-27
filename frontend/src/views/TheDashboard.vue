@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="grey lighten-3">
     <component :is="dashboard"></component>
   </div>
 </template>

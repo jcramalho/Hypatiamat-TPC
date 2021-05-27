@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import UserAuth from "../views/UserAuth.vue";
 import TheDashboard from "../views/TheDashboard.vue";
 import CreateTpc from "../views/CreateTpc.vue";
 import TheHistoric from "../views/TheHistoric.vue";
@@ -12,15 +11,7 @@ import SeeTPC from "../views/SeeTPC.vue";
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: "/",
-    redirect: "/login",
-  },
-  {
-    path: "/login",
-    name: "UserAuth",
-    component: UserAuth,
-  },
+  { path: "/", redirect: "/dashboard" },
   {
     path: "/dashboard",
     name: "TheDashboard",
