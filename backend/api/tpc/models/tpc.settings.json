@@ -16,9 +16,6 @@
     "tentativas": {
       "type": "integer"
     },
-    "ativo": {
-      "type": "integer"
-    },
     "tagname": {
       "type": "text"
     },
@@ -29,8 +26,8 @@
       "type": "datetime"
     },
     "tpc_questoes": {
-      "via": "tpcs",
       "collection": "tpc-questao",
+      "via": "tpcs",
       "dominant": true
     },
     "tpc_alunos": {
@@ -40,6 +37,15 @@
     },
     "codProf": {
       "type": "string"
+    },
+    "configAleatoria": {
+      "type": "boolean"
+    },
+    "configRetroceder": {
+      "type": "boolean"
+    },
+    "configResolucao": {
+      "type": "boolean"
     }
   }
 }

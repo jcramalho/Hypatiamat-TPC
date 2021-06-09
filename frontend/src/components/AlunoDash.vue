@@ -172,7 +172,7 @@ export default {
   },
   methods: {
     podeFazer(tpc) {
-      if (tpc.nResol === tpc.tentativas) return false;
+      if (tpc.nResol >= tpc.tentativas) return false;
       return true;
     },
     tentativas(tpc) {

@@ -19,9 +19,6 @@
     "qCertas": {
       "type": "integer"
     },
-    "questaoAtual": {
-      "type": "string"
-    },
     "classificacao": {
       "type": "decimal"
     },
@@ -32,6 +29,9 @@
       "type": "datetime"
     },
     "idTpc": {
+      "type": "integer"
+    },
+    "tentativa": {
       "type": "integer"
     }
   }

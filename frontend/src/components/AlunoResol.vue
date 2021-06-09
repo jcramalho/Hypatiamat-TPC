@@ -62,7 +62,7 @@
             min-height="500px"
           >
             <v-row>
-              <v-col cols="8" sm="8" md="8" lg="8" xl="8">
+              <v-col cols="12" sm="8" md="8" lg="8" xl="8">
                 <v-row>
                   <v-col cols="12" sm="12" md="12" lg="12" xl="12">
                     <h2 style="color:#009263" class="text-center my-2">
@@ -137,11 +137,9 @@
                       >
                     </v-container>
                   </v-col>
-                </v-row>
-                <v-row class="mt-8">
                   <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-                    <div style="position:absolute; bottom:0;" class="pa-2">
-                      <v-dialog v-model="dialogResol" :width="resolWidth()">
+                    <div class="align-center pa-2">
+                      <v-dialog v-model="dialogResol" :max-width="resolWidth()">
                         <template v-slot:activator="{ on, attrs }">
                           <v-btn
                             small
@@ -178,18 +176,18 @@
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col class="mt-n3" cols="4" sm="4" md="4" lg="4" xl="4">
-                <v-container fluid>
-                  <v-row no-gutters>
-                    <v-col align="left" cols="12" sm="6" lg="6">
-                      <div class="codquestao">
+              <v-col class="mt-n2" cols="12" sm="4" md="4" lg="4" xl="4">
+                <v-container>
+                  <v-row>
+                    <v-col cols="6" sm="6" lg="6">
+                      <div align="left" class="codquestao">
                         <span>
                           <b> {{ codQuestao }}</b>
                         </span>
                       </div>
                     </v-col>
-                    <v-col align="right" cols="12" sm="6" lg="6">
-                      <div class="selectNivel">
+                    <v-col cols="6" sm="6" lg="6">
+                      <div align="right" class="selectNivel">
                         <span
                           ><b>Nível {{ nivel }}</b></span
                         >
@@ -257,12 +255,7 @@ export default {
       const codQuestao = this.catalogoQuestoes[this.counter].cod;
       return this.opcoesSelected[codQuestao].resposta;
     },
-    resolucao() {
-      if (!this.catalogoQuestoes[this.counter]) return "";
-      let img = this.catalogoQuestoes[this.counter].resolucao;
-      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
-      return img;
-    },
+
     codQuestao() {
       if (!this.catalogoQuestoes[this.counter]) return "";
       return this.catalogoQuestoes[this.counter].cod;
@@ -297,10 +290,23 @@ export default {
 
       return this.catalogoQuestoes[this.counter].questao;
     },
+    resolucao() {
+      if (!this.catalogoQuestoes[this.counter]) return "";
+      let img = this.catalogoQuestoes[this.counter].resolucao;
+      img = img
+        ? `https://www.hypatiamat.com/imagens/propresolucao/${img.replace(
+            ".swf",
+            ""
+          )}.png`
+        : "";
+      return img;
+    },
     imagem() {
       if (!this.catalogoQuestoes[this.counter]) return "";
       let img = this.catalogoQuestoes[this.counter].figura;
-      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
+        : "";
       return img;
     },
   },
@@ -308,7 +314,12 @@ export default {
     resolWidth() {
       if (!this.catalogoQuestoes[this.counter]) return "";
       let img = this.catalogoQuestoes[this.counter].resolucao;
-      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/propresolucao/${img.replace(
+            ".swf",
+            ""
+          )}.png`
+        : "";
 
       this.imgSize(img, (w) => {
         this.resolCard = `${w}px`;
@@ -399,7 +410,9 @@ export default {
       }
     },
     imgRespostas(img) {
-      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
+        : "";
       return img;
     },
     showRespostas() {
@@ -484,7 +497,6 @@ export default {
 
 .unidade {
   float: right;
-  vertical-align: middle;
 }
 
 .selectExame {

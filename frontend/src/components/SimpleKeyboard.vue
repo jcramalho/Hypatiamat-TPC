@@ -1,5 +1,5 @@
 <template>
-  <v-container :class="keyboardClass"></v-container>
+  <div :class="keyboardClass"></div>
 </template>
 
 <script>
@@ -88,6 +88,7 @@ export default {
   border: 2px solid #009263;
   border-radius: 10px;
   margin-bottom: 10px;
+  overflow: auto;
 }
 
 .simple-keyboard.hg-layout-default .hg-button.hg-green {

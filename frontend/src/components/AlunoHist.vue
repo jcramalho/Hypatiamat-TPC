@@ -115,10 +115,11 @@
                     >
                       <template #activator="{ on: dialog }">
                         <v-btn
+                          :disabled="item.configResolucao"
                           small
                           @click="verResolucao(item)"
                           color="#009263"
-                          dark
+                          :dark="!item.configResolucao"
                           v-on="{ ...dialog }"
                           rounded
                           >Resolução</v-btn
@@ -265,7 +266,6 @@ export default {
 
         if (tpcsAluno.data !== "Not Found") {
           this.tpcs = tpcsAluno.data;
-
           const aluno = await axios.get(host + "tpc-alunos/" + this.userId);
 
           this.resolucoes = aluno.data.resolucoes;

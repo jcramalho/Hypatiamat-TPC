@@ -8,7 +8,6 @@
         }
       "
     />
-
     <router-view :key="$route.fullPath" v-if="mobile" />
     <v-main v-else class="grey lighten-3">
       <p :style="styleP">
@@ -38,7 +37,6 @@ export default {
       mensagensLer: 0,
       oldNovasMensagensLer: 0,
       token: "",
-      interval: undefined,
       utilizador: {},
     };
   },
@@ -60,7 +58,6 @@ export default {
   },
   methods: {
     refreshLogout: function() {
-      clearInterval(this.interval);
       this.$emit("refreshLogout");
     },
     size() {

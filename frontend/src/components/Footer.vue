@@ -1,5 +1,5 @@
 <template>
-  <v-footer dark padless>
+  <v-footer absolute max-height="12%" dark padless>
     <v-card
       padless
       width="100%"
@@ -70,7 +70,9 @@
             <br />
             <v-col cols="9">
               <v-card outlined>
-                <center><span class="green--text">Orientadores:</span></center>
+                <center>
+                  <span class="green--text">Orientadores:</span>
+                </center>
                 <center><span>José Carlos Leite Ramalho</span></center>
                 <center><span>Ricardo Manuel Neves Pinto</span></center>
               </v-card>
@@ -132,3 +134,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+</style>

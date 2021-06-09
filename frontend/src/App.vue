@@ -1,6 +1,6 @@
 <template>
-  <v-app id="app">
-    <AuthApp v-if="isLoggedIn" />
+  <v-app id="app" :key="viewKey">
+    <AuthApp @refreshLogout="refreshLogout" v-if="isLoggedIn" />
     <UserAuth v-else />
   </v-app>
 </template>
@@ -17,7 +17,9 @@ export default {
     this.$store.dispatch("tryLogin");
   },
   data() {
-    return {};
+    return {
+      viewKey: 0,
+    };
   },
   computed: {
     isLoggedIn() {
@@ -27,7 +29,11 @@ export default {
       return this.$store.getters.didAutoLogout;
     },
   },
-  methods: {},
+  methods: {
+    refreshLogout: function() {
+      this.viewKey++;
+    },
+  },
   watch: {
     // didAutoLogout(curValue, oldValue) {
     //   if (curValue && curValue !== oldValue) {

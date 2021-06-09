@@ -1,5 +1,6 @@
 const axios = require("axios");
-const url = require("@/config/hosts").hostAPI;
+const host = require("@/config/hosts").hostAPI;
+const Swal = require("sweetalert2");
 let timer;
 
 export default {
@@ -25,7 +26,7 @@ export default {
   actions: {
     async auth(context, payload) {
       try {
-        const response = await axios.post(url + "auth/local", {
+        const response = await axios.post(host + "auth/local", {
           identifier: payload.username,
           password: payload.password,
         });
@@ -59,6 +60,7 @@ export default {
           token: response.data.token.jwt,
           userType: response.data.user.type,
         });
+        context.dispatch("getTpcs");
       } catch (err) {
         const error = new Error(
           err.message || "Failed to authenticate. Check your login data."
@@ -90,12 +92,19 @@ export default {
           userType: userType,
         });
       }
+
+      context.commit("setEditFlag", {
+        isEditing: false,
+      });
+      context.dispatch("getTpcs");
     },
     logout(context) {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
       localStorage.removeItem("userType");
       localStorage.removeItem("tokenExpiration");
+
+      sessionStorage.clear();
 
       clearTimeout(timer);
 
@@ -108,6 +117,11 @@ export default {
     autoLogout(context) {
       context.dispatch("logout");
       context.commit("setAutoLogout");
+      Swal.fire({
+        icon: "info",
+        title: "A sua Sessão Expirou.",
+        confirmButtonColor: "#009263",
+      });
     },
   },
   getters: {

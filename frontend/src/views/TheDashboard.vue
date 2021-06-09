@@ -5,10 +5,11 @@
 </template>
 
 <script>
-import ProfDash from "../components/ProfDash.vue";
-import AlunoDash from "../components/AlunoDash.vue";
+import ProfDash from "@/components/ProfDash.vue";
+import AlunoDash from "@/components/AlunoDash.vue";
 
 export default {
+  created() {},
   components: {
     ProfDash,
     AlunoDash,
@@ -16,13 +17,13 @@ export default {
   data() {
     return {};
   },
+  methods: {},
   computed: {
     dashboard() {
-      const type = this.$store.getters.getUserType;
-      if (type === "aluno") {
-        return "AlunoDash";
-      }
-      return "ProfDash";
+      const usertype = this.$store.getters.getUserType;
+      if (usertype === "professor") {
+        return "ProfDash";
+      } else return "AlunoDash";
     },
   },
 };

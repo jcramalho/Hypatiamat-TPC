@@ -1,48 +1,45 @@
 <template>
-  <div class="grey lighten-3">
-    <v-main class="grey lighten-3">
-      <center>
-        <h1 style="color:#008a5d" class="my-6">
-          Hypatiamat - Gestor de TPCs
-        </h1>
-      </center>
-      <v-card width="50%" class="mx-auto">
-        <v-card-title class="justify-center">
-          <h3 class="green--text">Autenticação</h3>
-        </v-card-title>
-        <v-card-text>
-          <v-form>
-            <v-text-field
-              v-on:keyup.enter="submitForm"
-              color="#009263"
-              label="Utilizador"
-              prepend-icon="mdi-account-circle"
-              v-model="username"
-              :rules="rule"
-            />
-            <v-text-field
-              v-on:keyup.enter="submitForm"
-              color="#009263"
-              :type="showPassword ? 'text' : 'password'"
-              label="Password"
-              prepend-icon="mdi-lock"
-              :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
-              @click:append="showPassword = !showPassword"
-              v-model="password"
-              :rules="rule"
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn block dark large color="#009263" @click="submitForm"
-            >Login</v-btn
-          >
-        </v-card-actions>
-      </v-card>
-      <div class="spacer"></div>
-      <Footer class="grey lighten-3" />
-    </v-main>
-  </div>
+  <v-main class="grey lighten-3">
+    <center>
+      <h1 style="color:#008a5d" class="my-4">
+        Hypatiamat - Gestor de TPCs
+      </h1>
+    </center>
+    <v-card width="50%" class="mx-auto mb-12">
+      <v-card-title class="justify-center">
+        <h3 class="green--text">Autenticação</h3>
+      </v-card-title>
+      <v-card-text>
+        <v-form>
+          <v-text-field
+            v-on:keyup.enter="submitForm"
+            color="#009263"
+            label="Utilizador"
+            prepend-icon="mdi-account-circle"
+            v-model="username"
+            :rules="rule"
+          />
+          <v-text-field
+            v-on:keyup.enter="submitForm"
+            color="#009263"
+            :type="showPassword ? 'text' : 'password'"
+            label="Password"
+            prepend-icon="mdi-lock"
+            :append-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+            @click:append="showPassword = !showPassword"
+            v-model="password"
+            :rules="rule"
+          />
+        </v-form>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn block dark large color="#009263" @click="submitForm"
+          >Login</v-btn
+        >
+      </v-card-actions>
+    </v-card>
+    <Footer class="grey lighten-3" />
+  </v-main>
 </template>
 
 <script>
@@ -99,8 +96,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.spacer {
-  height: 31vh;
-}
-</style>
+<style></style>

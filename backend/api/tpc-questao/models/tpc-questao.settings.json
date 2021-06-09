@@ -18,8 +18,8 @@
       "unique": false
     },
     "tpcs": {
-      "collection": "tpc",
-      "via": "tpc_questoes"
+      "via": "tpc_questoes",
+      "collection": "tpc"
     }
   }
 }

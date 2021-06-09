@@ -1,609 +1,758 @@
 <template>
-  <v-main class="grey lighten-3">
-    <v-container>
-      <v-card class="pa-5">
-        <v-container>
-          <v-card-title class="justify-center green--text">
-            <h2>
-              Criar Novo TPC
-            </h2>
-          </v-card-title>
+  <v-app id="inspire">
+    <v-main class="grey lighten-3">
+      <v-container>
+        <v-card class="pa-5">
+          <v-container>
+            <v-card-title class="justify-center green--text">
+              <h2>
+                Criar Novo TPC
+              </h2>
+            </v-card-title>
 
-          <div class="mb-4">
-            <center>
-              <v-btn v-if="!show" text @click="show = !show"
-                ><span>Mostrar Ajuda</span
-                ><v-icon color="#009263"> mdi-help-circle </v-icon>
-              </v-btn>
-              <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
-            </center>
-            <v-slide-y-transition>
-              <v-card
-                v-show="show"
-                class="elevation-6 pa-3"
-                style="border: 2px solid green !important;"
-                color="grey lighten-3"
-              >
-                <v-row>
-                  <v-col cols="12">
-                    <span>
-                      1. Esta é a página de criação de um TPC, onde deverá
-                      primeiramente fornecer informações como o <b>Título</b>, o
-                      nº de <b>Tentativas</b> permitidas, escolher a
-                      <b>Data </b> e <b>Hora </b> de expiração e selecionar as
-                      <b>Turmas</b> e respetivos alunos a serem requisitados a
-                      realizar o TPC.
-                    </span>
-                  </v-col>
-                  <v-col cols="12">
-                    <span>
-                      2. Para cada turma que selecionou da lista, pode aceder à
-                      listagem dos respetivos alunos e editar aqueles que
-                      pretende que realizem o TPC, através do botão da turma
-                      (ex:
-                      <v-chip dark color="#009263" close>
-                        <strong>3A-21-1</strong> </v-chip
-                      >). Por defeito, estarão selecionados todos os alunos da
-                      turma.
-                    </span>
-                  </v-col>
-                  <v-col cols="12">
-                    <span>
-                      3. De seguida, deverá escolher as questões a submeter no
-                      TPC. Para escolher uma questão seleciona um tema da lista
-                      de <b>Temas</b>, e na lista de <b>Subtemas</b> seleciona
-                      um respetivo subtema. No <i>dashboard</i> irá aparecer
-                      cada questão do respetivo conjunto de tema/subtema
-                      escolhido. Para navegar entre as várias questões do
-                      conjunto utilize
-                      <v-btn icon color="#009263">
-                        <v-icon large>
-                          mdi-arrow-left-bold-circle
-                        </v-icon>
-                      </v-btn>
-                      e
-                      <v-btn icon color="#009263">
-                        <v-icon large>
-                          mdi-arrow-right-bold-circle
-                        </v-icon>
-                      </v-btn>
-                      e se pretender adicionar a questão que visualiza ao TPC,
-                      utiliza o botão de adicionar
-                      <v-btn
-                        small
-                        class="white--text mx-1"
-                        rounded
-                        color="#009263"
-                      >
-                        <v-icon>mdi-plus-circle</v-icon></v-btn
-                      >. No <i>dashboard</i> também consegue filtrar as questões
-                      por <b>Exame</b> e por <b>Nível</b>.
-                    </span>
-                  </v-col>
-                  <v-col cols="12">
-                    <span>
-                      4. Poderá também ativar configurações específicas do TPC
-                      se aceder ao botão
-                      <v-btn small class="white--text" color="#009263">
-                        <v-icon class="mr-1"> mdi-cog </v-icon>
-                        Configurações </v-btn
-                      >.
-                    </span>
-                  </v-col>
-                  <v-col cols="12">
-                    <span>
-                      5. Pode adicionar o nº de questões que quiser, e
-                      removê-las sempre que necessário. Quando estiver
-                      satisfeito com todas as configurações do TPC, pode
-                      finalmente submetê-lo em
-                      <v-btn small class="white--text" color="#009263">
-                        Criar TPC </v-btn
-                      >.
-                    </span>
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-slide-y-transition>
-          </div>
-
-          <v-row>
-            <v-col cols="12" sm="12" md="6" lg="6" xl="6">
-              <v-text-field
-                color="#009263"
-                outlined
-                type="text"
-                label="Título do TPC"
-                class="mb-n6"
-                v-model="titulo"
-                :rules="textRules"
-              ></v-text-field>
-            </v-col>
-            <v-col align="right" cols="12" sm="12" md="6" lg="6" xl="6">
-              <v-btn large class="white--text" color="#009263">
-                <v-icon class="mr-1"> mdi-cog </v-icon> Configurações
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row class="mb-n6">
-            <v-col cols="12" sm="8" md="4" lg="4" xl="4">
-              <v-combobox
-                @click:clear="clearTurmas"
-                color="#009263"
-                item-color="#009263"
-                v-model="turmasSelected"
-                :items="Object.keys(turmasProf)"
-                chips
-                clearable
-                multiple
-                outlined
-                full-width
-                prefix="Turmas"
-              >
-                <template v-slot:selection="{ item }">
-                  <v-dialog
-                    content-class="elevation-0"
-                    :retain-focus="false"
-                    v-model="turmaDialog"
-                    scrollable
-                    max-width="500px"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-chip
-                        dark
-                        color="#009263"
-                        v-bind="attrs"
-                        v-on="on"
-                        close
-                        @click="editarAlunos(item)"
-                        @click:close="removeTurma(item)"
-                      >
-                        <strong v-if="allAlunosFlag[item] === false"
-                          >{{ item }}*</strong
-                        >
-                        <strong v-else>{{ item }}</strong>
-                      </v-chip>
-                    </template>
-                    <v-card>
-                      <v-card-title
-                        style="background-color: #009263;"
-                        class="white--text"
-                      >
-                        <b>Turma {{ turmaCod }}</b>
-                      </v-card-title>
-
-                      <v-card-text style="height: 300px;">
-                        <v-list>
-                          <div
-                            class="mr-2"
-                            style="display: flex; justify-content: flex-end"
-                          >
-                            <v-checkbox
-                              @change="changeAll(turmaCod)"
-                              :input-value="allAlunosFlag[turmaCod]"
-                              color="#009263"
-                            ></v-checkbox>
-                          </div>
-                          <v-divider></v-divider>
-                          <template v-for="(al, ind) in turmasProf[turmaCod]">
-                            <v-list-item
-                              :key="ind"
-                              :value="al"
-                              active-class="#009263"
-                            >
-                              <v-list-item-content>
-                                <v-list-item-title>
-                                  {{ al.nome }}</v-list-item-title
-                                >
-                              </v-list-item-content>
-
-                              <v-list-item-action>
-                                <v-checkbox
-                                  @change="changeActive(al)"
-                                  :input-value="al.active"
-                                  color="#009263"
-                                ></v-checkbox>
-                              </v-list-item-action>
-                            </v-list-item>
-                          </template>
-                        </v-list>
-                      </v-card-text>
-                      <v-divider></v-divider>
-                      <v-card-actions>
-                        <v-btn
-                          :style="{
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                          }"
-                          color="#009263"
-                          text
-                          @click="turmaDialog = false"
-                        >
-                          Guardar
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                </template>
-              </v-combobox>
-            </v-col>
-            <v-col cols="12" sm="4" md="2" lg="2" xl="2">
-              <v-text-field
-                color="#009263"
-                outlined
-                v-model="tentativas"
-                type="number"
-                label="Tentativas"
-                :rules="tentativasRules"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6" md="3" lg="3" xl="3">
-              <v-dialog
-                ref="dialog"
-                v-model="dateModal"
-                :return-value.sync="date"
-                width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    outlined
-                    color="#009263"
-                    v-model="date"
-                    label="Data Limite"
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                    :rules="textRules"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  color="#009263"
-                  v-model="date"
-                  scrollable
-                  locale="pt-PT"
-                  :min="new Date().toISOString().substr(0, 10)"
+            <div class="mb-6">
+              <center>
+                <v-btn v-if="!show" text @click="show = !show"
+                  ><span>Mostrar Ajuda</span
+                  ><v-icon color="#009263"> mdi-help-circle </v-icon>
+                </v-btn>
+                <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
+              </center>
+              <v-slide-y-transition>
+                <v-card
+                  v-show="show"
+                  class="elevation-6 pa-3"
+                  style="border: 2px solid green !important;"
+                  color="grey lighten-3"
                 >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="#009263" @click="$refs.dialog.save(date)">
-                    OK
-                  </v-btn>
-                </v-date-picker>
-              </v-dialog>
-            </v-col>
-            <v-col cols="12" sm="6" md="3" lg="3" xl="3">
-              <v-dialog
-                ref="dialog2"
-                v-model="timeModal"
-                :return-value.sync="time"
-                width="290px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    outlined
-                    color="#009263"
-                    v-model="time"
-                    label="Hora Limite"
-                    prepend-icon="mdi-clock-time-four-outline"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                    :rules="textRules"
-                  ></v-text-field>
-                </template>
-                <v-time-picker
-                  scrollable
-                  color="#009263"
-                  format="24hr"
-                  v-model="time"
-                  full-width
-                >
-                  <v-spacer></v-spacer>
-                  <v-btn text color="#009263" @click="$refs.dialog2.save(time)">
-                    OK
-                  </v-btn>
-                </v-time-picker>
-              </v-dialog>
-            </v-col>
-          </v-row>
-          <v-row class="mb-6">
-            <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-              <v-container fluid class="my-n6" v-if="questoes.length === 0">
-                <h3 style="color:#960000;">Adicionar Questões!</h3>
-              </v-container>
-              <v-sheet class="my-n6" v-else>
-                <v-slide-group mandatory show-arrows center-active>
-                  <v-slide-item
-                    v-for="(q, index) in questoes"
-                    :key="index"
-                    v-slot="{ active, toggle }"
-                  >
-                    <v-chip
-                      ref="chips"
-                      large
-                      close
-                      dark
-                      color="#009263"
-                      class="mx-2"
-                      :input-value="active"
-                      active-class="black--text"
-                      @click="toggle"
-                      v-on:click="questaoSelected(q, index)"
-                      @click:close="removeQuestao(index)"
-                    >
+                  <v-row>
+                    <v-col cols="12">
                       <span>
-                        <b>{{ q.cod }}</b>
+                        1. Esta é a página de criação de um TPC, onde deverá
+                        primeiramente fornecer informações como o <b>Título</b>,
+                        o nº de <b>Tentativas</b> permitidas, escolher a
+                        <b>Data </b> e <b>Hora </b> de expiração e selecionar as
+                        <b>Turmas</b> e respetivos alunos a serem requisitados a
+                        realizar o TPC.
                       </span>
-                    </v-chip>
-                  </v-slide-item>
-                </v-slide-group>
-              </v-sheet>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="6" md="6" lg="6" xl="6">
-              <v-combobox
-                color="#009263"
-                item-color="green"
-                outlined
-                flat
-                v-model="temaSelected"
-                :items="temas"
-                label="Temas"
-                @change="changeTema"
-              ></v-combobox>
-            </v-col>
-            <v-col cols="12" sm="6" md="6" lg="6" xl="6">
-              <v-combobox
-                color="#009263"
-                item-color="green"
-                v-model="subtemaSelected"
-                outlined
-                flat
-                :items="subtemas"
-                label="Subtemas"
-                @change="changeSubtema()"
-              ></v-combobox>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-              <v-card
-                class="mt-n12 mx-auto"
-                color="white"
-                elevation="2"
-                outlined
-                rounded
-                min-height="500px"
-              >
-                <v-row>
-                  <v-col cols="8" sm="8" md="8" lg="8" xl="8">
-                    <v-row>
-                      <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-                        <h2 style="color:#009263" class="text-center my-2">
-                          <span v-if="!addDisabled">Questão</span>
-                        </h2>
-                        <div v-if="hasQuestao === -1" class="mt-5 ml-5">
-                          <h3 style="color:green;">
-                            Selecione um Tema e Subtema para visualizar as
-                            respetivas Questões!
-                          </h3>
-                        </div>
-                        <div v-else-if="hasQuestao === 0" class="mt-5 ml-5">
-                          <h3 style="color:green;">
-                            O Tema/Subtema selecionado não possui questões
-                            disponíveis.
-                          </h3>
-                        </div>
-                        <div
-                          v-else-if="hasQuestaoConfig === 0"
-                          class="mt-5 ml-5"
+                    </v-col>
+                    <v-col cols="12">
+                      <span>
+                        2. Para cada turma que selecionou da lista, pode aceder
+                        à listagem dos respetivos alunos e editar aqueles que
+                        pretende que realizem o TPC, através do botão da turma
+                        (ex:
+                        <v-chip dark color="#009263" close>
+                          <strong>3A-21-1</strong> </v-chip
+                        >). Por defeito, estarão selecionados todos os alunos da
+                        turma.
+                      </span>
+                    </v-col>
+                    <v-col cols="12">
+                      <span>
+                        3. De seguida, deverá escolher as questões a submeter no
+                        TPC. Para escolher uma questão seleciona um tema da
+                        lista de <b>Temas</b>, e na lista de
+                        <b>Subtemas</b> seleciona um respetivo subtema. No
+                        <i>dashboard</i> irá aparecer cada questão do respetivo
+                        conjunto de tema/subtema escolhido. Para navegar entre
+                        as várias questões do conjunto utilize
+                        <v-btn icon color="#009263">
+                          <v-icon large>
+                            mdi-arrow-left-bold-circle
+                          </v-icon>
+                        </v-btn>
+                        e
+                        <v-btn icon color="#009263">
+                          <v-icon large>
+                            mdi-arrow-right-bold-circle
+                          </v-icon>
+                        </v-btn>
+                        e se pretender adicionar a questão que visualiza ao TPC,
+                        utiliza o botão de adicionar
+                        <v-btn
+                          small
+                          class="white--text mx-1"
+                          rounded
+                          color="#009263"
                         >
-                          <h3 style="color:green;">
-                            Não existem questões disponíveis para as
-                            configurações de exame/nível de dificuldade
-                            escolhidas.
-                          </h3>
-                        </div>
-                        <div
-                          v-else
-                          v-html="questaoAtual"
-                          class="mt-5 ml-8 mr-2"
-                        ></div>
+                          <v-icon>mdi-plus-circle</v-icon></v-btn
+                        >. No <i>dashboard</i> também consegue filtrar as
+                        questões por <b>Exame</b> e por <b>Nível</b>.
+                      </span>
+                    </v-col>
+                    <v-col cols="12">
+                      <span>
+                        4. Poderá também ativar configurações específicas do TPC
+                        se aceder ao botão
+                        <v-btn small class="white--text" color="#009263">
+                          <v-icon class="mr-1"> mdi-cog </v-icon>
+                          Configurações </v-btn
+                        >.
+                      </span>
+                    </v-col>
+                    <v-col cols="12">
+                      <span>
+                        5. Pode adicionar o nº de questões que quiser, e
+                        removê-las sempre que necessário. Quando estiver
+                        satisfeito com todas as configurações do TPC, pode
+                        finalmente submetê-lo em
+                        <v-btn small class="white--text" color="#009263">
+                          Criar TPC </v-btn
+                        >.
+                      </span>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-slide-y-transition>
+            </div>
 
-                        <div class="mt-5 ml-8">
-                          <v-container v-if="tipoQuestao === 2">
+            <v-row>
+              <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+                <v-text-field
+                  color="#009263"
+                  outlined
+                  type="text"
+                  label="Título do TPC"
+                  v-model="titulo"
+                  :rules="textRules"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="12" md="2" lg="3" xl="3">
+                <v-text-field
+                  color="#009263"
+                  outlined
+                  v-model="tentativas"
+                  type="number"
+                  label="Tentativas"
+                  prepend-icon="mdi-counter"
+                  :rules="tentativasRules"
+                ></v-text-field>
+              </v-col>
+              <v-col align="right" cols="12" sm="12" md="4" lg="3" xl="3">
+                <v-dialog
+                  v-model="dialogConfig"
+                  content-class="elevation-0"
+                  :retain-focus="false"
+                  scrollable
+                  max-width="500px"
+                  @click:outside="closeConfig()"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      large
+                      class="white--text"
+                      color="#009263"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <v-icon class="mr-1"> mdi-cog </v-icon> Configurações
+                    </v-btn>
+                  </template>
+                  <v-card>
+                    <v-card-title
+                      style="background-color: #009263;"
+                      class="white--text"
+                    >
+                      <b>Configurações TPC</b>
+                    </v-card-title>
+                    <v-card-text>
+                      <div class="my-2">
+                        <center>
+                          <v-btn
+                            v-if="!showConfig"
+                            text
+                            @click="showConfig = !showConfig"
+                            ><span>Mostrar Ajuda</span
+                            ><v-icon color="#009263"> mdi-help-circle </v-icon>
+                          </v-btn>
+                          <v-btn v-else text @click="showConfig = !showConfig"
+                            >Esconder Ajuda</v-btn
+                          >
+                        </center>
+                        <v-slide-y-transition>
+                          <v-card
+                            v-show="showConfig"
+                            class="elevation-6 pa-3"
+                            style="border: 2px solid green !important;"
+                            color="grey lighten-3"
+                          >
                             <v-row>
-                              <v-col
-                                v-for="(resp, index) in respostas"
-                                :key="index"
-                                cols="6"
-                                sm="3"
-                                md="3"
-                                lg="3"
-                                xl="3"
-                              >
-                                <span
-                                  ><b>{{ index + 1 }})</b></span
-                                >
-                                <v-img
-                                  contain
-                                  :src="imgRespostas(resp)"
-                                ></v-img>
+                              <v-col cols="12">
+                                <span>
+                                  1. <b>Ordem das Questões Aleatória:</b> Esta
+                                  opção faz com que a ordem das questões seja
+                                  aleatória para cada aluno.
+                                </span>
+                              </v-col>
+                              <v-col cols="12">
+                                <span>
+                                  2.
+                                  <b>Impedir Retroceder nas Questões:</b> Esta
+                                  opção faz com que o aluno ao responder a uma
+                                  questão e avançar para a próxima, seja
+                                  impedido de retroceder e alterar a resposta a
+                                  uma questão anterior.
+                                </span>
+                              </v-col>
+                              <v-col cols="12">
+                                <span>
+                                  3.
+                                  <b>Impedir Acesso à Resolução:</b> Esta opção
+                                  impede o aluno de ter acesso à solução do TPC
+                                  e à respetiva correção da sua resolução (após
+                                  o TPC ficar expirado).
+                                </span>
                               </v-col>
                             </v-row>
-                          </v-container>
-                          <div class="mt-8 mr-2" v-else-if="tipoQuestao === 1">
-                            <v-container class="input">
-                              <span> Resposta Aberta </span>
-                              <span class="unidade" v-html="unidade"></span>
+                          </v-card>
+                        </v-slide-y-transition>
+                      </div>
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              Ordem das Questões Aleatória
+                            </v-list-item-title>
+                          </v-list-item-content>
+
+                          <v-list-item-action>
+                            <v-checkbox
+                              v-model="configAleatoria"
+                              color="#009263"
+                            ></v-checkbox>
+                          </v-list-item-action>
+                        </v-list-item>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              Impedir Retroceder nas Questões
+                            </v-list-item-title>
+                          </v-list-item-content>
+
+                          <v-list-item-action>
+                            <v-checkbox
+                              v-model="configRetroceder"
+                              color="#009263"
+                            ></v-checkbox>
+                          </v-list-item-action>
+                        </v-list-item>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              Impedir Acesso à Resolução
+                            </v-list-item-title>
+                          </v-list-item-content>
+
+                          <v-list-item-action>
+                            <v-checkbox
+                              v-model="configResolucao"
+                              color="#009263"
+                            ></v-checkbox>
+                          </v-list-item-action>
+                        </v-list-item>
+                      </v-list>
+                    </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions class="text-center">
+                      <v-btn
+                        :style="{
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                        }"
+                        color="#009263"
+                        text
+                        @click="closeConfig()"
+                      >
+                        OK
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </v-col>
+            </v-row>
+            <v-row class="mb-n6">
+              <v-col cols="12" sm="12" md="6" lg="6" xl="6">
+                <v-combobox
+                  @click:clear="clearTurmas"
+                  color="#009263"
+                  item-color="#009263"
+                  v-model="turmasSelected"
+                  :items="Object.keys(turmasProf)"
+                  chips
+                  clearable
+                  multiple
+                  outlined
+                  full-width
+                  prefix="Turmas"
+                >
+                  <template v-slot:selection="{ item }">
+                    <v-dialog
+                      content-class="elevation-0"
+                      :retain-focus="false"
+                      v-model="turmaDialog"
+                      scrollable
+                      max-width="500px"
+                    >
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-chip
+                          dark
+                          color="#009263"
+                          v-bind="attrs"
+                          v-on="on"
+                          close
+                          @click="editarAlunos(item)"
+                          @click:close="removeTurma(item)"
+                        >
+                          <strong v-if="allAlunosFlag[item] === false"
+                            >{{ item }}*</strong
+                          >
+                          <strong v-else>{{ item }}</strong>
+                        </v-chip>
+                      </template>
+                      <v-card>
+                        <v-card-title
+                          style="background-color: #009263;"
+                          class="white--text"
+                        >
+                          <b>Turma {{ turmaCod }}</b>
+                        </v-card-title>
+
+                        <v-card-text style="height: 300px;">
+                          <v-list>
+                            <div
+                              class="mr-2"
+                              style="display: flex; justify-content: flex-end"
+                            >
+                              <v-checkbox
+                                @change="changeAll(turmaCod)"
+                                :input-value="allAlunosFlag[turmaCod]"
+                                color="#009263"
+                              ></v-checkbox>
+                            </div>
+                            <v-divider></v-divider>
+                            <template v-for="(al, ind) in turmasProf[turmaCod]">
+                              <v-list-item
+                                :key="ind"
+                                :value="al"
+                                active-class="#009263"
+                              >
+                                <v-list-item-content>
+                                  <v-list-item-title>
+                                    {{ al.nome }}</v-list-item-title
+                                  >
+                                </v-list-item-content>
+
+                                <v-list-item-action>
+                                  <v-checkbox
+                                    @change="changeActive(al)"
+                                    :input-value="al.active"
+                                    color="#009263"
+                                  ></v-checkbox>
+                                </v-list-item-action>
+                              </v-list-item>
+                            </template>
+                          </v-list>
+                        </v-card-text>
+                        <v-divider></v-divider>
+                        <v-card-actions>
+                          <v-btn
+                            :style="{
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                            }"
+                            color="#009263"
+                            text
+                            @click="turmaDialog = false"
+                          >
+                            Guardar
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
+                  </template>
+                </v-combobox>
+              </v-col>
+              <v-col cols="12" sm="6" md="3" lg="3" xl="3">
+                <v-dialog
+                  ref="dialog"
+                  v-model="dateModal"
+                  :return-value.sync="date"
+                  width="290px"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      outlined
+                      color="#009263"
+                      v-model="date"
+                      label="Data Limite"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :rules="textRules"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker
+                    color="#009263"
+                    v-model="date"
+                    scrollable
+                    locale="pt-PT"
+                    :min="new Date().toISOString().substr(0, 10)"
+                  >
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      text
+                      color="#009263"
+                      @click="$refs.dialog.save(date)"
+                    >
+                      OK
+                    </v-btn>
+                  </v-date-picker>
+                </v-dialog>
+              </v-col>
+              <v-col cols="12" sm="6" md="3" lg="3" xl="3">
+                <v-dialog
+                  ref="dialog2"
+                  v-model="timeModal"
+                  :return-value.sync="time"
+                  width="290px"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      outlined
+                      color="#009263"
+                      v-model="time"
+                      label="Hora Limite"
+                      prepend-icon="mdi-clock-time-four-outline"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                      :rules="textRules"
+                    ></v-text-field>
+                  </template>
+                  <v-time-picker
+                    scrollable
+                    color="#009263"
+                    format="24hr"
+                    v-model="time"
+                    full-width
+                  >
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      text
+                      color="#009263"
+                      @click="$refs.dialog2.save(time)"
+                    >
+                      OK
+                    </v-btn>
+                  </v-time-picker>
+                </v-dialog>
+              </v-col>
+            </v-row>
+            <v-row class="mb-6">
+              <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+                <v-container fluid class="my-n6" v-if="questoes.length === 0">
+                  <h3 style="color:#960000;">Adicionar Questões!</h3>
+                </v-container>
+                <v-sheet class="my-n6" v-else>
+                  <v-slide-group mandatory show-arrows center-active>
+                    <v-slide-item
+                      v-for="(q, index) in questoes"
+                      :key="index"
+                      v-slot="{ active, toggle }"
+                    >
+                      <v-chip
+                        ref="chips"
+                        large
+                        close
+                        dark
+                        color="#009263"
+                        class="mx-2"
+                        :input-value="active"
+                        active-class="black--text"
+                        @click="toggle"
+                        v-on:click="questaoSelected(q, index)"
+                        @click:close="removeQuestao(index)"
+                      >
+                        <span>
+                          <b>{{ q.cod }}</b>
+                        </span>
+                      </v-chip>
+                    </v-slide-item>
+                  </v-slide-group>
+                </v-sheet>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+                <v-combobox
+                  color="#009263"
+                  item-color="green"
+                  outlined
+                  flat
+                  v-model="temaSelected"
+                  :items="temas"
+                  label="Temas"
+                  @change="changeTema"
+                ></v-combobox>
+              </v-col>
+              <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+                <v-combobox
+                  color="#009263"
+                  item-color="green"
+                  v-model="subtemaSelected"
+                  outlined
+                  flat
+                  :items="subtemas"
+                  label="Subtemas"
+                  @change="changeSubtema()"
+                ></v-combobox>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+                <v-card
+                  class="mt-n12 mx-auto"
+                  color="white"
+                  elevation="2"
+                  outlined
+                  rounded
+                  min-height="500px"
+                >
+                  <v-row>
+                    <v-col cols="12" sm="8" md="8" lg="8" xl="8">
+                      <v-row>
+                        <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+                          <h2 style="color:#009263" class="text-center my-2">
+                            <span v-if="!addDisabled">Questão</span>
+                          </h2>
+                          <div v-if="hasQuestao === -1" class="mt-5 ml-5">
+                            <h3 style="color:green;">
+                              Selecione um Tema e Subtema para visualizar as
+                              respetivas Questões!
+                            </h3>
+                          </div>
+                          <div v-else-if="hasQuestao === 0" class="mt-5 ml-5">
+                            <h3 style="color:green;">
+                              O Tema/Subtema selecionado não possui questões
+                              disponíveis.
+                            </h3>
+                          </div>
+                          <div
+                            v-else-if="hasQuestaoConfig === 0"
+                            class="mt-5 ml-5"
+                          >
+                            <h3 style="color:green;">
+                              Não existem questões disponíveis para as
+                              configurações de exame/nível de dificuldade
+                              escolhidas.
+                            </h3>
+                          </div>
+                          <div
+                            v-else
+                            v-html="questaoAtual"
+                            class="mt-5 ml-8 mr-2"
+                          ></div>
+
+                          <div class="mt-5 ml-8">
+                            <v-container v-if="tipoQuestao === 2">
+                              <v-row>
+                                <v-col
+                                  v-for="(resp, index) in respostas"
+                                  :key="index"
+                                  cols="6"
+                                  sm="3"
+                                  md="3"
+                                  lg="3"
+                                  xl="3"
+                                >
+                                  <span
+                                    ><b>{{ index + 1 }})</b></span
+                                  >
+                                  <v-img
+                                    contain
+                                    :src="imgRespostas(resp)"
+                                  ></v-img>
+                                </v-col>
+                              </v-row>
+                            </v-container>
+                            <div
+                              class="mt-8 mr-2"
+                              v-else-if="tipoQuestao === 1"
+                            >
+                              <v-container class="input">
+                                <span> Resposta Aberta </span>
+                                <span class="unidade" v-html="unidade"></span>
+                              </v-container>
+                            </div>
+                            <v-container v-else>
+                              <ul>
+                                <li
+                                  v-for="(resp, index) in respostas"
+                                  :key="index"
+                                >
+                                  <b> {{ index + 1 }}) </b>
+                                  <span v-html="resp"></span>
+                                </li>
+                              </ul>
                             </v-container>
                           </div>
-                          <v-container v-else>
-                            <ul>
-                              <li
-                                v-for="(resp, index) in respostas"
-                                :key="index"
-                              >
-                                <b> {{ index + 1 }}) </b>
-                                <span v-html="resp"></span>
-                              </li>
-                            </ul>
-                          </v-container>
-                        </div>
-                      </v-col>
-                    </v-row>
-                    <v-row class="mt-8">
-                      <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-                        <div style="position:absolute; bottom:0;" class="pa-2">
-                          <v-dialog v-model="dialog" :max-width="resolWidth()">
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-btn
-                                small
-                                class="white--text"
-                                color="#009263"
-                                v-bind="attrs"
-                                v-on="on"
-                                :disabled="!hasResolucao"
-                              >
-                                Resolução
-                              </v-btn>
-                            </template>
-                            <v-card>
-                              <v-img contain :src="resolucao"></v-img>
-                              <v-card-actions class="text-center">
-                                <v-btn
-                                  :style="{
-                                    left: '50%',
-                                    transform: 'translateX(-50%)',
-                                  }"
-                                  color="#009263"
-                                  text
-                                  @click="dialog = false"
-                                >
-                                  OK
-                                </v-btn>
-                              </v-card-actions>
-                            </v-card>
-                          </v-dialog>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                  <v-col class="mt-n3" cols="4" sm="4" md="4" lg="4" xl="4">
-                    <v-container fluid v-if="hasQuestao !== 1"></v-container>
-                    <v-container fluid v-else>
-                      <v-row no-gutters>
-                        <v-col align="left" cols="12" sm="6" lg="4">
-                          <div class="codquestao">
-                            <span>
-                              <b> {{ codQuestao }}</b>
-                            </span>
-                          </div>
                         </v-col>
-                        <v-col align="center" cols="12" sm="4" lg="4">
-                          <div class="selectExame">
-                            <v-checkbox
-                              @change="changeNivelExames"
-                              v-model="onlyExames"
-                              color="#009263"
-                              dense
-                              label="Exame"
-                              ><span slot="label" class="black--text"
-                                >Exame</span
-                              ></v-checkbox
+                        <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+                          <div v-if="hasResolucao" align="center" class="pa-2">
+                            <v-dialog
+                              v-model="dialog"
+                              :max-width="resolWidth()"
                             >
-                          </div>
-                        </v-col>
-                        <v-col align="right" cols="12" sm="12" lg="4">
-                          <div class="selectNivel">
-                            <v-select
-                              @change="changeNivelExames"
-                              v-model="nivelSelect"
-                              :items="nivelItems"
-                              single-line
-                              color="#009263"
-                              item-color="green"
-                              prefix="Nível"
-                              dense
-                            ></v-select>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                  small
+                                  class="white--text"
+                                  color="#009263"
+                                  v-bind="attrs"
+                                  v-on="on"
+                                >
+                                  Resolução
+                                </v-btn>
+                              </template>
+                              <v-card>
+                                <v-img contain :src="resolucao"></v-img>
+                                <v-card-actions class="text-center">
+                                  <v-btn
+                                    :style="{
+                                      left: '50%',
+                                      transform: 'translateX(-50%)',
+                                    }"
+                                    color="#009263"
+                                    text
+                                    @click="dialog = false"
+                                  >
+                                    OK
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card>
+                            </v-dialog>
                           </div>
                         </v-col>
                       </v-row>
-                    </v-container>
-                    <v-card class="mt-n4">
-                      <v-img max-height="400px" contain :src="imagem"></v-img>
-                    </v-card>
-                    <div v-if="temExame" id="exame">
-                      <span> <b> Exame: </b> {{ exame }}</span>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-container>
-            <v-row>
-              <v-col align="start" cols="6" sm="3" md="4" lg="4" xl="4">
-              </v-col>
-              <v-col align="center" cols="12" sm="6" md="4" lg="4" xl="4">
-                <v-btn
-                  :disabled="addDisabled"
-                  icon
-                  color="#009263"
-                  @click="proxQuestao(false)"
-                >
-                  <v-icon x-large>
-                    mdi-arrow-left-bold-circle
-                  </v-icon>
-                </v-btn>
-                <v-tooltip top>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-bind="attrs"
-                      v-on="on"
-                      class="white--text mx-1"
-                      :disabled="addDisabled"
-                      rounded
-                      @click="submitQuestao"
-                      large
-                      color="#009263"
-                    >
-                      <v-icon>mdi-plus-circle</v-icon>
-                      {{ codQuestao }}</v-btn
-                    >
-                  </template>
-                  <span>Adicionar Questão</span>
-                </v-tooltip>
-                <v-btn
-                  :disabled="addDisabled"
-                  icon
-                  color="#009263"
-                  @click="proxQuestao(true)"
-                >
-                  <v-icon x-large>
-                    mdi-arrow-right-bold-circle
-                  </v-icon>
-                </v-btn>
-                <p v-if="questoesSelected.length !== 0" class="mt-2">
-                  {{ contador }}
-                </p>
-              </v-col>
-
-              <v-col align="right" cols="12" sm="3" md="4" lg="4" xl="4">
-                <v-btn
-                  large
-                  class="white--text"
-                  color="#009263"
-                  @click="criarTpc"
-                  >Criar TPC</v-btn
-                >
+                    </v-col>
+                    <v-col class="mt-n2" cols="12" sm="4" md="4" lg="4" xl="4">
+                      <v-container v-if="hasQuestao !== 1"></v-container>
+                      <v-container v-else>
+                        <v-row no-gutters>
+                          <v-col cols="12" sm="6" lg="4">
+                            <div class="codquestao">
+                              <span>
+                                <b> {{ codQuestao }}</b>
+                              </span>
+                            </div>
+                          </v-col>
+                          <v-col align="left" cols="12" sm="6" lg="4">
+                            <div class="selectExame">
+                              <v-checkbox
+                                @change="changeNivelExames"
+                                v-model="onlyExames"
+                                color="#009263"
+                                dense
+                                label="Exame"
+                                ><span slot="label" class="black--text"
+                                  >Exame</span
+                                ></v-checkbox
+                              >
+                            </div>
+                          </v-col>
+                          <v-col align="right" cols="12" sm="12" lg="4">
+                            <div class="selectNivel">
+                              <v-select
+                                @change="changeNivelExames"
+                                v-model="nivelSelect"
+                                :items="nivelItems"
+                                single-line
+                                color="#009263"
+                                item-color="green"
+                                prefix="Nível"
+                                dense
+                              ></v-select>
+                            </div>
+                          </v-col>
+                        </v-row>
+                      </v-container>
+                      <v-card class="mt-n4">
+                        <v-img max-height="400px" contain :src="imagem"></v-img>
+                      </v-card>
+                      <div v-if="temExame" id="exame">
+                        <span> <b> Exame: </b> {{ exame }}</span>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-card>
               </v-col>
             </v-row>
+            <v-container>
+              <v-row>
+                <v-col align="start" cols="6" sm="3" md="4" lg="4" xl="4">
+                </v-col>
+                <v-col align="center" cols="12" sm="6" md="4" lg="4" xl="4">
+                  <v-btn
+                    :disabled="addDisabled"
+                    icon
+                    color="#009263"
+                    @click="proxQuestao(false)"
+                  >
+                    <v-icon x-large>
+                      mdi-arrow-left-bold-circle
+                    </v-icon>
+                  </v-btn>
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        class="white--text mx-1"
+                        :disabled="addDisabled"
+                        rounded
+                        @click="submitQuestao"
+                        large
+                        color="#009263"
+                      >
+                        <v-icon>mdi-plus-circle</v-icon>
+                        {{ codQuestao }}</v-btn
+                      >
+                    </template>
+                    <span>Adicionar Questão</span>
+                  </v-tooltip>
+                  <v-btn
+                    :disabled="addDisabled"
+                    icon
+                    color="#009263"
+                    @click="proxQuestao(true)"
+                  >
+                    <v-icon x-large>
+                      mdi-arrow-right-bold-circle
+                    </v-icon>
+                  </v-btn>
+                  <p v-if="questoesSelected.length !== 0" class="mt-2">
+                    {{ contador }}
+                  </p>
+                </v-col>
+
+                <v-col align="right" cols="12" sm="3" md="4" lg="4" xl="4">
+                  <v-btn
+                    large
+                    class="white--text"
+                    color="#009263"
+                    @click="criarTpc"
+                    >Criar TPC</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-container>
           </v-container>
-        </v-container>
-      </v-card>
-    </v-container>
-  </v-main>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -612,6 +761,7 @@ const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
 
 export default {
+  name: "CreateTpc",
   created() {
     this.getUserId();
     this.getTurmas();
@@ -626,6 +776,7 @@ export default {
       userId: null,
       titulo: null,
       dialog: false,
+      dialogConfig: false,
       turmaCod: "",
       turmaDialog: false,
       turmasProf: [],
@@ -654,6 +805,10 @@ export default {
       textRules: [(v) => !!v],
       resolCard: "900px",
       show: false,
+      showConfig: false,
+      configAleatoria: false,
+      configRetroceder: false,
+      configResolucao: false,
     };
   },
   computed: {
@@ -697,13 +852,20 @@ export default {
     resolucao() {
       if (!this.questoesSelected[this.counter]) return "";
       let img = this.questoesSelected[this.counter].resolucao;
-      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/propresolucao/${img.replace(
+            ".swf",
+            ""
+          )}.png`
+        : "";
       return img;
     },
     imagem() {
       if (!this.questoesSelected[this.counter]) return "";
       let img = this.questoesSelected[this.counter].figura;
-      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
+        : "";
       return img;
     },
     contador() {
@@ -721,10 +883,19 @@ export default {
     },
   },
   methods: {
+    closeConfig() {
+      this.dialogConfig = false;
+      this.showConfig = false;
+    },
     resolWidth() {
       if (!this.questoesSelected[this.counter]) return "";
       let img = this.questoesSelected[this.counter].resolucao;
-      img = img ? `/imagens/propresolucao/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/propresolucao/${img.replace(
+            ".swf",
+            ""
+          )}.png`
+        : "";
 
       this.imgSize(img, (w) => {
         this.resolCard = `${w}px`;
@@ -876,14 +1047,24 @@ export default {
               tagname: this.titulo,
               codProf: this.userId,
               tentativas: this.tentativas,
-              ativo: 1,
               dataInicio: new Date(),
               dataFim: new Date(`${this.date} ${this.time}`),
               tpc_questoes: questoesId,
               tpc_alunos: alunosId,
+              configAleatoria: this.configAleatoria,
+              configRetroceder: this.configRetroceder,
+              configResolucao: this.configResolucao,
             };
 
-            await axios.post(host + "tpcs", body);
+            const response = await axios.post(host + "tpcs", body);
+
+            // Atualizar store
+            let tpcsAtivos = this.$store.getters.getTpcsAtiv;
+            tpcsAtivos.push(response.data.id);
+
+            this.$store.commit("setTpcsAtiv", {
+              tpcsAtiv: tpcsAtivos,
+            });
 
             Swal.close();
             Swal.fire({
@@ -900,7 +1081,9 @@ export default {
       }
     },
     imgRespostas(img) {
-      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
+        : "";
       return img;
     },
 
@@ -1137,7 +1320,6 @@ export default {
 }
 .unidade {
   float: right;
-  vertical-align: middle;
 }
 
 .codquestao {

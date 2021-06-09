@@ -90,7 +90,7 @@ const host = require("@/config/hosts").hostAPI;
 import Swal from "sweetalert2";
 
 export default {
-  props: ["logged", "mensagensLer"],
+  props: ["logged"],
   data() {
     return {
       reatividade: "#900000",
@@ -189,20 +189,42 @@ export default {
   },
   methods: {
     backoffice: function() {
+      const editFlag = this.$store.getters.getEditFlag;
+      if (editFlag) {
+        Swal.fire({
+          title: "Navegação Impedida",
+          text: "Tem que acabar o TPC antes de poder navegar.",
+          icon: "error",
+          confirmButtonColor: "#009263",
+        });
+        return;
+      }
       window.location.href = "https://backoffice.hypatiamat.com/";
     },
     logout: function() {
-      Swal.fire({
-        title: "De certeza que pretende terminar sessão?",
-        showDenyButton: true,
-        confirmButtonColor: "#009263",
-        confirmButtonText: `Sim`,
-        denyButtonText: `Não`,
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          this.$store.dispatch("logout");
-        }
-      });
+      const editFlag = this.$store.getters.getEditFlag;
+      if (editFlag) {
+        Swal.fire({
+          title: "Navegação Impedida",
+          text: "Tem que acabar o TPC antes de poder navegar.",
+          icon: "error",
+          confirmButtonColor: "#009263",
+        });
+      } else
+        Swal.fire({
+          title: "De certeza que pretende terminar sessão?",
+          showDenyButton: true,
+          confirmButtonColor: "#009263",
+          confirmButtonText: `Sim`,
+          denyButtonText: `Não`,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            this.$store.dispatch("logout");
+            this.$emit("refreshLogout");
+            if (this.$route.path != "/dashboard")
+              this.$router.push({ name: "TheDashboard" });
+          }
+        });
     },
     isLogged: function() {
       if (localStorage.getItem("token") == null) {

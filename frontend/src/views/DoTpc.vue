@@ -1,238 +1,227 @@
 <template>
-  <v-main class="grey lighten-3">
-    <v-container>
-      <v-card class="pa-5">
-        <v-row>
-          <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-            <v-card-title class="justify-center green--text">
-              <h1>TPC: {{ titulo }}</h1>
-            </v-card-title>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" sm="6" md="6" lg="6" xl="6">
-            <v-container>
-              <p><b>Aluno: </b> {{ userName }} <b>Turma:</b> {{ turma }}</p>
-            </v-container>
-          </v-col>
-          <v-col cols="12" sm="6" md="6" lg="6" xl="6">
-            <v-container>
-              <p><b>Professor: </b> {{ profName }}</p>
-            </v-container>
-          </v-col>
-        </v-row>
-        <v-row class="mb-6">
-          <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-            <v-sheet class="my-n6">
-              <v-slide-group mandatory show-arrows center-active>
-                <v-slide-item
-                  v-for="(q, index) in catalogoQuestoes"
-                  :key="index"
-                  v-slot="{ active, toggle }"
-                >
-                  <v-chip
-                    color="#009263"
-                    ref="chips"
-                    large
-                    dark
-                    class="mx-2"
-                    :input-value="active"
-                    active-class="black--text"
-                    @click="toggle"
-                    v-on:click="questaoSelected(q, index)"
+  <v-app id="inspire">
+    <v-main class="grey lighten-3">
+      <v-container>
+        <v-card class="pa-5">
+          <v-row>
+            <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+              <v-card-title class="justify-center green--text">
+                <h1>TPC: {{ titulo }}</h1>
+              </v-card-title>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+              <v-container>
+                <p><b>Aluno: </b> {{ userName }} <b>Turma:</b> {{ turma }}</p>
+              </v-container>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+              <v-container>
+                <p><b>Professor: </b> {{ profName }}</p>
+              </v-container>
+            </v-col>
+          </v-row>
+          <v-row class="mb-6">
+            <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+              <v-sheet class="my-n6">
+                <v-slide-group mandatory show-arrows center-active>
+                  <v-slide-item
+                    v-for="(q, index) in catalogoQuestoes"
+                    :key="index"
+                    v-slot="{ active, toggle }"
                   >
-                    <span>
-                      <b>{{ q.cod }}</b>
-                    </span>
-                  </v-chip>
-                </v-slide-item>
-              </v-slide-group>
-            </v-sheet>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" sm="6" md="6" lg="6" xl="6">
-            <v-text-field
-              v-model="tema"
-              readonly
-              label="Tema"
-              outlined
-            ></v-text-field>
-          </v-col>
-          <v-col cols="12" sm="6" md="6" lg="6" xl="6">
-            <v-text-field
-              v-model="subtema"
-              readonly
-              label="Subtema"
-              outlined
-            ></v-text-field>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-            <v-card
-              class="mt-n12 mx-auto"
-              color="white"
-              elevation="2"
-              outlined
-              rounded
-              min-height="500px"
-            >
-              <v-row>
-                <v-col cols="12" sm="8" md="8" lg="8" xl="8">
-                  <v-row>
-                    <v-col cols="12" sm="12" md="12" lg="12" xl="12">
-                      <h2 style="color:#009263" class="text-center my-2">
-                        Questão
-                      </h2>
+                    <v-chip
+                      :disabled="configRetroceder"
+                      color="#009263"
+                      ref="chips"
+                      large
+                      dark
+                      class="mx-2"
+                      :input-value="active"
+                      active-class="black--text"
+                      @click="toggle"
+                      v-on:click="questaoSelected(q, index)"
+                    >
+                      <span>
+                        <b>Questão {{ index + 1 }}</b>
+                      </span>
+                    </v-chip>
+                  </v-slide-item>
+                </v-slide-group>
+              </v-sheet>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+              <v-text-field
+                v-model="tema"
+                readonly
+                label="Tema"
+                outlined
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+              <v-text-field
+                v-model="subtema"
+                readonly
+                label="Subtema"
+                outlined
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+              <v-card
+                class="mt-n12 mx-auto"
+                color="white"
+                elevation="2"
+                outlined
+                rounded
+                min-height="500px"
+              >
+                <v-row>
+                  <v-col cols="12" sm="8" md="8" lg="8" xl="8">
+                    <v-row>
+                      <v-col cols="12" sm="12" md="12" lg="12" xl="12">
+                        <h2 style="color:#009263" class="text-center my-2">
+                          Questão
+                        </h2>
 
-                      <div v-html="questaoAtual" class="mt-5 ml-8 mr-2"></div>
+                        <div v-html="questaoAtual" class="mt-5 ml-8 mr-2"></div>
 
-                      <div class="mt-5 ml-8">
-                        <v-container v-if="tipoQuestao === 2">
-                          <v-radio-group v-model="opcoesSelected[codQuestao]">
-                            <v-row>
-                              <v-col
+                        <div class="mt-5 ml-8">
+                          <v-container v-if="tipoQuestao === 2">
+                            <v-radio-group v-model="opcoesSelected[codQuestao]">
+                              <v-row>
+                                <v-col
+                                  v-for="(resp, index) in respostas"
+                                  :key="index"
+                                  cols="6"
+                                  sm="3"
+                                  md="3"
+                                  lg="3"
+                                  xl="3"
+                                >
+                                  <v-radio color="#009263" :value="resp">
+                                    <template slot="label">
+                                      <span class="black--text"
+                                        >{{ index + 1 }})</span
+                                      >
+                                    </template>
+                                  </v-radio>
+                                  <v-img
+                                    contain
+                                    :src="imgRespostas(resp)"
+                                  ></v-img>
+                                </v-col>
+                              </v-row>
+                            </v-radio-group>
+                          </v-container>
+                          <div class="mt-8 mr-2" v-else-if="tipoQuestao === 1">
+                            <v-container class="input my-2">
+                              <span v-html="opcoesSelected[codQuestao]"> </span>
+                              <span class="unidade" v-html="unidade"></span>
+                            </v-container>
+
+                            <SimpleKeyboard
+                              @onChange="onChange"
+                              :input="opcoesSelected[codQuestao]"
+                            />
+                          </div>
+
+                          <v-container class="mt-n6" v-else fluid>
+                            <v-radio-group v-model="opcoesSelected[codQuestao]">
+                              <v-radio
+                                color="#009263"
                                 v-for="(resp, index) in respostas"
                                 :key="index"
-                                cols="6"
-                                sm="3"
-                                md="3"
-                                lg="3"
-                                xl="3"
+                                :value="resp"
                               >
-                                <v-radio color="#009263" :value="resp">
-                                  <template slot="label">
-                                    <span class="black--text"
-                                      >{{ index + 1 }})</span
-                                    >
-                                  </template>
-                                </v-radio>
-                                <v-img
-                                  contain
-                                  :src="imgRespostas(resp)"
-                                ></v-img>
-                              </v-col>
-                            </v-row>
-                          </v-radio-group>
-                        </v-container>
-                        <div class="mt-8 mr-2" v-else-if="tipoQuestao === 1">
-                          <v-container class="input my-2">
-                            <span v-html="opcoesSelected[codQuestao]"> </span>
-                            <span class="unidade" v-html="unidade"></span>
+                                <template slot="label">
+                                  <span
+                                    class="black--text"
+                                    v-html="resp"
+                                  ></span>
+                                </template>
+                              </v-radio>
+                            </v-radio-group>
                           </v-container>
-
-                          <SimpleKeyboard
-                            @onChange="onChange"
-                            :input="opcoesSelected[codQuestao]"
-                          />
-                        </div>
-
-                        <v-container class="mt-n6" v-else fluid>
-                          <v-radio-group v-model="opcoesSelected[codQuestao]">
-                            <v-radio
-                              color="#009263"
-                              v-for="(resp, index) in respostas"
-                              :key="index"
-                              :value="resp"
-                            >
-                              <template slot="label">
-                                <span class="black--text" v-html="resp"></span>
-                              </template>
-                            </v-radio>
-                          </v-radio-group>
-                        </v-container>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col class="mt-n3" cols="12" sm="4" md="4" lg="4" xl="4">
-                  <v-container>
-                    <v-row no-gutters>
-                      <v-col align="left" cols="6" sm="6" lg="6">
-                        <div class="codquestao">
-                          <span>
-                            <b> {{ codQuestao }}</b>
-                          </span>
-                        </div>
-                      </v-col>
-                      <v-col align="right" cols="6" sm="6" lg="6">
-                        <div class="selectNivel">
-                          <span
-                            ><b>Nível {{ nivel }}</b></span
-                          >
                         </div>
                       </v-col>
                     </v-row>
-                  </v-container>
-                  <v-card>
-                    <v-img max-height="400px" contain :src="imagem"></v-img>
-                  </v-card>
-                  <div v-if="temExame" id="exame">
-                    <span> <b> Exame: </b> {{ exame }}</span>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-container fluid>
-          <v-row>
-            <v-col align="start" cols="6" sm="3" md="4" lg="4" xl="4">
-              <v-btn @click="voltar" large class="white--text" color="#009263"
-                >Voltar</v-btn
-              >
-            </v-col>
-            <v-col
-              :order="xsBpoint"
-              align="center"
-              cols="12"
-              sm="6"
-              md="4"
-              lg="4"
-              xl="4"
-            >
-              <v-btn
-                @click="proxQuestao(false)"
-                rounded
-                class="mx-4"
-                large
-                dark
-                color="#009263"
-              >
-                <v-icon large>
-                  mdi-arrow-left-bold-circle
-                </v-icon>
-              </v-btn>
-
-              <v-btn
-                @click="proxQuestao(true)"
-                rounded
-                class="mx-4"
-                large
-                dark
-                color="#009263"
-              >
-                <v-icon large>
-                  mdi-arrow-right-bold-circle
-                </v-icon>
-              </v-btn>
-            </v-col>
-            <v-col align="right" cols="6" sm="3" md="4" lg="4" xl="4">
-              <v-btn
-                @click="submeter"
-                :disabled="podeSubmeter"
-                large
-                class="white--text"
-                color="#009263"
-                >Submeter</v-btn
-              >
+                  </v-col>
+                  <v-col class="mt-n2" cols="12" sm="4" md="4" lg="4" xl="4">
+                    <v-container>
+                      <v-row>
+                        <v-col align="left" cols="12" sm="12" lg="12">
+                          <div class="selectNivel">
+                            <span
+                              ><b>Nível {{ nivel }}</b></span
+                            >
+                          </div>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <v-card>
+                      <v-img max-height="400px" contain :src="imagem"></v-img>
+                    </v-card>
+                    <div v-if="temExame" id="exame">
+                      <span> <b> Exame: </b> {{ exame }}</span>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-card>
             </v-col>
           </v-row>
-        </v-container>
-      </v-card>
-    </v-container>
-  </v-main>
+          <v-container>
+            <v-row>
+              <v-col align="start" cols="6" sm="3" md="4" lg="4" xl="4">
+              </v-col>
+              <v-col align="center" cols="12" sm="6" md="4" lg="4" xl="4">
+                <v-btn
+                  @click="proxQuestao(false)"
+                  rounded
+                  class="mx-4"
+                  large
+                  :dark="!configRetroceder"
+                  color="#009263"
+                  :disabled="configRetroceder"
+                >
+                  <v-icon large>
+                    mdi-arrow-left-bold-circle
+                  </v-icon>
+                </v-btn>
+
+                <v-btn
+                  @click="proxQuestao(true)"
+                  rounded
+                  class="mx-4"
+                  large
+                  dark
+                  color="#009263"
+                >
+                  <v-icon large>
+                    mdi-arrow-right-bold-circle
+                  </v-icon>
+                </v-btn>
+              </v-col>
+              <v-col align="right" cols="12" sm="3" md="4" lg="4" xl="4">
+                <v-btn
+                  @click="submeter"
+                  :disabled="podeSubmeter"
+                  large
+                  class="white--text"
+                  color="#009263"
+                  >Submeter</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -240,22 +229,48 @@ const axios = require("axios");
 const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
 
-import SimpleKeyboard from "../components/SimpleKeyboard.vue";
+import SimpleKeyboard from "@/components/SimpleKeyboard.vue";
 
 export default {
+  name: "DoTpc",
   components: {
     SimpleKeyboard,
   },
   props: ["id"],
+  beforeMount() {
+    window.addEventListener("beforeunload", this.preventNav);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("beforeunload", this.preventNav);
+  },
+  beforeRouteLeave(to, from, next) {
+    const editFlag = this.$store.getters.getEditFlag;
+    if (editFlag) {
+      Swal.fire({
+        title: "Navegação Impedida",
+        text: "Tem que acabar o TPC antes de poder navegar.",
+        icon: "error",
+        confirmButtonColor: "#009263",
+      });
+      next(false);
+    } else next();
+  },
+
   created() {
+    this.$store.commit("setEditFlag", {
+      isEditing: true,
+    });
     this.getUser();
     this.getQuestoes();
     this.getTemas();
   },
   data() {
     return {
+      isEditing: true,
       userId: null,
       tpc: null,
+      tentativa: null,
       catalogoQuestoes: [],
       catalogoRespostas: {},
       catalogoTemas: [],
@@ -266,6 +281,9 @@ export default {
       subtema: "",
       user: null,
       profName: "",
+      configAleatoria: false,
+      configRetroceder: false,
+      configResolucao: false,
     };
   },
   computed: {
@@ -276,10 +294,6 @@ export default {
     userName() {
       if (!this.user) return "";
       return this.user.nome;
-    },
-    xsBpoint() {
-      if (this.$vuetify.breakpoint.xs) return "first";
-      return "";
     },
     podeSubmeter() {
       const nQuestoes = this.catalogoQuestoes.length;
@@ -329,11 +343,18 @@ export default {
     imagem() {
       if (!this.catalogoQuestoes[this.counter]) return "";
       let img = this.catalogoQuestoes[this.counter].figura;
-      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
+        : "";
       return img;
     },
   },
   methods: {
+    preventNav(event) {
+      if (!this.isEditing) return;
+      event.preventDefault();
+      event.returnValue = "";
+    },
     async getTemas() {
       try {
         const response = await axios.get(host + "temas");
@@ -389,6 +410,9 @@ export default {
           cancelButtonText: "Cancelar",
         }).then(async (result) => {
           if (result.isConfirmed) {
+            this.$store.commit("setEditFlag", {
+              isEditing: false,
+            });
             // Loading modal
             Swal.fire({
               title: "A submeter TPC...",
@@ -462,9 +486,9 @@ export default {
 
             let bodyResol = {
               idTpc: this.id,
+              tentativa: this.tentativa,
               qRespondidas,
               qCertas,
-              questaoAtual: "",
               classificacao: classificacao.toFixed(2),
               respostas,
               data: new Date(),
@@ -484,6 +508,9 @@ export default {
               resolucoes: allResol,
             });
 
+            // Atualizar store
+            this.$store.dispatch("getTpcs");
+
             Swal.close();
             Swal.fire({
               icon: "success",
@@ -499,16 +526,51 @@ export default {
       }
     },
     proxQuestao(flag) {
+      const questao = this.catalogoQuestoes[this.counter];
       const nQuestoes = this.catalogoQuestoes.length;
-      if (flag) {
-        if (this.counter + 1 < nQuestoes) this.counter++;
+      if (this.configRetroceder && this.counter + 1 < nQuestoes) {
+        if (!this.opcoesSelected[questao.cod])
+          return Swal.fire({
+            title: "Responda à questão antes de avançar!",
+            icon: "warning",
+            confirmButtonColor: "#009263",
+          });
+
+        Swal.fire({
+          title: "Avançar para Próxima Questão?",
+          text:
+            "Se avançar, não poderá alterar a resposta a questões anteriores.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#009263",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Confirmar",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const nQuestoes = this.catalogoQuestoes.length;
+            if (flag) {
+              if (this.counter + 1 < nQuestoes) this.counter++;
+            } else {
+              if (this.counter - 1 >= 0) this.counter--;
+            }
+            this.$refs.chips[this.counter].click();
+          }
+        });
       } else {
-        if (this.counter - 1 >= 0) this.counter--;
+        const nQuestoes = this.catalogoQuestoes.length;
+        if (flag) {
+          if (this.counter + 1 < nQuestoes) this.counter++;
+        } else {
+          if (this.counter - 1 >= 0) this.counter--;
+        }
+        this.$refs.chips[this.counter].click();
       }
-      this.$refs.chips[this.counter].click();
     },
     imgRespostas(img) {
-      img = img ? `/imagens/${img.replace(".swf", "")}.png` : "";
+      img = img
+        ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
+        : "";
       return img;
     },
     showRespostas() {
@@ -590,7 +652,6 @@ export default {
       try {
         const user = this.$store.getters.getUserId;
         this.userId = user;
-
         const aluno = await axios.get(host + "alunos/" + user);
         this.user = aluno.data;
         const prof = await axios.get(
@@ -614,8 +675,26 @@ export default {
           this.catalogoQuestoes.push(questao.data);
           this.getRespostas(questao.data);
         }
+
+        //Configs
+        this.configAleatoria = tpcData.data.configAleatoria;
+        this.configRetroceder = tpcData.data.configRetroceder;
+        this.configResolucao = tpcData.data.configResolucao;
+
+        //Shuffle confiAleatoria
+        if (this.configAleatoria)
+          this.catalogoQuestoes = this.shuffle(this.catalogoQuestoes);
+
         this.showRespostas();
         this.getTema();
+
+        // Tentativa nº
+        let tpcsAluno = await axios.get(
+          host + "tpc-alunos/" + this.userId + "/tpcs?time=active"
+        );
+
+        tpcsAluno = tpcsAluno.data.filter((el) => el.id == this.id);
+        this.tentativa = tpcsAluno[0].nResol + 1;
       } catch (err) {
         const error = new Error(err.message || "Failed to query Questoes");
         throw error;
@@ -644,7 +723,6 @@ export default {
 
 .unidade {
   float: right;
-  vertical-align: middle;
 }
 .selectExame {
   font-size: 14px;
