@@ -5,7 +5,7 @@
         <v-card class="pa-5">
           <v-card-title class="justify-center green--text">
             <h2>
-              TPCs Expirados
+              TPC Expirados
             </h2>
           </v-card-title>
           <center>
@@ -25,14 +25,15 @@
               <v-row>
                 <v-col cols="12">
                   <span>
-                    1. Aqui pode visualizar a lista de TPCs que já não se
-                    encontram ativos, por ordem daquele que expirou mais
-                    recentemente.
+                    1. Aqui, pode visualizar a lista de TPC que já não se
+                    encontram ativos, ordenados segundo o prazo de expiração
+                    começando pelo que expirou mais recentemente.
                   </span>
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    2. Para cada TPC, temos as seguintes informações: o
+                    2. Para cada TPC, estão disponíveis as seguintes
+                    informações: o
                     <b>Título do TPC</b>; a classificação resultante da sua
                     resolução (<b style="color:green;">Classificação</b>); assim
                     como a data e hora limite de expiração do TPC (<b
@@ -273,7 +274,7 @@ export default {
         }
         this.loading = false;
         if (this.tpcs.length === 0)
-          this.tpcsFlag = "De momento não tem TPCs expirados.";
+          this.tpcsFlag = "De momento não tem TPC expirados.";
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");
         throw error;

@@ -128,7 +128,7 @@ export default {
       // Professor
       this.items = [
         {
-          title: "TPCs Ativos",
+          title: "TPC Ativos",
           icon: "mdi-format-list-bulleted",
           href: "/dashboard",
         },
@@ -139,13 +139,13 @@ export default {
           href: "/create",
         },
         {
-          title: "TPCs Expirados",
+          title: "TPC Expirados",
           icon: "mdi-pillar",
           href: "/historic",
         },
         {
           title: "Estatísticas",
-          icon: "mdi-podium",
+          icon: "mdi-chart-bar",
           href: "/stats",
         },
         {
@@ -158,18 +158,18 @@ export default {
       // Aluno
       this.items = [
         {
-          title: "TPCs Ativos",
+          title: "TPC Ativos",
           icon: "mdi-format-list-bulleted",
           href: "/dashboard",
         },
         {
-          title: "TPCs Expirados",
+          title: "TPC Expirados",
           icon: "mdi-pillar",
           href: "/historic",
         },
         {
           title: "Estatísticas",
-          icon: "mdi-podium",
+          icon: "mdi-chart-bar",
           href: "/stats",
         },
         {

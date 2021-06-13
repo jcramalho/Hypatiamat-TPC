@@ -11,10 +11,17 @@ module.exports = {
   async findProfTurmas(ctx) {
     const { idprofessor } = ctx.params;
 
-    const entities = await strapi.services.turma.find({
-      idprofessor,
-      anoletivo,
-    });
+    let entities;
+    if (ctx.query.ano === "last") {
+      entities = await strapi.services.turma.find({
+        idprofessor,
+        anoletivo,
+      });
+    } else {
+      entities = await strapi.services.turma.find({
+        idprofessor,
+      });
+    }
 
     const turmas = {};
 
@@ -30,5 +37,20 @@ module.exports = {
     }
 
     return turmas;
+  },
+  async findProfTurmasAno(ctx) {
+    const { idprofessor } = ctx.params;
+
+    const entities = await strapi.services.turma.find({
+      idprofessor,
+    });
+
+    let result = entities.reduce(function (list, el) {
+      list[el.anoletivo] = list[el.anoletivo] || [];
+      list[el.anoletivo].push(el.turma);
+      return list;
+    }, Object.create(null));
+
+    return result;
   },
 };

@@ -33,6 +33,14 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/turmas/prof/:idprofessor/ano",
+      "handler": "turma.findProfTurmasAno",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/turmas",
       "handler": "turma.create",

@@ -26,8 +26,11 @@
       "collection": "resolucao"
     },
     "tpcs": {
-      "via": "tpc_alunos",
-      "collection": "tpc"
+      "collection": "tpc",
+      "via": "tpc_alunos"
+    },
+    "numero": {
+      "type": "integer"
     }
   }
 }

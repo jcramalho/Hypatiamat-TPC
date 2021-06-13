@@ -6,7 +6,7 @@
           <v-container>
             <v-card-title class="justify-center green--text">
               <h2>
-                TPCs Ativos
+                TPC Ativos
               </h2>
             </v-card-title>
             <center>
@@ -26,14 +26,16 @@
                 <v-row>
                   <v-col cols="12">
                     <span>
-                      1. Aqui pode visualizar a lista de TPCs que estão ativos,
-                      por ordem daquele que expirará primeiro.
+                      1. Aqui pode visualizar a lista de TPC que estão ativos,
+                      ordenadas segundo o prazo de expiração começando pelo que
+                      expirará primeiro.
                     </span>
                   </v-col>
                   <v-col cols="12">
                     <span>
-                      2. Para cada TPC, temos as seguintes informações: o
-                      <b>Título do TPC</b>; a contagem dos alunos que já
+                      2. Para cada TPC, estão disponíveis as seguintes
+                      informações: o
+                      <b>Título dos TPC</b>; o número dos alunos que já
                       realizaram pelo menos uma tentativa de resolução (<b
                         style="color:green;"
                         >Nº Respostas</b
@@ -122,7 +124,7 @@
                 </template>
               </v-list>
               <v-container v-else>
-                <h2 style="text-align: center;">
+                <h2 style="text-align: center; color:#666666;">
                   {{ noTpcs }}
                 </h2>
               </v-container>
@@ -204,7 +206,7 @@ export default {
         this.tpcs = response.data;
 
         if (this.tpcs.length === 0)
-          this.tpcsFlag = "De momento não tem TPCs ativos.";
+          this.tpcsFlag = "De momento não tem TPC ativos.";
         this.loading = false;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");

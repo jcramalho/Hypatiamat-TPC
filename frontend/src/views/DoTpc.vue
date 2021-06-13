@@ -10,6 +10,75 @@
               </v-card-title>
             </v-col>
           </v-row>
+          <center>
+            <v-btn v-if="!show" text @click="show = !show"
+              ><span>Mostrar Ajuda</span
+              ><v-icon color="#009263"> mdi-help-circle </v-icon>
+            </v-btn>
+            <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
+          </center>
+          <v-slide-y-transition>
+            <v-card
+              v-show="show"
+              class="elevation-6 pa-3"
+              style="border: 2px solid green !important;"
+              color="grey lighten-3"
+            >
+              <v-row>
+                <v-col cols="12">
+                  <span>
+                    1. Esta é a página de resolução de um TPC. Para navegar
+                    entre as questões utilize
+                    <v-btn small dark rounded color="#009263">
+                      <v-icon>
+                        mdi-arrow-left-bold-circle
+                      </v-icon>
+                    </v-btn>
+                    e
+                    <v-btn small dark rounded color="#009263">
+                      <v-icon>
+                        mdi-arrow-right-bold-circle
+                      </v-icon> </v-btn
+                    >, ou clique numa questão para selecioná-la (ex.
+                    <v-chip color="#009263" dark>
+                      <span>
+                        <b>Questão 1</b>
+                      </span> </v-chip
+                    >).
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span>
+                    2. A navegação estará condicionada consoante as opções de
+                    configuração do TPC. No caso em que não seja possível
+                    retroceder nas questões, terá que responder por ordem a cada
+                    questão, sendo que após passar para a próxima questão
+                    <b
+                      >não terá possibilidade de alterar respostas anteriores</b
+                    >
+                    (apenas o botão
+                    <v-btn small dark rounded color="#009263">
+                      <v-icon>
+                        mdi-arrow-right-bold-circle
+                      </v-icon>
+                    </v-btn>
+                    estará disponível neste cenário).
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span>
+                    3. É necessário responder a todas as questões do TPC para
+                    poder submetê-lo. Assim que esteja satisfeito com as suas
+                    respostas, clique no botão
+                    <v-btn small class="white--text" color="#009263"
+                      >Submeter</v-btn
+                    >.
+                  </span>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-slide-y-transition>
+          <br />
           <v-row>
             <v-col cols="12" sm="6" md="6" lg="6" xl="6">
               <v-container>
@@ -267,6 +336,7 @@ export default {
   },
   data() {
     return {
+      show: false,
       isEditing: true,
       userId: null,
       tpc: null,

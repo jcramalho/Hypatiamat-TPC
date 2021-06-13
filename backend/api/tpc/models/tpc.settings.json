@@ -31,8 +31,8 @@
       "dominant": true
     },
     "tpc_alunos": {
-      "collection": "tpc-aluno",
       "via": "tpcs",
+      "collection": "tpc-aluno",
       "dominant": true
     },
     "codProf": {

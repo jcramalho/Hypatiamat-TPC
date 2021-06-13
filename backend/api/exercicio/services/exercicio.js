@@ -27,6 +27,8 @@ module.exports = {
         return `<sup>${token}</sup>`;
       });
 
+      el.questao = el.questao.replace(/mQQ/gm, "<");
+
       el.questao = el.questao.replace(
         /<raiz>(.*?)<raiz>/g,
         function (_, token) {

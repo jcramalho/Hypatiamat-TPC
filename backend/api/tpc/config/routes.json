@@ -33,6 +33,30 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/tpcs/prof/:codProf/turmas",
+      "handler": "tpc.findProfTpcsTurma",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tpcs/prof/:codProf/stats",
+      "handler": "tpc.findAllTpcStats",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tpcs/:tpcId/stats",
+      "handler": "tpc.findTpcStats",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/tpcs",
       "handler": "tpc.create",

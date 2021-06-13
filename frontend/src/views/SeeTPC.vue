@@ -7,69 +7,76 @@
             <v-card-title class="justify-center green--text">
               <h2>TPC: {{ titulo }}</h2>
             </v-card-title>
-            <div class="mb-4">
-              <center>
-                <v-btn v-if="!show" text @click="show = !show"
-                  ><span>Mostrar Ajuda</span
-                  ><v-icon color="#009263"> mdi-help-circle </v-icon>
-                </v-btn>
-                <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
-              </center>
-              <v-slide-y-transition>
-                <v-card
-                  v-show="show"
-                  class="elevation-6 pa-3"
-                  style="border: 2px solid green !important;"
-                  color="grey lighten-3"
-                >
-                  <v-row v-if="profView">
-                    <v-col cols="12">
-                      <span>
-                        1. Nesta página pode visualizar todas as configurações e
-                        questões selecionadas, aquando da criação do respetivo
-                        TPC.
-                      </span>
-                    </v-col>
-                    <v-col cols="12">
-                      <span>
-                        2. Também tem a possibilidade de eliminar o TPC em
-                        <v-btn
-                          small
-                          rounded
-                          class="white--text"
-                          color="#cc0000"
-                        >
-                          <v-icon>
-                            mdi-delete
-                          </v-icon> </v-btn
-                        >. Note que ao apagar o TPC, também estará a
-                        <b
-                          >descartar todas as resoluções que já tenham sido
-                          feitas por parte dos alunos</b
-                        >.
-                      </span>
-                    </v-col>
-                  </v-row>
-                  <v-row v-else>
-                    <v-col cols="12">
-                      <span>
-                        1. Nesta página tem a possibilidade de visualizar e
-                        navegar as questões do TPC já expirado.
-                      </span>
-                    </v-col>
-                    <v-col cols="12">
-                      <span>
-                        2. Para cada questão tem acesso à respetiva proposta de
-                        resolução em
-                        <v-btn small class="white--text" color="#009263">
-                          Resolução </v-btn
-                        >.
-                      </span>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-slide-y-transition>
-            </div>
+            <center>
+              <v-btn v-if="!show" text @click="show = !show"
+                ><span>Mostrar Ajuda</span
+                ><v-icon color="#009263"> mdi-help-circle </v-icon>
+              </v-btn>
+              <v-btn v-else text @click="show = !show">Esconder Ajuda</v-btn>
+            </center>
+            <v-slide-y-transition>
+              <v-card
+                v-show="show"
+                class="elevation-6 pa-3"
+                style="border: 2px solid green !important;"
+                color="grey lighten-3"
+              >
+                <v-row v-if="profView">
+                  <v-col cols="12">
+                    <span>
+                      1. Nesta página pode visualizar todas as configurações e
+                      questões selecionadas, aquando da criação do respetivo
+                      TPC.
+                    </span>
+                  </v-col>
+                  <v-col cols="12">
+                    <span>
+                      2. Também tem a possibilidade de eliminar o TPC em
+                      <v-btn small rounded class="white--text" color="#cc0000">
+                        <v-icon>
+                          mdi-delete
+                        </v-icon> </v-btn
+                      >. Note que ao apagar o TPC, também estará a
+                      <b
+                        >descartar todas as resoluções que já tenham sido feitas
+                        por parte dos alunos</b
+                      >.
+                    </span>
+                  </v-col>
+                  <v-col cols="12">
+                    <span>
+                      3. No caso de ser sócio do <b>Hypatiamat</b>, tem a
+                      possibilidade de exportar o TPC em formato PDF, ao clicar
+                      em
+                      <v-btn
+                        class="white--text"
+                        style="background-color: #009263;"
+                        small
+                        ><v-icon>mdi-pdf-box</v-icon>Exportar</v-btn
+                      >.
+                    </span>
+                  </v-col>
+                </v-row>
+                <v-row v-else>
+                  <v-col cols="12">
+                    <span>
+                      1. Nesta página tem a possibilidade de visualizar e
+                      navegar as questões do TPC já expirado.
+                    </span>
+                  </v-col>
+                  <v-col cols="12">
+                    <span>
+                      2. Para cada questão tem acesso à respetiva proposta de
+                      resolução em
+                      <v-btn small class="white--text" color="#009263">
+                        Resolução </v-btn
+                      >.
+                    </span>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-slide-y-transition>
+            <br />
             <v-row v-if="!profView">
               <v-col cols="12" sm="6" md="6" lg="6" xl="6">
                 <v-container>

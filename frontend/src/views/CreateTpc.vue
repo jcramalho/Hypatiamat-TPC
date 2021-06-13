@@ -32,31 +32,30 @@
                         primeiramente fornecer informações como o <b>Título</b>,
                         o nº de <b>Tentativas</b> permitidas, escolher a
                         <b>Data </b> e <b>Hora </b> de expiração e selecionar as
-                        <b>Turmas</b> e respetivos alunos a serem requisitados a
-                        realizar o TPC.
+                        <b>Turmas</b> e respetivos alunos que devem realizar o
+                        TPC.
                       </span>
                     </v-col>
                     <v-col cols="12">
                       <span>
-                        2. Para cada turma que selecionou da lista, pode aceder
-                        à listagem dos respetivos alunos e editar aqueles que
-                        pretende que realizem o TPC, através do botão da turma
-                        (ex:
+                        2. Para cada turma que selecionou na lista, pode aceder
+                        aos respetivos alunos e editar aqueles que pretende que
+                        realizem o TPC, através do botão da turma (ex:
                         <v-chip dark color="#009263" close>
                           <strong>3A-21-1</strong> </v-chip
-                        >). Por defeito, estarão selecionados todos os alunos da
-                        turma.
+                        >). Por defeito, ficarão selecionados todos os alunos
+                        dessa turma.
                       </span>
                     </v-col>
                     <v-col cols="12">
                       <span>
-                        3. De seguida, deverá escolher as questões a submeter no
-                        TPC. Para escolher uma questão seleciona um tema da
-                        lista de <b>Temas</b>, e na lista de
-                        <b>Subtemas</b> seleciona um respetivo subtema. No
-                        <i>dashboard</i> irá aparecer cada questão do respetivo
-                        conjunto de tema/subtema escolhido. Para navegar entre
-                        as várias questões do conjunto utilize
+                        3. De seguida, deverá escolher as questões que pretende
+                        submeter no TPC. Para escolher uma questão selecione um
+                        tema da lista de <b>Temas</b> e um subtema, na lista de
+                        <b>Subtemas</b>. No <i>dashboard</i>, irão aparecer, uma
+                        a uma, as questões do conjunto do tema/subtema
+                        escolhido. Para navegar nesse conjunto de questões,
+                        utilize
                         <v-btn icon color="#009263">
                           <v-icon large>
                             mdi-arrow-left-bold-circle
@@ -68,8 +67,8 @@
                             mdi-arrow-right-bold-circle
                           </v-icon>
                         </v-btn>
-                        e se pretender adicionar a questão que visualiza ao TPC,
-                        utiliza o botão de adicionar
+                        e se pretender adicionar ao TPC a questão que está a
+                        visualizar, utilize o botão de adicionar
                         <v-btn
                           small
                           class="white--text mx-1"
@@ -78,13 +77,15 @@
                         >
                           <v-icon>mdi-plus-circle</v-icon></v-btn
                         >. No <i>dashboard</i> também consegue filtrar as
-                        questões por <b>Exame</b> e por <b>Nível</b>.
+                        questões por <b>Exame</b> (extraídas de provas de
+                        avaliação nacionais e estrangeiras) e por
+                        <b>Nível</b> (de escolaridade).
                       </span>
                     </v-col>
                     <v-col cols="12">
                       <span>
-                        4. Poderá também ativar configurações específicas do TPC
-                        se aceder ao botão
+                        4. Poderá também ativar configurações específicas dos
+                        TPC se aceder ao botão
                         <v-btn small class="white--text" color="#009263">
                           <v-icon class="mr-1"> mdi-cog </v-icon>
                           Configurações </v-btn
@@ -93,10 +94,10 @@
                     </v-col>
                     <v-col cols="12">
                       <span>
-                        5. Pode adicionar o nº de questões que quiser, e
-                        removê-las sempre que necessário. Quando estiver
-                        satisfeito com todas as configurações do TPC, pode
-                        finalmente submetê-lo em
+                        5. Pode adicionar o número de questões que quiser, e
+                        removê-las sempre que achar necessário. Quando tiver
+                        concluído a elaboração do TPC, pode finalmente
+                        submetê-lo em
                         <v-btn small class="white--text" color="#009263">
                           Criar TPC </v-btn
                         >.
@@ -1034,8 +1035,9 @@ export default {
               for (const al of alunos) {
                 if (al.active) {
                   const response = await axios.post(host + "tpc-alunos", {
-                    nome: al.nome,
                     codAluno: al.user,
+                    nome: al.nome,
+                    numero: al.numero,
                     codTurma: turma,
                   });
                   alunosId.push(response.data.id);
@@ -1270,12 +1272,15 @@ export default {
     },
     async getTurmas() {
       try {
-        const response = await axios.get(host + "turmas/prof/" + this.userId);
+        const response = await axios.get(
+          host + "turmas/prof/" + this.userId + "?ano=last"
+        );
 
         let turmas = {};
         Object.entries(response.data).forEach(([turma, alunos]) => {
-          const al = alunos.map(({ user, nome }) => ({
+          const al = alunos.map(({ user, nome, numero }) => ({
             user,
+            numero,
             nome,
             active: true,
           }));

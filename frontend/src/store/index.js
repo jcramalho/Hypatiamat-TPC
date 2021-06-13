@@ -58,18 +58,26 @@ export default new Vuex.Store({
             tpcsExp,
           });
         } else if (type === "aluno") {
+          let tpcsAtiv = [];
+          let tpcsExp = [];
+
           const resp1 = await axios.get(
             host + "tpc-alunos/" + userId + "/tpcs?time=active"
           );
-          const tpcsAtiv = resp1.data
-            .filter((el) => el.nResol < el.tentativas)
-            .map((el) => el.id);
+
+          if (resp1.data !== "Not Found") {
+            tpcsAtiv = resp1.data
+              .filter((el) => el.nResol < el.tentativas)
+              .map((el) => el.id);
+          }
 
           const resp2 = await axios.get(
             host + "tpc-alunos/" + userId + "/tpcs?time=expired"
           );
-          const tpcsExp = resp2.data.map((el) => el.id);
 
+          if (resp2.data !== "Not Found") {
+            tpcsExp = resp2.data.map((el) => el.id);
+          }
           // Store Storage
           context.commit("setTpcs", {
             tpcsAtiv,

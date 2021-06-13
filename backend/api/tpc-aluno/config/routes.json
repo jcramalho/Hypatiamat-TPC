@@ -33,6 +33,22 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/tpc-alunos/:codAluno/stats",
+      "handler": "tpc-aluno.findAlunoAllStats",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tpc-alunos/:codAluno/tpcs/:tpcId/stats",
+      "handler": "tpc-aluno.findAlunoTpcStats",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/tpc-alunos",
       "handler": "tpc-aluno.create",

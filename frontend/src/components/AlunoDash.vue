@@ -5,7 +5,7 @@
         <v-card class="pa-5">
           <v-card-title class="justify-center green--text">
             <h2>
-              TPCs Ativos
+              TPC Ativos
             </h2>
           </v-card-title>
           <center>
@@ -25,13 +25,15 @@
               <v-row>
                 <v-col cols="12">
                   <span>
-                    1. Aqui pode visualizar a lista de TPCs que estão ativos,
-                    por ordem daquele que expirará primeiro.
+                    1. Aqui pode visualizar a lista de TPC que estão ativos,
+                    ordenadas segundo o prazo de expiração começando pelo que
+                    expirará primeiro.
                   </span>
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    2. Em cada TPC, temos as seguintes informações: o
+                    2. Em cada TPC, estão disponíveis as seguintes informações:
+                    o
                     <b>Título do TPC</b>; o nº de tentativas que ainda lhe
                     restam (<b style="color:green;">Nº Tentativas</b>); assim
                     como a data e hora limite de expiração do TPC (<b
@@ -57,7 +59,8 @@
                     4. Note que sempre que realizar uma nova tentativa de
                     resolução, estará a
                     <b
-                      >descartar a tentativa que realizou anteriormente a esta </b
+                      >descartar a tentativa que realizou anteriormente a
+                      esta</b
                     >.
                   </span>
                 </v-col>
@@ -234,9 +237,9 @@ export default {
           this.tpcs = tpcs;
           this.tpcsFlag = "";
         }
-        this.loading = false;
         if (this.tpcs.length === 0)
-          this.tpcsFlag = "De momento não tem TPCs ativos.";
+          this.tpcsFlag = "De momento não tem TPC ativos.";
+        this.loading = false;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");
         throw error;
