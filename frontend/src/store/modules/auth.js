@@ -1,6 +1,8 @@
 const axios = require("axios");
 const host = require("@/config/hosts").hostAPI;
 const Swal = require("sweetalert2");
+import jwt_decode from "jwt-decode";
+
 let timer;
 
 export default {
@@ -18,6 +20,17 @@ export default {
       state.token = payload.token;
       state.userType = payload.userType;
       state.didAutoLogout = false;
+
+      // headers axios
+      if (payload.token)
+        axios.defaults.headers.common = {
+          Authorization: `Bearer ${payload.token}`,
+          usertype: payload.userType,
+        };
+      else {
+        delete axios.defaults.headers.common["Authorization"];
+        delete axios.defaults.headers.common["usertype"];
+      }
     },
     setAutoLogout(state) {
       state.didAutoLogout = true;
@@ -68,35 +81,87 @@ export default {
         throw error;
       }
     },
-    tryLogin(context) {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
-      const userType = localStorage.getItem("userType");
-      const tokenExpiration = localStorage.getItem("tokenExpiration");
+    tryLogin(context, payload) {
+      if (payload) {
+        // token backoffice
+        var decode_token = jwt_decode(payload.token);
+        console.log(decode_token);
+        // verificar tipo user
+        let userType = decode_token.user.type;
+        let userId;
+        if (userType === 10) {
+          userId = decode_token.user.user;
+          userType = "aluno";
+        } else if (userType === 20) {
+          userId = decode_token.user.codigo;
+          userType = "professor";
+        }
 
-      // Expiration timer
-      const expiresIn = +tokenExpiration - new Date().getTime();
+        const token = payload.token;
 
-      if (expiresIn < 0) {
-        return;
-      }
+        // miliseconds
+        const expires = (decode_token.exp - decode_token.iat) * 1000;
 
-      timer = setTimeout(function() {
-        context.dispatch("autoLogout");
-      }, expiresIn);
+        const tokenExpiration = new Date().getTime() + expires;
 
-      if (token && userId) {
-        context.commit("setLoggedUser", {
-          token: token,
-          userId: userId,
-          userType: userType,
+        // Expiration timer
+        const expiresIn = +tokenExpiration - new Date().getTime();
+
+        if (expiresIn < 0) {
+          return;
+        }
+
+        timer = setTimeout(function() {
+          context.dispatch("autoLogout");
+        }, expiresIn);
+
+        if (token && userId) {
+          context.commit("setLoggedUser", {
+            token: token,
+            userId: userId,
+            userType: userType,
+          });
+        }
+
+        context.commit("setEditFlag", {
+          isEditing: false,
         });
-      }
+        context.dispatch("getTpcs");
 
-      context.commit("setEditFlag", {
-        isEditing: false,
-      });
-      context.dispatch("getTpcs");
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("userType", userType);
+        localStorage.setItem("tokenExpiration", tokenExpiration);
+      } else {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId");
+        const userType = localStorage.getItem("userType");
+        const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+        // Expiration timer
+        const expiresIn = +tokenExpiration - new Date().getTime();
+
+        if (expiresIn < 0) {
+          return;
+        }
+
+        timer = setTimeout(function() {
+          context.dispatch("autoLogout");
+        }, expiresIn);
+
+        if (token && userId) {
+          context.commit("setLoggedUser", {
+            token: token,
+            userId: userId,
+            userType: userType,
+          });
+        }
+
+        context.commit("setEditFlag", {
+          isEditing: false,
+        });
+        context.dispatch("getTpcs");
+      }
     },
     logout(context) {
       localStorage.removeItem("token");

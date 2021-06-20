@@ -405,7 +405,10 @@
                 lg="2"
                 xl="2"
               >
-                <v-btn class="white--text" style="background-color: #009263;"
+                <v-btn
+                  class="white--text"
+                  style="background-color: #009263;"
+                  @click="exportarPdf()"
                   ><v-icon>mdi-pdf-box</v-icon>Exportar</v-btn
                 >
               </v-col>
@@ -459,7 +462,7 @@
                 ></v-text-field>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row ref="questaoAtual">
               <v-col cols="12" sm="12" md="12" lg="12" xl="12">
                 <v-card
                   class="mt-n12 mx-auto"
@@ -683,6 +686,10 @@
 const axios = require("axios");
 const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
+const blank = require("@/assets/blank.svg");
+// const { jsPDF } = require("jspdf");
+// const html2canvas = require("html2canvas");
+// const hypatiaImg = require("@/assets/hypatiamat.png");
 
 export default {
   props: ["id"],
@@ -716,6 +723,7 @@ export default {
       configAleatoria: false,
       configRetroceder: false,
       configResolucao: false,
+      resolCard: "900px",
     };
   },
   computed: {
@@ -810,7 +818,7 @@ export default {
       return img;
     },
     imagem() {
-      if (!this.catalogoQuestoes[this.counter]) return "";
+      if (!this.catalogoQuestoes[this.counter]) return blank;
       let img = this.catalogoQuestoes[this.counter].figura;
       img = img
         ? `https://www.hypatiamat.com/imagens/${img.replace(".swf", "")}.png`
@@ -819,6 +827,48 @@ export default {
     },
   },
   methods: {
+    async exportarPdf() {
+      // this.counter = 0;
+      // this.$refs.chips[this.counter].click();
+      // console.log(hypatiaImg);
+      // const doc = new jsPDF("p", "mm", "a4");
+      // const options = {
+      //   type: "dataURL",
+      //   useCORS: true,
+      //   allowTaint: true,
+      // };
+      // var promises = [];
+      // const n = this.catalogoQuestoes.length;
+      // window.scroll(0, 0);
+      // for (var i = 0; i < n; i++) {
+      //   this.counter = i;
+      //   await this.$nextTick();
+      //   const el = this.$refs.questaoAtual;
+      //   console.log("ELEMENTOoOOOOOOO");
+      //   console.log(el);
+      //   promises.push(
+      //     html2canvas(el, options).then(function(canvas) {
+      //       console.log("finished one!");
+      //       return canvas.toDataURL("image/png");
+      //     })
+      //   );
+      // }
+      // console.log("done calling");
+      // let y = 0;
+      // Promise.all(promises)
+      //   .then((content) => {
+      //     let i = 0;
+      //     for (const canvas of content) {
+      //       if (i === 3) doc.addPage();
+      //       if (i === 3) y = 0;
+      //       doc.addImage(canvas, "png", 0, y, 100, 100);
+      //       y += 100;
+      //       i++;
+      //     }
+      //     doc.save("Download.pdf");
+      //   })
+      //   .catch((e) => console.error(e));
+    },
     closeConfig() {
       this.dialogConfig = false;
       this.showConfig = false;
@@ -1067,6 +1117,10 @@ export default {
           const prof = await axios.get(
             host + "professores/" + this.user.codprofessor
           );
+
+          this.profName = prof.data.nome;
+        } else if (type === "professor") {
+          const prof = await axios.get(host + "professores/" + user);
 
           this.profName = prof.data.nome;
         }

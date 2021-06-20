@@ -535,6 +535,16 @@
           },
           "email": {
             "type": "string"
+          },
+          "confirmacao": {
+            "type": "integer"
+          },
+          "validade": {
+            "type": "string",
+            "format": "date"
+          },
+          "premium": {
+            "type": "integer"
           }
         }
       },
@@ -554,6 +564,16 @@
           },
           "password": {
             "type": "string"
+          },
+          "confirmacao": {
+            "type": "integer"
+          },
+          "validade": {
+            "type": "string",
+            "format": "date"
+          },
+          "premium": {
+            "type": "integer"
           },
           "created_by": {
             "type": "string"

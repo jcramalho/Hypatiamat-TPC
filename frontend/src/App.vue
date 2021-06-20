@@ -8,13 +8,50 @@
 <script>
 import UserAuth from "@/views/UserAuth.vue";
 import AuthApp from "@/views/AuthApp.vue";
+const CrossStorageHub = require("cross-storage").CrossStorageHub;
+const CrossStorageClient = require("cross-storage").CrossStorageClient;
 
 export default {
   name: "App",
   components: { UserAuth, AuthApp },
 
-  created() {
-    this.$store.dispatch("tryLogin");
+  async created() {
+    try {
+      // Iniciar Hub
+      CrossStorageHub.init([
+        {
+          origin: /localhost(:[0-9]*)?$/,
+          allow: ["get", "set", "del", "clear"],
+        },
+        // { origin: /hypatiamat.com$/, allow: ["get", "set", "del", "clear"] },
+      ]);
+
+      // Iniciar Client
+      var storage = new CrossStorageClient("http://localhost:8081", {
+        timeout: 5000,
+      });
+
+      const isLoggedIn = this.$store.getters.isAuthenticated;
+
+      if (isLoggedIn) {
+        this.$store.dispatch("tryLogin");
+      } else {
+        await storage.onConnect();
+
+        storage
+          .get("token")
+          .then((tok) => {
+            if (tok) this.$store.dispatch("tryLogin", { token: tok });
+            else this.$store.dispatch("tryLogin");
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+    } catch (e) {
+      const error = new Error(e.message);
+      throw error;
+    }
   },
   data() {
     return {

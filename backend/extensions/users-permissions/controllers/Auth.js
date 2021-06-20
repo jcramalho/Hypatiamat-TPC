@@ -12,7 +12,8 @@ const _ = require("lodash");
 const grant = require("grant-koa");
 const { sanitizeEntity } = require("strapi-utils");
 
-const emailRegExp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const emailRegExp =
+  /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const formatError = (error) => [
   { messages: [{ id: error.id, message: error.message, field: error.field }] },
 ];
@@ -106,11 +107,6 @@ module.exports = {
         );
       }
 
-      const userModel =
-        user.type === "aluno"
-          ? strapi.query("aluno").model
-          : strapi.query("professor").model;
-
       if (!validPassword) {
         return ctx.badRequest(
           null,
@@ -120,10 +116,64 @@ module.exports = {
           })
         );
       } else {
+        const userModel =
+          user.type === "aluno"
+            ? strapi.query("aluno").model
+            : strapi.query("professor").model;
+
+        // Verificacoes confirmacao, validade, premium
+
+        // aluno
+        if (user.type === "aluno") {
+          const prof = await strapi
+            .query("professor")
+            .findOne({ codigo: user.codprofessor });
+
+          const validade = new Date(prof.validade) <= new Date() ? 0 : 1;
+
+          if (validade === 0)
+            return ctx.badRequest(
+              null,
+              formatError({
+                id: "Auth.form.error.invalid",
+                message: "Utilizador com verificações inválidas.",
+              })
+            );
+          // prof
+        } else {
+          const validade = new Date(user.validade) <= new Date() ? 0 : 1;
+
+          if (user.confirmacao !== 1 || validade === 0 || user.premium === 0)
+            return ctx.badRequest(
+              null,
+              formatError({
+                id: "Auth.form.error.invalid",
+                message: "Utilizador com verificações inválidas.",
+              })
+            );
+        }
+
+        // payload token
+        const agrup = await strapi
+          .query("escola")
+          .findOne({ cod: user.escola });
+
+        const payload = {
+          id: user.id,
+          email: user.email,
+          escola: user.escola,
+          agrupamento: agrup.nome,
+          type: user.type,
+        };
+
+        user.type === "aluno"
+          ? (payload.user = user.user)
+          : (payload.codigo = user.codigo);
+
         ctx.send({
           token: {
             jwt: strapi.plugins["users-permissions"].services.jwt.issue({
-              id: user.id,
+              user: payload,
             }),
             expiresIn: 3600,
           },

@@ -29,6 +29,15 @@
     "password": {
       "type": "string",
       "private": true
+    },
+    "confirmacao": {
+      "type": "integer"
+    },
+    "validade": {
+      "type": "date"
+    },
+    "premium": {
+      "type": "integer"
     }
   }
 }

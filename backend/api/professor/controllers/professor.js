@@ -13,6 +13,9 @@ module.exports = {
     const { codigo } = ctx.params;
 
     const entity = await strapi.services.professor.findOne({ codigo });
+
+    entity.validade = new Date(entity.validade) <= new Date() ? 0 : 1;
+
     return sanitizeEntity(entity, { model: strapi.models.professor });
   },
 };

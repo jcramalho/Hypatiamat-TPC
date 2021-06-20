@@ -504,6 +504,12 @@ export default {
               //Resp Aberta
               if (questao.tipo === 1) {
                 switch (questao.auxiliar) {
+                  case 2:
+                    correta =
+                      resp === `${questao.resposta1}/${questao.resposta2}`
+                        ? 1
+                        : 0;
+                    break;
                   case 22:
                     correta =
                       resp === `${questao.resposta1}/${questao.resposta2}`

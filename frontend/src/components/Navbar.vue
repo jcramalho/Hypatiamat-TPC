@@ -75,7 +75,7 @@
               <b> TPC </b>
             </span>
             <span v-else class="white--text" style="font-size:12px">
-              <b> Hypatiamat - TPC </b>
+              <b> TPC - Versão 2.1 </b>
             </span>
           </div>
         </template>
