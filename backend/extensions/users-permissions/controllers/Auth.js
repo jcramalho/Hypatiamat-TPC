@@ -153,19 +153,42 @@ module.exports = {
             );
         }
 
-        // payload token
         const agrup = await strapi
           .query("escola")
           .findOne({ cod: user.escola });
 
+        // backoffice usertype
+        let backofficeType;
+        if (user.type === "professor") {
+          switch (user.premium) {
+            case 1:
+              backofficeType = 20;
+              break;
+            case 2:
+              backofficeType = 30;
+              break;
+            case 3:
+              backofficeType = 40;
+              break;
+            case 5:
+              backofficeType = 50;
+              break;
+          }
+        } else if (user.type === "aluno") {
+          backofficeType = 10;
+        }
+
+        // payload token
         const payload = {
           id: user.id,
           email: user.email,
           escola: user.escola,
           agrupamento: agrup.nome,
           type: user.type,
+          backofficeType,
         };
 
+        // codigo user
         user.type === "aluno"
           ? (payload.user = user.user)
           : (payload.codigo = user.codigo);
@@ -175,7 +198,7 @@ module.exports = {
             jwt: strapi.plugins["users-permissions"].services.jwt.issue({
               user: payload,
             }),
-            expiresIn: 3600,
+            expiresIn: 5400,
           },
           user: sanitizeEntity(user.toJSON ? user.toJSON() : user, {
             model: userModel,

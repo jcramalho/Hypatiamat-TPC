@@ -31,9 +31,9 @@ export default {
         timeout: 5000,
       });
 
-      const isLoggedIn = this.$store.getters.isAuthenticated;
+      const token = localStorage.getItem("token");
 
-      if (isLoggedIn) {
+      if (token) {
         this.$store.dispatch("tryLogin");
       } else {
         await storage.onConnect();
@@ -42,7 +42,10 @@ export default {
           .get("token")
           .then((tok) => {
             if (tok) this.$store.dispatch("tryLogin", { token: tok });
-            else this.$store.dispatch("tryLogin");
+            else {
+              this.$store.dispatch("logout");
+              this.refreshLogout();
+            }
           })
           .catch((err) => {
             console.error(err);

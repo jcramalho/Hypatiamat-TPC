@@ -2,6 +2,7 @@ const axios = require("axios");
 const host = require("@/config/hosts").hostAPI;
 const Swal = require("sweetalert2");
 import jwt_decode from "jwt-decode";
+const CrossStorageClient = require("cross-storage").CrossStorageClient;
 
 let timer;
 
@@ -84,7 +85,8 @@ export default {
     tryLogin(context, payload) {
       if (payload) {
         // token backoffice
-        var decode_token = jwt_decode(payload.token);
+        const token = payload.token;
+        var decode_token = jwt_decode(token);
         console.log(decode_token);
         // verificar tipo user
         let userType = decode_token.user.type;
@@ -92,12 +94,10 @@ export default {
         if (userType === 10) {
           userId = decode_token.user.user;
           userType = "aluno";
-        } else if (userType === 20) {
+        } else {
           userId = decode_token.user.codigo;
           userType = "professor";
         }
-
-        const token = payload.token;
 
         // miliseconds
         const expires = (decode_token.exp - decode_token.iat) * 1000;
@@ -121,12 +121,12 @@ export default {
             userId: userId,
             userType: userType,
           });
-        }
 
-        context.commit("setEditFlag", {
-          isEditing: false,
-        });
-        context.dispatch("getTpcs");
+          context.commit("setEditFlag", {
+            isEditing: false,
+          });
+          context.dispatch("getTpcs");
+        }
 
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
@@ -155,19 +155,19 @@ export default {
             userId: userId,
             userType: userType,
           });
-        }
 
-        context.commit("setEditFlag", {
-          isEditing: false,
-        });
-        context.dispatch("getTpcs");
+          context.commit("setEditFlag", {
+            isEditing: false,
+          });
+          context.dispatch("getTpcs");
+        }
       }
     },
     logout(context) {
       localStorage.removeItem("token");
+      localStorage.removeItem("tokenExpiration");
       localStorage.removeItem("userId");
       localStorage.removeItem("userType");
-      localStorage.removeItem("tokenExpiration");
 
       sessionStorage.clear();
 
@@ -178,6 +178,20 @@ export default {
         token: null,
         userType: null,
       });
+
+      // remover storage do backoffice.hypatiamat
+      var storage = new CrossStorageClient("http://localhost:8081", {
+        timeout: 5000,
+      });
+
+      storage
+        .onConnect()
+        .then(function() {
+          return storage.del("token", "type", "utilizador");
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
     autoLogout(context) {
       context.dispatch("logout");
