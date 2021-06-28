@@ -18,6 +18,15 @@
     },
     "cod": {
       "type": "string"
+    },
+    "localidade": {
+      "type": "string"
+    },
+    "distrito": {
+      "type": "string"
+    },
+    "pais": {
+      "type": "string"
     }
   }
 }

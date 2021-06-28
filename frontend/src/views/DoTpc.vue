@@ -67,7 +67,18 @@
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    3. É necessário responder a todas as questões do TPC para
+                    3. No caso de estar perante uma questão de cálculo de uma
+                    amplitude (ângulo), irá ter o botão
+                    <v-btn dark small rounded color="#009263"
+                      >Transferidor</v-btn
+                    >
+                    que disponibiliza um transferidor, podendo movê-lo e rodá-lo
+                    livremente para o cálculo da amplitude.
+                  </span>
+                </v-col>
+                <v-col cols="12">
+                  <span>
+                    4. É necessário responder a todas as questões do TPC para
                     poder submetê-lo. Assim que esteja satisfeito com as suas
                     respostas, clique no botão
                     <v-btn small class="white--text" color="#009263"
@@ -223,10 +234,23 @@
                   <v-col class="mt-n2" cols="12" sm="4" md="4" lg="4" xl="4">
                     <v-container>
                       <v-row>
-                        <v-col align="left" cols="12" sm="12" lg="12">
+                        <v-col align="left" cols="12" sm="12" lg="6">
                           <div class="selectNivel">
                             <span
                               ><b>Nível {{ nivel }}</b></span
+                            >
+                          </div>
+                        </v-col>
+                        <v-col cols="12" sm="12" lg="6">
+                          <div>
+                            <v-btn
+                              v-if="showTransfButton"
+                              @click="toggleTransf"
+                              dark
+                              small
+                              rounded
+                              color="#009263"
+                              >Transferidor</v-btn
                             >
                           </div>
                         </v-col>
@@ -234,6 +258,14 @@
                     </v-container>
                     <v-card>
                       <v-img max-height="400px" contain :src="imagem"></v-img>
+                      <Moveable
+                        v-if="transferidor"
+                        v-bind="moveable"
+                        @drag="handleDrag"
+                        @rotate="handleRotate"
+                      >
+                        <v-img src="@/assets/transferidor.png"></v-img>
+                      </Moveable>
                     </v-card>
                     <div v-if="temExame" id="exame">
                       <span> <b> Exame: </b> {{ exame }}</span>
@@ -297,12 +329,13 @@
 const axios = require("axios");
 const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
-
 import SimpleKeyboard from "@/components/SimpleKeyboard.vue";
+import Moveable from "vue-moveable";
 
 export default {
   name: "DoTpc",
   components: {
+    Moveable,
     SimpleKeyboard,
   },
   props: ["id"],
@@ -336,6 +369,25 @@ export default {
   },
   data() {
     return {
+      moveable: {
+        draggable: true,
+        throttleDrag: 1,
+        resizable: false,
+        throttleResize: 1,
+        keepRatio: true,
+        scalable: false,
+        throttleScale: 0.01,
+        rotatable: true,
+        throttleRotate: 0.2,
+        pinchable: false,
+        origin: false,
+      },
+      states: {
+        scalable: "Scalable",
+        resizable: "Resizable",
+        warpable: "Warpable",
+      },
+      transferidor: false,
       show: false,
       isEditing: true,
       userId: null,
@@ -357,6 +409,12 @@ export default {
     };
   },
   computed: {
+    showTransfButton() {
+      const questao = this.catalogoQuestoes[this.counter];
+      if (!questao) return false;
+      if (questao.tipo === 1 && questao.auxiliar === 10) return true;
+      return false;
+    },
     turma() {
       if (!this.user) return "";
       return this.user.turma;
@@ -420,6 +478,20 @@ export default {
     },
   },
   methods: {
+    toggleTransf() {
+      this.transferidor = !this.transferidor;
+    },
+    handleDrag({ target, transform }) {
+      target.style.transform = transform;
+    },
+    handleRotate({ target, transform }) {
+      target.style.transform = transform;
+    },
+    clearAllStates() {
+      Object.keys(this.states).forEach((key) => {
+        this.moveable[key] = false;
+      });
+    },
     preventNav(event) {
       if (!this.isEditing) return;
       event.preventDefault();
@@ -507,6 +579,13 @@ export default {
                   case 2:
                     correta =
                       resp === `${questao.resposta1}/${questao.resposta2}`
+                        ? 1
+                        : 0;
+                    break;
+                  //transferidor
+                  case 10:
+                    correta =
+                      resp >= questao.resposta1 && resp <= questao.resposta2
                         ? 1
                         : 0;
                     break;
@@ -723,6 +802,7 @@ export default {
       this.counter = ind;
       this.showRespostas();
       this.getTema();
+      this.transferidor = false;
     },
     async getUser() {
       try {

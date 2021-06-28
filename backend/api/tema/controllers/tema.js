@@ -15,12 +15,14 @@ module.exports = {
     }
 
     let result = entities.reduce(function (list, t) {
-      list[t.codtema] = list[t.codtema] || [];
-      list[t.codtema].push({
-        tema: t.tema,
-        subtema: t.subtema,
-        codsubtema: t.codsubtema,
-      });
+      if (t.codtemaN !== 100) {
+        list[t.codtemaN] = list[t.codtemaN] || [];
+        list[t.codtemaN].push({
+          tema: t.tema,
+          subtema: t.subtema,
+          codsubtema: t.codsubtema,
+        });
+      }
       return list;
     }, Object.create(null));
 

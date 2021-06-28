@@ -19,24 +19,22 @@ module.exports = async (ctx, next) => {
     return next();
   }
 
-  if (
-    ctx.request &&
-    ctx.request.header &&
-    ctx.request.header.authorization &&
-    ctx.request.header.usertype
-  ) {
+  if (ctx.request && ctx.request.header && ctx.request.header.authorization) {
     try {
       const data = await strapi.plugins[
         "users-permissions"
       ].services.jwt.getToken(ctx);
 
       const id = data.user.id;
+      let userType;
+      if (data.user.type === 10) userType = "aluno";
+      else userType = "professor";
+
       if (id === undefined) {
         throw new Error("Invalid token: Token did not contain required fields");
       }
 
       // fetch authenticated user
-      const userType = ctx.request.header.usertype;
       if (userType === "aluno") {
         ctx.state.user = await strapi.services.aluno.fetchAuthenticatedUser(id);
       } else {

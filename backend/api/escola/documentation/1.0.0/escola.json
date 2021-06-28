@@ -529,6 +529,15 @@
           },
           "cod": {
             "type": "string"
+          },
+          "localidade": {
+            "type": "string"
+          },
+          "distrito": {
+            "type": "string"
+          },
+          "pais": {
+            "type": "string"
           }
         }
       },
@@ -538,6 +547,15 @@
             "type": "string"
           },
           "cod": {
+            "type": "string"
+          },
+          "localidade": {
+            "type": "string"
+          },
+          "distrito": {
+            "type": "string"
+          },
+          "pais": {
             "type": "string"
           },
           "created_by": {

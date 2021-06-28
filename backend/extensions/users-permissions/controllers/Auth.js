@@ -153,45 +153,57 @@ module.exports = {
             );
         }
 
-        const agrup = await strapi
+        // agrupamento do user
+        const agrupamento = await strapi
           .query("escola")
           .findOne({ cod: user.escola });
 
-        // backoffice usertype
-        let backofficeType;
-        if (user.type === "professor") {
-          switch (user.premium) {
-            case 1:
-              backofficeType = 20;
-              break;
-            case 2:
-              backofficeType = 30;
-              break;
-            case 3:
-              backofficeType = 40;
-              break;
-            case 5:
-              backofficeType = 50;
-              break;
-          }
-        } else if (user.type === "aluno") {
-          backofficeType = 10;
-        }
-
         // payload token
-        const payload = {
-          id: user.id,
-          email: user.email,
-          escola: user.escola,
-          agrupamento: agrup.nome,
-          type: user.type,
-          backofficeType,
-        };
+        let payload = {};
 
-        // codigo user
-        user.type === "aluno"
-          ? (payload.user = user.user)
-          : (payload.codigo = user.codigo);
+        if (user.type === "aluno") {
+          payload = {
+            agrupamento: agrupamento.nome,
+            id: user.id,
+            user: user.user,
+            email: user.email,
+            escola: user.escola,
+            type: 10,
+            tpcType: "aluno",
+          };
+        } else if (user.type === "professor") {
+          // professor
+          payload = {
+            id: user.id,
+            codigo: user.codigo,
+            email: user.email,
+            escola: user.escola,
+            type: 20,
+            tpcType: "professor",
+            agrupamento: agrupamento.nome,
+          };
+
+          // municipio
+          if (user.premium === 2) {
+            const escolas = await strapi
+              .query("escola")
+              .find({ localidade: agrupamento.localidade });
+
+            payload.type = 30;
+            payload.infoEscola = agrupamento;
+            payload.escolas = escolas;
+          }
+
+          // agrupamento
+          if (user.premium === 3) {
+            payload.type = 40;
+          }
+
+          // admin
+          if (user.premium === 5) {
+            payload.type = 50;
+          }
+        }
 
         ctx.send({
           token: {

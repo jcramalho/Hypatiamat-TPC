@@ -1,8 +1,8 @@
 const axios = require("axios");
 const host = require("@/config/hosts").hostAPI;
 const Swal = require("sweetalert2");
-import jwt_decode from "jwt-decode";
 const CrossStorageClient = require("cross-storage").CrossStorageClient;
+import jwt_decode from "jwt-decode";
 
 let timer;
 
@@ -17,21 +17,18 @@ export default {
   },
   mutations: {
     setLoggedUser(state, payload) {
+      // auth header axios
+      if (payload.token)
+        axios.defaults.headers.common = {
+          Authorization: `Bearer ${payload.token}`,
+        };
+      else delete axios.defaults.headers.common["Authorization"];
+
+      // atualizar store
       state.userId = payload.userId;
       state.token = payload.token;
       state.userType = payload.userType;
       state.didAutoLogout = false;
-
-      // headers axios
-      if (payload.token)
-        axios.defaults.headers.common = {
-          Authorization: `Bearer ${payload.token}`,
-          usertype: payload.userType,
-        };
-      else {
-        delete axios.defaults.headers.common["Authorization"];
-        delete axios.defaults.headers.common["usertype"];
-      }
     },
     setAutoLogout(state) {
       state.didAutoLogout = true;

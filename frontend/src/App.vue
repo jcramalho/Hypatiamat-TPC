@@ -20,32 +20,28 @@ export default {
       // Iniciar Hub
       CrossStorageHub.init([
         {
-          origin: /localhost(:[0-9]*)?$/,
+          origin: /localhost:8080$/,
           allow: ["get", "set", "del", "clear"],
         },
         // { origin: /hypatiamat.com$/, allow: ["get", "set", "del", "clear"] },
       ]);
-
-      // Iniciar Client
-      var storage = new CrossStorageClient("http://localhost:8081", {
-        timeout: 5000,
-      });
 
       const token = localStorage.getItem("token");
 
       if (token) {
         this.$store.dispatch("tryLogin");
       } else {
+        // Iniciar Client
+        var storage = new CrossStorageClient("http://localhost:8081", {
+          timeout: 5000,
+        });
+
         await storage.onConnect();
 
         storage
           .get("token")
           .then((tok) => {
             if (tok) this.$store.dispatch("tryLogin", { token: tok });
-            else {
-              this.$store.dispatch("logout");
-              this.refreshLogout();
-            }
           })
           .catch((err) => {
             console.error(err);
