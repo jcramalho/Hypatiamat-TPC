@@ -10,6 +10,8 @@ import UserAuth from "@/views/UserAuth.vue";
 import AuthApp from "@/views/AuthApp.vue";
 const CrossStorageHub = require("cross-storage").CrossStorageHub;
 const CrossStorageClient = require("cross-storage").CrossStorageClient;
+const hostOffice = require("@/config/hosts").hostOffice;
+const storageHosts = require("@/config/hosts").storageHosts;
 
 export default {
   name: "App",
@@ -18,13 +20,7 @@ export default {
   async created() {
     try {
       // Iniciar Hub
-      CrossStorageHub.init([
-        {
-          origin: /localhost:8080$/,
-          allow: ["get", "set", "del", "clear"],
-        },
-        // { origin: /hypatiamat.com$/, allow: ["get", "set", "del", "clear"] },
-      ]);
+      CrossStorageHub.init(storageHosts);
 
       const token = localStorage.getItem("token");
 
@@ -32,7 +28,7 @@ export default {
         this.$store.dispatch("tryLogin");
       } else {
         // Iniciar Client
-        var storage = new CrossStorageClient("http://localhost:8081", {
+        var storage = new CrossStorageClient(hostOffice, {
           timeout: 5000,
         });
 
@@ -45,6 +41,9 @@ export default {
           })
           .catch((err) => {
             console.error(err);
+          })
+          .then(() => {
+            storage.close();
           });
       }
     } catch (e) {
@@ -70,13 +69,7 @@ export default {
       this.viewKey++;
     },
   },
-  watch: {
-    // didAutoLogout(curValue, oldValue) {
-    //   if (curValue && curValue !== oldValue) {
-    //     this.$router.replace("/login");
-    //   }
-    // },
-  },
+  watch: {},
 };
 </script>
 

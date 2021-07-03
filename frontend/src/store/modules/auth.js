@@ -3,6 +3,7 @@ const host = require("@/config/hosts").hostAPI;
 const Swal = require("sweetalert2");
 const CrossStorageClient = require("cross-storage").CrossStorageClient;
 import jwt_decode from "jwt-decode";
+const hostOffice = require("@/config/hosts").hostOffice;
 
 let timer;
 
@@ -80,14 +81,16 @@ export default {
       }
     },
     tryLogin(context, payload) {
+      let token;
+      let userType;
+      let userId;
+      let tokenExpiration;
       if (payload) {
         // token backoffice
-        const token = payload.token;
-        var decode_token = jwt_decode(token);
-        console.log(decode_token);
+        token = payload.token;
+        const decode_token = jwt_decode(token);
         // verificar tipo user
-        let userType = decode_token.user.type;
-        let userId;
+        userType = decode_token.user.type;
         if (userType === 10) {
           userId = decode_token.user.user;
           userType = "aluno";
@@ -98,66 +101,41 @@ export default {
 
         // miliseconds
         const expires = (decode_token.exp - decode_token.iat) * 1000;
-
-        const tokenExpiration = new Date().getTime() + expires;
-
-        // Expiration timer
-        const expiresIn = +tokenExpiration - new Date().getTime();
-
-        if (expiresIn < 0) {
-          return;
-        }
-
-        timer = setTimeout(function() {
-          context.dispatch("autoLogout");
-        }, expiresIn);
-
-        if (token && userId) {
-          context.commit("setLoggedUser", {
-            token: token,
-            userId: userId,
-            userType: userType,
-          });
-
-          context.commit("setEditFlag", {
-            isEditing: false,
-          });
-          context.dispatch("getTpcs");
-        }
+        tokenExpiration = new Date().getTime() + expires;
 
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
         localStorage.setItem("userType", userType);
         localStorage.setItem("tokenExpiration", tokenExpiration);
       } else {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        const userType = localStorage.getItem("userType");
-        const tokenExpiration = localStorage.getItem("tokenExpiration");
+        token = localStorage.getItem("token");
+        userId = localStorage.getItem("userId");
+        userType = localStorage.getItem("userType");
+        tokenExpiration = localStorage.getItem("tokenExpiration");
+      }
 
-        // Expiration timer
-        const expiresIn = +tokenExpiration - new Date().getTime();
+      // Expiration timer
+      const expiresIn = +tokenExpiration - new Date().getTime();
 
-        if (expiresIn < 0) {
-          return;
-        }
+      if (expiresIn < 0) {
+        return;
+      }
 
+      if (token && userId) {
         timer = setTimeout(function() {
           context.dispatch("autoLogout");
         }, expiresIn);
 
-        if (token && userId) {
-          context.commit("setLoggedUser", {
-            token: token,
-            userId: userId,
-            userType: userType,
-          });
+        context.commit("setLoggedUser", {
+          token: token,
+          userId: userId,
+          userType: userType,
+        });
 
-          context.commit("setEditFlag", {
-            isEditing: false,
-          });
-          context.dispatch("getTpcs");
-        }
+        context.commit("setEditFlag", {
+          isEditing: false,
+        });
+        context.dispatch("getTpcs");
       }
     },
     logout(context) {
@@ -177,7 +155,7 @@ export default {
       });
 
       // remover storage do backoffice.hypatiamat
-      var storage = new CrossStorageClient("http://localhost:8081", {
+      var storage = new CrossStorageClient(hostOffice, {
         timeout: 5000,
       });
 
@@ -188,6 +166,9 @@ export default {
         })
         .catch((err) => {
           console.error(err);
+        })
+        .then(() => {
+          storage.close();
         });
     },
     autoLogout(context) {

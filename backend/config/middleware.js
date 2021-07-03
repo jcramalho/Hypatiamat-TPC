@@ -7,13 +7,8 @@ module.exports = {
   settings: {
     cors: {
       enabled: true,
-      origin: [
-        "http://localhost:8080",
-        "http://localhost:8081",
-        "https://tpc.hypatiamat.com",
-      ],
+      origin: ["*"],
       credentials: true,
-      maxAge: 31536000,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
       headers: [
         "Accept",

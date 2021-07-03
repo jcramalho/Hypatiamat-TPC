@@ -122,4 +122,12 @@ const router = new VueRouter({
   },
 });
 
+// caso token seja removido pelo backoffice
+router.beforeEach((to, from, next) => {
+  const auth = store.getters.isAuthenticated;
+  const token = localStorage.getItem("token");
+  if (!token && auth) store.dispatch("logout");
+  else next();
+});
+
 export default router;
