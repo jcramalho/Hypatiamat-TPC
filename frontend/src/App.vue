@@ -12,6 +12,7 @@ const CrossStorageHub = require("cross-storage").CrossStorageHub;
 const CrossStorageClient = require("cross-storage").CrossStorageClient;
 const hostOffice = require("@/config/hosts").hostOffice;
 const storageHosts = require("@/config/hosts").storageHosts;
+const Swal = require("sweetalert2");
 
 export default {
   name: "App",
@@ -19,6 +20,14 @@ export default {
 
   async created() {
     try {
+      Swal.fire({
+        title: "A carregar...",
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        willOpen: () => {
+          Swal.showLoading();
+        },
+      });
       // Iniciar Hub
       CrossStorageHub.init(storageHosts);
 
@@ -29,10 +38,12 @@ export default {
       } else {
         // Iniciar Client
         var storage = new CrossStorageClient(hostOffice, {
-          timeout: 5000,
+          timeout: 2000,
         });
 
-        await storage.onConnect();
+        await storage.onConnect().catch(() => {
+          Swal.close();
+        });
 
         storage
           .get("token")
@@ -44,6 +55,7 @@ export default {
           })
           .then(() => {
             storage.close();
+            Swal.close();
           });
       }
     } catch (e) {
@@ -54,6 +66,7 @@ export default {
   data() {
     return {
       viewKey: 0,
+      loading: true,
     };
   },
   computed: {

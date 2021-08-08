@@ -81,6 +81,8 @@ export default {
       }
     },
     tryLogin(context, payload) {
+      Swal.close();
+
       let token;
       let userType;
       let userId;
@@ -156,7 +158,7 @@ export default {
 
       // remover storage do backoffice.hypatiamat
       var storage = new CrossStorageClient(hostOffice, {
-        timeout: 5000,
+        timeout: 2000,
       });
 
       storage

@@ -27,7 +27,7 @@
                   <v-col cols="12">
                     <span>
                       1. Aqui pode visualizar a lista de TPC que estão ativos,
-                      ordenadas segundo o prazo de expiração começando pelo que
+                      ordenados segundo o prazo de expiração começando pelo que
                       expirará primeiro.
                     </span>
                   </v-col>
@@ -35,10 +35,10 @@
                     <span>
                       2. Para cada TPC, estão disponíveis as seguintes
                       informações: o
-                      <b>Título dos TPC</b>; o número dos alunos que já
+                      <b>Título do TPC</b>; o número dos alunos que já
                       realizaram pelo menos uma tentativa de resolução (<b
                         style="color:green;"
-                        >Nº Respostas</b
+                        >N.º Respostas</b
                       >); assim como a data e hora limite de expiração do TPC
                       (<b style="color:#960000;">Data Limite</b>).
                     </span>
@@ -82,7 +82,7 @@
                         >
                       </v-list-item-title>
                       <b
-                        ><span style="color:green;">Nº Respostas: </span>
+                        ><span style="color:green;">N.º Respostas: </span>
                         {{ respFormat(item) }}
                       </b>
                       <b

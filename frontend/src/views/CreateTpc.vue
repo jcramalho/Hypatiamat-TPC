@@ -30,17 +30,16 @@
                       <span>
                         1. Esta é a página de criação de um TPC, onde deverá
                         primeiramente fornecer informações como o <b>Título</b>,
-                        o nº de <b>Tentativas</b> permitidas, escolher a
-                        <b>Data </b> e <b>Hora </b> de expiração e selecionar as
-                        <b>Turmas</b> e respetivos alunos que devem realizar o
-                        TPC.
+                        o n.º permitido de <b>Tentativas</b>, a <b>Data </b> e
+                        <b>Hora </b> de expiração e as <b>Turmas</b> e
+                        respetivos alunos que devem realizar o TPC.
                       </span>
                     </v-col>
                     <v-col cols="12">
                       <span>
                         2. Para cada turma que selecionou na lista, pode aceder
                         aos respetivos alunos e editar aqueles que pretende que
-                        realizem o TPC, através do botão da turma (ex:
+                        realizem o TPC, clicando no botão da turma (ex:
                         <v-chip dark color="#009263" close>
                           <strong>3A-21-1</strong> </v-chip
                         >). Por defeito, ficarão selecionados todos os alunos
@@ -54,7 +53,7 @@
                         tema da lista de <b>Temas</b> e um subtema, na lista de
                         <b>Subtemas</b>. No <i>dashboard</i>, irão aparecer, uma
                         a uma, as questões do conjunto do tema/subtema
-                        escolhido. Para navegar nesse conjunto de questões,
+                        escolhidos. Para navegar nesse conjunto de questões,
                         utilize
                         <v-btn icon color="#009263">
                           <v-icon large>
@@ -68,7 +67,7 @@
                           </v-icon>
                         </v-btn>
                         e se pretender adicionar ao TPC a questão que está a
-                        visualizar, utilize o botão de adicionar
+                        visualizar, utilize o botão adicionar
                         <v-btn
                           small
                           class="white--text mx-1"
@@ -79,13 +78,15 @@
                         >. No <i>dashboard</i> também consegue filtrar as
                         questões por <b>Exame</b> (extraídas de provas de
                         avaliação nacionais e estrangeiras) e por
-                        <b>Nível</b> (de escolaridade).
+                        <b>Nível</b> (de escolaridade: Nível 1 - 1.º e 2.º anos;
+                        Nível 2 - 3.º e 4.º anos; Nível 3 - 5.º e 6.º anos;
+                        Nível 4 - 7.º ao 9.º ano).
                       </span>
                     </v-col>
                     <v-col cols="12">
                       <span>
-                        4. Poderá também ativar configurações específicas dos
-                        TPC se aceder ao botão
+                        4. Poderá também ativar configurações específicas do TPC
+                        se aceder ao botão
                         <v-btn small class="white--text" color="#009263">
                           <v-icon class="mr-1"> mdi-cog </v-icon>
                           Configurações </v-btn
@@ -94,10 +95,10 @@
                     </v-col>
                     <v-col cols="12">
                       <span>
-                        5. Pode adicionar o número de questões que quiser, e
-                        removê-las sempre que achar necessário. Quando tiver
-                        concluído a elaboração do TPC, pode finalmente
-                        submetê-lo em
+                        5. Pode adicionar qualquer número de questões, e
+                        removê-las, uma a uma, sempre que achar necessário.
+                        Quando tiver concluído a elaboração do TPC, pode
+                        finalmente submetê-lo em
                         <v-btn small class="white--text" color="#009263">
                           Criar TPC </v-btn
                         >.

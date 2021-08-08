@@ -41,7 +41,7 @@
                     TPC específico, ou se pretender estatísticas sobre todos os
                     TPC daquela turma, selecione a opção "Todos". No caso do
                     campo "TPC" estar vazio, significa que não tem TPC criados
-                    para a respetiva turma.
+                    para a turma selecionada.
                   </span>
                 </v-col>
                 <v-col cols="12">
@@ -54,33 +54,34 @@
                 <v-col cols="9">
                   <v-card class="mx-auto" color="grey lighten-4">
                     <center>
-                      <h3 class="green--text">Legenda da Tabela:</h3>
+                      <h3 class="green--text">Legenda da Tabela</h3>
                     </center>
                     <ul>
                       <li>
-                        <span> <b>Nº</b> - Número do aluno; </span>
+                        <span> <b>N.º</b> - Número do aluno; </span>
                       </li>
                       <li>
                         <span> <b>Aluno</b> - Nome do aluno; </span>
                       </li>
                       <li>
                         <span>
-                          <b>Nº TPC</b> - Número de TPC realizados por parte do
-                          aluno (apenas quando selecionar opção "Todos");
+                          <b>N.º TPC</b> - Número de TPC realizados por cada
+                          aluno (apenas quando selecionar a opção "Todos");
                         </span>
                       </li>
                       <li>
                         <span>
-                          <b>Q. Corretas</b> - Número de questões respondidas
-                          corretamente, em razão com o número total de questões
+                          <b>Q. Corretas</b> - Razão entre o número de questões
+                          respondidas corretamente, e o número total de questões
                           de um TPC ou de todos os TPC;
                         </span>
                       </li>
                       <li>
                         <span>
-                          <b>Classificação (%)</b> - Percentagem calculada
-                          através da razão entre questões corretas e questões
-                          respondidas.
+                          <b>Classificação (%)</b> - Razão entre o número de
+                          questões respondidas corretamente e o número total de
+                          questões de um TPC ou de todos os TPC (em
+                          percentagem).
                         </span>
                       </li>
                     </ul>
@@ -179,9 +180,9 @@ export default {
       loading: false,
       show: false,
       headers: [
-        { text: "Nº", value: "numero", class: "subtitle-1" },
+        { text: "N.º", value: "numero", class: "subtitle-1" },
         { text: "Aluno", value: "nome", class: "subtitle-1" },
-        { text: "Nº TPC", value: "tpcs", class: "subtitle-1" },
+        { text: "N.º TPC", value: "tpcs", class: "subtitle-1" },
         {
           text: "Q. Corretas",
           value: "corretas",

@@ -24,21 +24,25 @@
                 <v-col cols="12">
                   <span>
                     1. Esta página disponibiliza estatísticas em tabela, sobre
-                    os TPC que resolveu e que já se encontram expirados.
+                    os TPC que realizaste e cujos prazos já se encontram
+                    expirados.
                   </span>
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    2. Para visualizar as estatísticas, selecione no campo "TPC"
-                    um TPC específico, ou se pretender estatísticas sobre todos
-                    os seus TPC, selecione a opção "Todos". Caso este campo se
-                    encontre vazio, significa que não tem TPC disponíveis.
+                    2. Para visualizar as estatísticas, seleciona no campo
+                    <b>TPC</b>
+                    um TPC específico ou, se pretenderes estatísticas sobre
+                    todos os teus TPC, seleciona a opção "Todos". Caso este
+                    campo se encontre vazio, significa que não tens TPC
+                    disponíveis.
                   </span>
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    3. Se selecionar um TPC e não existirem dados disponíveis na
-                    tabela, significa que não resolveu esse TPC.
+                    3. Se selecionares um TPC específico e não existirem dados
+                    disponíveis na tabela, significa que não realizaste esse
+                    TPC.
                   </span>
                 </v-col>
                 <v-col cols="9">
@@ -50,34 +54,35 @@
                       <li>
                         <span>
                           <b>Professor</b> - Professor que criou o TPC (apenas
-                          quando selecionar um TPC específico);
+                          quando selecionares um TPC específico);
                         </span>
                       </li>
                       <li>
                         <span>
-                          <b>Tentativa Nº</b> - Número da tentativa à qual
-                          corresponde a resolução (apenas quando selecionar um
+                          <b>Tentativa N.º</b> - Número da tentativa a que
+                          corresponde a resolução (apenas quando selecionares um
                           TPC específico);
                         </span>
                       </li>
                       <li>
                         <span>
-                          <b>Nº TPC</b> - Número de TPC realizados (apenas
-                          quando selecionar opção "Todos");
+                          <b>N.º TPC</b> - Número de TPC realizados (apenas
+                          quando selecionares a opção "Todos");
                         </span>
                       </li>
                       <li>
                         <span>
-                          <b>Q. Corretas</b> - Número de questões respondidas
-                          corretamente, em razão com o número total de questões
+                          <b>Q. Corretas</b> - Razão entre o número de questões
+                          respondidas corretamente e o número total de questões
                           de um TPC ou de todos os TPC;
                         </span>
                       </li>
                       <li>
                         <span>
-                          <b>Classificação (%)</b> - Percentagem calculada
-                          através da razão entre questões corretas e questões
-                          respondidas.
+                          <b>Classificação (%)</b> - Razão entre o número de
+                          questões respondidas corretamente e o número total de
+                          questões de um TPC ou de todos os TPC (em
+                          percentagem).
                         </span>
                       </li>
                     </ul>
@@ -159,8 +164,8 @@ export default {
       results: [],
       headers: [
         { text: "Professor", value: "prof", class: "subtitle-1" },
-        { text: "Tentativa Nº", value: "tentativa", class: "subtitle-1" },
-        { text: "Nº TPC", value: "tpcs", class: "subtitle-1" },
+        { text: "Tentativa N.º", value: "tentativa", class: "subtitle-1" },
+        { text: "N.º TPC", value: "tpcs", class: "subtitle-1" },
         {
           text: "Q. Corretas",
           value: "corretas",

@@ -25,7 +25,7 @@
               <v-row>
                 <v-col cols="12">
                   <span>
-                    1. Aqui, pode visualizar a lista de TPC que já não se
+                    1. Aqui, podes visualizar a lista de TPC que já não se
                     encontram ativos, ordenados segundo o prazo de expiração
                     começando pelo que expirou mais recentemente.
                   </span>
@@ -34,7 +34,7 @@
                   <span>
                     2. Para cada TPC, estão disponíveis as seguintes
                     informações: o
-                    <b>Título do TPC</b>; a classificação resultante da sua
+                    <b>Título do TPC</b>; a classificação que obtiveste na sua
                     resolução (<b style="color:green;">Classificação</b>); assim
                     como a data e hora limite de expiração do TPC (<b
                       style="color:#960000;"
@@ -44,15 +44,15 @@
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    3. Pode aceder à página de informações de cada TPC em
+                    3. Podes aceder à página de informações de cada TPC em
                     <v-btn icon dark color="#009263">
                       <v-icon>
                         mdi-magnify
                       </v-icon></v-btn
-                    >, assim como visualizar a sua tentativa de resolução e
-                    respetivas respostas ao TPC em
+                    >, assim como visualizar a tua tentativa de resolução e as
+                    respostas que apresentaste, em
                     <v-btn small rounded dark color="#009263">Resolução</v-btn>.
-                    Caso não tenha realizado qualquer tentativa de resolução,
+                    Caso não tenhas efetuado qualquer tentativa de resolução,
                     irá aparecer o ícone de TPC não realizado
                     <v-icon color="red">mdi-close-circle</v-icon>.
                   </span>
@@ -80,7 +80,7 @@
                     >
 
                     <b>
-                      <span style="color:green;">Classificação: </span>
+                      <span style="color:green;">Classificação (%): </span>
                       {{ classificacao(item.id) }}
                     </b>
                     <b

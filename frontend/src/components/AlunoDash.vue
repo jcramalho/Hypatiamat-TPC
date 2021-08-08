@@ -25,8 +25,8 @@
               <v-row>
                 <v-col cols="12">
                   <span>
-                    1. Aqui pode visualizar a lista de TPC que estão ativos,
-                    ordenadas segundo o prazo de expiração começando pelo que
+                    1. Aqui podes visualizar a lista de TPC que estão ativos,
+                    ordenados segundo o prazo de expiração começando pelo que
                     expirará primeiro.
                   </span>
                 </v-col>
@@ -34,9 +34,9 @@
                   <span>
                     2. Em cada TPC, estão disponíveis as seguintes informações:
                     o
-                    <b>Título do TPC</b>; o nº de tentativas que ainda lhe
-                    restam (<b style="color:green;">Nº Tentativas</b>); assim
-                    como a data e hora limite de expiração do TPC (<b
+                    <b>Título do TPC</b>; o nº de tentativas que ainda te restam
+                    (<b style="color:green;">Nº Tentativas</b>); assim como a
+                    data e hora limite de expiração do TPC (<b
                       style="color:#960000;"
                       >Data Limite</b
                     >).
@@ -44,24 +44,21 @@
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    3. Para proceder à resolução de um TPC, aceda ao botão
+                    3. Para realizares um TPC, acede ao botão
                     <v-btn rounded small dark color="#009263">Resolver </v-btn>.
-                    Este botão estará disponível sempre que ainda tiver
-                    tentativas de resolução disponíveis. Caso já tenha utilizado
-                    todas as tentativas permitidas de resolução, apenas
-                    aparecerá o ícone de TPC resolvido
+                    Este botão estará disponível sempre que ainda houver
+                    tentativas de resolução disponíveis. Caso já tenhas
+                    utilizado todas as tentativas de resolução permitidas,
+                    aparecerá apenas o ícone de TPC resolvido
                     <v-icon color="green"> mdi-checkbox-marked-circle </v-icon>,
-                    não sendo possível realizar mais nenhuma tentativa.
+                    não sendo possível efetuares mais nenhuma tentativa.
                   </span>
                 </v-col>
                 <v-col cols="12">
                   <span>
-                    4. Note que sempre que realizar uma nova tentativa de
-                    resolução, estará a
-                    <b
-                      >descartar a tentativa que realizou anteriormente a
-                      esta</b
-                    >.
+                    4. Nota que sempre que efetuares uma nova tentativa de
+                    resolução, estarás a
+                    <b>descartar a tentativa anterior.</b>.
                   </span>
                 </v-col>
               </v-row>
@@ -238,7 +235,7 @@ export default {
           this.tpcsFlag = "";
         }
         if (this.tpcs.length === 0)
-          this.tpcsFlag = "De momento não tem TPC ativos.";
+          this.tpcsFlag = "De momento não tens TPC ativos.";
         this.loading = false;
       } catch (err) {
         const error = new Error(err.message || "Failed to fetch TPCs");

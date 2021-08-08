@@ -38,7 +38,7 @@
                       <b>Título do TPC</b>; o número dos alunos que realizaram
                       pelo menos uma tentativa de resolução (<b
                         style="color:green;"
-                        >Nº Respostas</b
+                        >N.º Respostas</b
                       >); assim como a data e hora limite de expiração do TPC
                       (<b style="color:#960000;">Data Limite</b>).
                     </span>
@@ -81,7 +81,7 @@
                         >
                       </v-list-item-title>
                       <b
-                        ><span style="color:green;">Nº Respostas: </span>
+                        ><span style="color:green;">N.º Respostas: </span>
                         {{ respFormat(item) }}
                       </b>
                       <b
