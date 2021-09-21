@@ -43,6 +43,28 @@ export default {
           password: payload.password,
         });
 
+        // Mensagens de erro credenciais/validacao
+        if ("message" in response.data) {
+          switch (response.data.message) {
+            case "credenciais":
+              return Swal.fire({
+                icon: "error",
+                confirmButtonColor: "#009263",
+                title: "Credenciais Erradas!",
+                width: 450,
+              });
+            case "invalido":
+              return Swal.fire({
+                icon: "error",
+                confirmButtonColor: "#009263",
+                title: "As suas credenciais não são válidas!",
+                text:
+                  "Contacte o Hypatiamat para voltar a ativar a sua conta: hypatiamate@gmail.com",
+                width: 450,
+              });
+          }
+        }
+
         // Expiration time
         const expiresIn = response.data.token.expiresIn * 1000;
 
@@ -73,6 +95,12 @@ export default {
           userType: response.data.user.type,
         });
         context.dispatch("getTpcs");
+        Swal.fire({
+          icon: "success",
+          confirmButtonColor: "#009263",
+          title: "Login efetuado com sucesso.",
+          width: 450,
+        });
       } catch (err) {
         const error = new Error(
           err.message || "Failed to authenticate. Check your login data."

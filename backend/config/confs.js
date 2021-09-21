@@ -51,3 +51,10 @@ for (var j = 0; j < N; j++) {
 }
 
 module.exports.anosletivos2 = anosletivos2;
+
+module.exports.db_config = {
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "hypati67_testeconhecimentos",
+};

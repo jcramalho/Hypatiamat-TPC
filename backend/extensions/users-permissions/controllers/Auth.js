@@ -85,13 +85,9 @@ module.exports = {
       }
 
       if (!user) {
-        return ctx.badRequest(
-          null,
-          formatError({
-            id: "Auth.form.error.invalid",
-            message: "Identifier or password invalid.",
-          })
-        );
+        return ctx.send({
+          message: "credenciais",
+        });
       }
 
       let validPassword;
@@ -108,13 +104,9 @@ module.exports = {
       }
 
       if (!validPassword) {
-        return ctx.badRequest(
-          null,
-          formatError({
-            id: "Auth.form.error.invalid",
-            message: "Identifier or password invalid.",
-          })
-        );
+        return ctx.send({
+          message: "credenciais",
+        });
       } else {
         const userModel =
           user.type === "aluno"
@@ -132,25 +124,18 @@ module.exports = {
           const validade = new Date(prof.validade) <= new Date() ? 0 : 1;
 
           if (validade === 0)
-            return ctx.badRequest(
-              null,
-              formatError({
-                id: "Auth.form.error.invalid",
-                message: "Utilizador com verificações inválidas.",
-              })
-            );
-          // prof
+            return ctx.send({
+              message: "invalido",
+            });
+
+          // professor
         } else {
           const validade = new Date(user.validade) <= new Date() ? 0 : 1;
 
           if (user.confirmacao !== 1 || validade === 0 || user.premium === 0)
-            return ctx.badRequest(
-              null,
-              formatError({
-                id: "Auth.form.error.invalid",
-                message: "Utilizador com verificações inválidas.",
-              })
-            );
+            return ctx.send({
+              message: "invalido",
+            });
         }
 
         // agrupamento do user

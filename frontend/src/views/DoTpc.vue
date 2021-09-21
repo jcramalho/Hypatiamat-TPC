@@ -631,6 +631,38 @@ export default {
               const resposta = await axios.post(host + "respostas", bodyResp);
 
               resps.push(resposta.data);
+
+              // ------------- Criar entrada em tabela da appstabletpc
+              const appsTable = await axios.get(
+                host +
+                  "appstabletpcs?codtema=" +
+                  questao.tema +
+                  "&subtmp=" +
+                  questao.subtema
+              );
+
+              // Inserir na tabela se existir
+              if (appsTable.data.length > 0) {
+                const table = appsTable.data[0].tabela;
+                const tema = appsTable.data[0].codtema;
+                const subtema = appsTable.data[0].codsubtema;
+                const data = new Date().toISOString().split("T")[0];
+                const body = {
+                  table,
+                  user: this.userId,
+                  turma: this.user.turma,
+                  codprof: this.user.codprofessor,
+                  escola: this.user.escola,
+                  tema,
+                  subtema,
+                  frame: `T[${questao.cod}]`,
+                  data,
+                  certas: correta,
+                  total: 1,
+                };
+
+                await axios.post(host + "appstabletpcs", body);
+              }
             }
 
             // ------------- Criar resolucao

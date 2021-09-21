@@ -74,22 +74,12 @@ export default {
           password: this.password,
         });
 
-        Swal.fire({
-          icon: "success",
-          confirmButtonColor: "#009263",
-          title: "Login efetuado com sucesso.",
-          width: 450,
-        });
         if (this.$route.path != "/dashboard") {
           this.$router.push({ name: "TheDashboard" });
         }
       } catch (err) {
-        Swal.fire({
-          icon: "error",
-          confirmButtonColor: "#009263",
-          title: "Credenciais erradas!",
-          width: 450,
-        });
+        const error = new Error(err.message || "Failed to authenticate.");
+        throw error;
       }
     },
   },
