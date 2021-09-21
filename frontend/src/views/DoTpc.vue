@@ -634,11 +634,7 @@ export default {
 
               // ------------- Criar entrada em tabela da appstabletpc
               const appsTable = await axios.get(
-                host +
-                  "appstabletpcs?codtema=" +
-                  questao.tema +
-                  "&subtmp=" +
-                  questao.subtema
+                host + "appstabletpcs?subtmp=" + questao.subtema
               );
 
               // Inserir na tabela se existir

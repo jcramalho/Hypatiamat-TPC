@@ -52,7 +52,7 @@
                         class="white--text"
                         style="background-color: #009263;"
                         small
-                        ><v-icon>mdi-pdf-box</v-icon>Exportar</v-btn
+                        ><v-icon>mdi-file-pdf-box</v-icon>Exportar</v-btn
                       >.
                     </span>
                   </v-col>
@@ -409,7 +409,7 @@
                   class="white--text"
                   style="background-color: #009263;"
                   @click="exportarPdf()"
-                  ><v-icon>mdi-pdf-box</v-icon>Exportar</v-btn
+                  ><v-icon>mdi-file-pdf-box</v-icon>Exportar</v-btn
                 >
               </v-col>
             </v-row>
