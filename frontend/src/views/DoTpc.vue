@@ -632,7 +632,7 @@ export default {
 
               resps.push(resposta.data);
 
-              // ------------- Criar entrada em tabela da appstabletpc
+              // ------------- Criar entrada em tabelas da appstabletpc, appsinfo e appsinfoall
               const appsTable = await axios.get(
                 host + "appstabletpcs?subtmp=" + questao.subtema
               );
@@ -642,7 +642,11 @@ export default {
                 const table = appsTable.data[0].tabela;
                 const tema = appsTable.data[0].codtema;
                 const subtema = appsTable.data[0].codsubtema;
-                const data = new Date().toISOString().split("T")[0];
+
+                const datetime = new Date().toISOString().split("T");
+                const data = datetime[0];
+                const tempo = datetime[1].replace("Z", "");
+
                 const body = {
                   table,
                   user: this.userId,
@@ -655,6 +659,7 @@ export default {
                   data,
                   certas: correta,
                   total: 1,
+                  tempo,
                 };
 
                 await axios.post(host + "appstabletpcs", body);

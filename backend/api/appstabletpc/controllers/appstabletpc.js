@@ -22,14 +22,17 @@ module.exports = {
     );
   },
 
-  // Criar/update entrada em tabela
+  // Create/update nas tabelas do appstabletpc, appsinfo e appsinfoall
   async create(ctx) {
+    let info = {},
+      info2 = {},
+      info3 = {};
+    //--------------------- APPSTABLETPC --------------------------
     let check = await strapi.services.appstabletpc.checkTableEntry(
       ctx.request.body
     );
 
-    let info;
-    // verificar se ja existe entrada
+    // verificar se ja existe entrada na tabela
     if (check.length === 0)
       // post
       info = await strapi.services.appstabletpc.createTableEntry(
@@ -42,6 +45,43 @@ module.exports = {
         ctx.request.body
       );
     }
-    return info;
+
+    //--------------------- APPSINFO/APPSINFOALL -------------------
+    let check2 = await strapi.services.appstabletpc.checkAppsInfoAll(
+      ctx.request.body
+    );
+
+    let check3 = await strapi.services.appstabletpc.checkAppsInfo(
+      ctx.request.body
+    );
+
+    // verificar se ja existe entrada na appsinfoall
+    if (check2.length === 0) {
+      // post
+      info2 = await strapi.services.appstabletpc.createAppsInfoAll(
+        ctx.request.body
+      );
+    } else {
+      // update
+      info2 = await strapi.services.appstabletpc.updateAppsInfoAll(
+        check2[0],
+        ctx.request.body
+      );
+    }
+
+    // verificar se ja existe entrada na appsinfo
+    if (check3.length === 0) {
+      // post
+      info3 = await strapi.services.appstabletpc.createAppsInfo(
+        ctx.request.body
+      );
+    } else {
+      // update
+      info3 = await strapi.services.appstabletpc.updateAppsInfo(
+        check3[0],
+        ctx.request.body
+      );
+    }
+    return [info, info2, info3];
   },
 };
