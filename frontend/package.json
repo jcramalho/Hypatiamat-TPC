@@ -18,6 +18,7 @@
     "simple-keyboard": "^3.0.50",
     "sweetalert2": "^10.16.7",
     "vue": "^2.6.11",
+    "vue-grid-layout": "^2.3.12",
     "vue-moveable": "^1.8.11",
     "vue-responsive-components": "^0.2.3",
     "vue-router": "^3.2.0",

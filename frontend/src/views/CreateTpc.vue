@@ -588,6 +588,62 @@
                                 <span class="unidade" v-html="unidade"></span>
                               </v-container>
                             </div>
+                            <div v-else-if="tipoQuestao === 7">
+                              <v-row>
+                                <v-col cols="5">
+                                  <div style="margin-top:10px;">
+                                    <grid-layout
+                                      :layout.sync="grid.layoutEsq"
+                                      :col-num="21"
+                                      :row-height="18"
+                                      :is-draggable="grid.draggable"
+                                      :is-resizable="grid.resizable"
+                                      :vertical-compact="true"
+                                      :use-css-transforms="true"
+                                    >
+                                      <grid-item
+                                        :style="corGridEsq(item.i)"
+                                        v-for="item in grid.layoutEsq"
+                                        :x="item.x"
+                                        :y="item.y"
+                                        :w="item.w"
+                                        :h="item.h"
+                                        :i="item.i"
+                                        :key="item.i"
+                                      >
+                                      </grid-item>
+                                    </grid-layout>
+                                  </div>
+                                </v-col>
+                                <v-divider vertical></v-divider>
+                                <v-col cols="5">
+                                  <div style="margin-top:10px;">
+                                    <grid-layout
+                                      :layout.sync="grid.layoutDir"
+                                      :col-num="21"
+                                      :row-height="18"
+                                      :is-draggable="grid.draggable"
+                                      :is-resizable="grid.resizable"
+                                      :vertical-compact="true"
+                                      :use-css-transforms="true"
+                                    >
+                                      <grid-item
+                                        :style="corGridDir(item.i)"
+                                        v-for="item in grid.layoutDir"
+                                        :x="item.x"
+                                        :y="item.y"
+                                        :w="item.w"
+                                        :h="item.h"
+                                        :i="item.i"
+                                        :key="item.i"
+                                      >
+                                      </grid-item>
+                                    </grid-layout>
+                                  </div>
+                                </v-col>
+                              </v-row>
+                            </div>
+
                             <v-container v-else>
                               <ul>
                                 <li
@@ -761,9 +817,14 @@
 const axios = require("axios");
 const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
+import { GridLayout, GridItem } from "vue-grid-layout";
 
 export default {
   name: "CreateTpc",
+  components: {
+    GridLayout,
+    GridItem,
+  },
   created() {
     this.getUserId();
     this.getTurmas();
@@ -772,6 +833,74 @@ export default {
   },
   data() {
     return {
+      grid: {
+        layoutEsq: [
+          { x: 0, y: 0, w: 5, h: 2, i: "5", static: true },
+          { x: 4, y: 0, w: 5, h: 2, i: "4", static: true },
+          { x: 8, y: 0, w: 5, h: 2, i: "3", static: true },
+          { x: 12, y: 0, w: 5, h: 2, i: "2", static: true },
+          { x: 16, y: 0, w: 5, h: 2, i: "1", static: true },
+          { x: 0, y: 1.6, w: 5, h: 2, i: "10", static: true },
+          { x: 4, y: 1.6, w: 5, h: 2, i: "9", static: true },
+          { x: 8, y: 1.6, w: 5, h: 2, i: "8", static: true },
+          { x: 12, y: 1.6, w: 5, h: 2, i: "7", static: true },
+          { x: 16, y: 1.6, w: 5, h: 2, i: "6", static: true },
+          { x: 0, y: 3.2, w: 5, h: 2, i: "15", static: true },
+          { x: 4, y: 3.2, w: 5, h: 2, i: "14", static: true },
+          { x: 8, y: 3.2, w: 5, h: 2, i: "13", static: true },
+          { x: 12, y: 3.2, w: 5, h: 2, i: "12", static: true },
+          { x: 16, y: 3.2, w: 5, h: 2, i: "11", static: true },
+          { x: 0, y: 4.8, w: 5, h: 2, i: "20", static: true },
+          { x: 4, y: 4.8, w: 5, h: 2, i: "19", static: true },
+          { x: 8, y: 4.8, w: 5, h: 2, i: "18", static: true },
+          { x: 12, y: 4.8, w: 5, h: 2, i: "17", static: true },
+          { x: 16, y: 4.8, w: 5, h: 2, i: "16", static: true },
+          { x: 0, y: 6.4, w: 5, h: 2, i: "25", static: true },
+          { x: 4, y: 6.4, w: 5, h: 2, i: "24", static: true },
+          { x: 8, y: 6.4, w: 5, h: 2, i: "23", static: true },
+          { x: 12, y: 6.4, w: 5, h: 2, i: "22", static: true },
+          { x: 16, y: 6.4, w: 5, h: 2, i: "21", static: true },
+          { x: 0, y: 8, w: 5, h: 2, i: "30", static: true },
+          { x: 4, y: 8, w: 5, h: 2, i: "29", static: true },
+          { x: 8, y: 8, w: 5, h: 2, i: "28", static: true },
+          { x: 12, y: 8, w: 5, h: 2, i: "27", static: true },
+          { x: 16, y: 8, w: 5, h: 2, i: "26", static: true },
+        ],
+        layoutDir: [
+          { x: 0, y: 0, w: 5, h: 2, i: "1", static: true },
+          { x: 4, y: 0, w: 5, h: 2, i: "2", static: true },
+          { x: 8, y: 0, w: 5, h: 2, i: "3", static: true },
+          { x: 12, y: 0, w: 5, h: 2, i: "4", static: true },
+          { x: 16, y: 0, w: 5, h: 2, i: "5", static: true },
+          { x: 0, y: 1.6, w: 5, h: 2, i: "6", static: true },
+          { x: 4, y: 1.6, w: 5, h: 2, i: "7", static: true },
+          { x: 8, y: 1.6, w: 5, h: 2, i: "8", static: true },
+          { x: 12, y: 1.6, w: 5, h: 2, i: "9", static: true },
+          { x: 16, y: 1.6, w: 5, h: 2, i: "10", static: true },
+          { x: 0, y: 3.2, w: 5, h: 2, i: "11", static: true },
+          { x: 4, y: 3.2, w: 5, h: 2, i: "12", static: true },
+          { x: 8, y: 3.2, w: 5, h: 2, i: "13", static: true },
+          { x: 12, y: 3.2, w: 5, h: 2, i: "14", static: true },
+          { x: 16, y: 3.2, w: 5, h: 2, i: "15", static: true },
+          { x: 0, y: 4.8, w: 5, h: 2, i: "16", static: true },
+          { x: 4, y: 4.8, w: 5, h: 2, i: "17", static: true },
+          { x: 8, y: 4.8, w: 5, h: 2, i: "18", static: true },
+          { x: 12, y: 4.8, w: 5, h: 2, i: "19", static: true },
+          { x: 16, y: 4.8, w: 5, h: 2, i: "20", static: true },
+          { x: 0, y: 6.4, w: 5, h: 2, i: "21", static: true },
+          { x: 4, y: 6.4, w: 5, h: 2, i: "22", static: true },
+          { x: 8, y: 6.4, w: 5, h: 2, i: "23", static: true },
+          { x: 12, y: 6.4, w: 5, h: 2, i: "24", static: true },
+          { x: 16, y: 6.4, w: 5, h: 2, i: "25", static: true },
+          { x: 0, y: 8, w: 5, h: 2, i: "26", static: true },
+          { x: 4, y: 8, w: 5, h: 2, i: "27", static: true },
+          { x: 8, y: 8, w: 5, h: 2, i: "28", static: true },
+          { x: 12, y: 8, w: 5, h: 2, i: "29", static: true },
+          { x: 16, y: 8, w: 5, h: 2, i: "30", static: true },
+        ],
+        draggable: false,
+        resizable: false,
+      },
       nivelSelect: "*",
       nivelItems: ["*", 1, 2, 3, 4],
       onlyExames: false,
@@ -885,6 +1014,35 @@ export default {
     },
   },
   methods: {
+    // Grid
+    corGridEsq(index) {
+      const layout = this.questoesSelected[this.counter].resposta1;
+      let idxList = layout.split("-");
+      const lado = idxList[1];
+
+      idxList = idxList.splice(2);
+
+      if (lado === "e")
+        return idxList.includes(index)
+          ? { background: "#ff6600" }
+          : { background: "#eee" };
+
+      return { background: "#eee" };
+    },
+    corGridDir(index) {
+      const layout = this.questoesSelected[this.counter].resposta1;
+      let idxList = layout.split("-");
+      const lado = idxList[1];
+
+      idxList = idxList.splice(2);
+
+      if (lado === "d")
+        return idxList.includes(index)
+          ? { background: "#ff6600" }
+          : { background: "#eee" };
+
+      return { background: "#eee" };
+    },
     closeConfig() {
       this.dialogConfig = false;
       this.showConfig = false;
@@ -1312,6 +1470,21 @@ export default {
 </script>
 
 <style scoped>
+/* Vue-grid-layout */
+
+.btnItem {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.vue-grid-layout {
+  background: #eee;
+}
+.vue-grid-item:not(.vue-grid-placeholder) {
+  border: 1px solid black;
+}
+
 .input {
   background-color: white;
   border: 2px solid #009263;
