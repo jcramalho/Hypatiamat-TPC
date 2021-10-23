@@ -75,7 +75,7 @@
               <b> TPC </b>
             </span>
             <span v-else class="white--text" style="font-size:12px">
-              <b> TPC - Versão 2.8 </b>
+              <b> TPC - Versão 3.0 </b>
             </span>
           </div>
         </template>

@@ -516,9 +516,13 @@
                                 <span class="unidade" v-html="unidade"></span>
                               </v-container>
                             </div>
-                            <div v-else-if="tipoQuestao === 7">
+
+                            <!-- Vertical Grid -->
+                            <div
+                              v-else-if="tipoQuestao === 7 && tipoGrid === 'v'"
+                            >
                               <v-row>
-                                <v-col cols="5">
+                                <v-col cols="6">
                                   <div style="margin-top:10px;">
                                     <grid-layout
                                       :layout.sync="grid.layoutEsq"
@@ -543,8 +547,12 @@
                                     </grid-layout>
                                   </div>
                                 </v-col>
-                                <v-divider vertical></v-divider>
-                                <v-col cols="5">
+                                <v-divider
+                                  style="border: 5px solid black;"
+                                  class="mx-n6"
+                                  vertical
+                                ></v-divider>
+                                <v-col cols="6">
                                   <div style="margin-top:10px;">
                                     <grid-layout
                                       :layout.sync="grid.layoutDir"
@@ -558,6 +566,70 @@
                                       <grid-item
                                         :style="corGridDir(item.i)"
                                         v-for="item in grid.layoutDir"
+                                        :x="item.x"
+                                        :y="item.y"
+                                        :w="item.w"
+                                        :h="item.h"
+                                        :i="item.i"
+                                        :key="item.i"
+                                      >
+                                      </grid-item>
+                                    </grid-layout>
+                                  </div>
+                                </v-col>
+                              </v-row>
+                            </div>
+
+                            <!-- Horizontal Grid -->
+                            <div
+                              v-else-if="tipoQuestao === 7 && tipoGrid === 'h'"
+                            >
+                              <v-row no-gutters justify="center" align="center">
+                                <v-col cols="8">
+                                  <div class="my-n3">
+                                    <grid-layout
+                                      :layout.sync="grid.layoutTop"
+                                      :col-num="26"
+                                      :row-height="18"
+                                      :is-draggable="grid.draggable"
+                                      :is-resizable="grid.resizable"
+                                      :vertical-compact="true"
+                                      :use-css-transforms="true"
+                                    >
+                                      <grid-item
+                                        :style="corGridTop(item.i)"
+                                        v-for="item in grid.layoutTop"
+                                        :x="item.x"
+                                        :y="item.y"
+                                        :w="item.w"
+                                        :h="item.h"
+                                        :i="item.i"
+                                        :key="item.i"
+                                      >
+                                      </grid-item>
+                                    </grid-layout>
+                                  </div>
+                                </v-col>
+
+                                <v-col cols="8">
+                                  <v-divider
+                                    style="border: 5px solid black;"
+                                  ></v-divider>
+                                </v-col>
+                                <v-col cols="8">
+                                  <div class="my-n3">
+                                    <grid-layout
+                                      :layout.sync="grid.layoutBtm"
+                                      :col-num="26"
+                                      :row-height="18"
+                                      :is-draggable="grid.draggable"
+                                      :is-resizable="grid.resizable"
+                                      :vertical-compact="true"
+                                      :use-css-transforms="true"
+                                    >
+                                      <grid-item
+                                        :style="corGridBtm(item.i)"
+                                        v-for="item in grid.layoutBtm"
                                         :x="item.x"
                                         :y="item.y"
                                         :w="item.w"
@@ -744,9 +816,6 @@ const Swal = require("sweetalert2");
 const host = require("@/config/hosts").hostAPI;
 const blank = require("@/assets/blank.svg");
 import { GridLayout, GridItem } from "vue-grid-layout";
-// const { jsPDF } = require("jspdf");
-// const html2canvas = require("html2canvas");
-// const hypatiaImg = require("@/assets/hypatiamat.png");
 
 export default {
   components: {
@@ -762,6 +831,78 @@ export default {
   data() {
     return {
       grid: {
+        layoutTop: [
+          { x: 0, y: 0, w: 5, h: 2, i: "5", static: true },
+          { x: 4, y: 0, w: 5, h: 2, i: "10", static: true },
+          { x: 8, y: 0, w: 5, h: 2, i: "15", static: true },
+          { x: 12, y: 0, w: 5, h: 2, i: "20", static: true },
+          { x: 16, y: 0, w: 5, h: 2, i: "25", static: true },
+          { x: 20, y: 0, w: 5, h: 2, i: "30", static: true },
+
+          { x: 0, y: 1.4, w: 5, h: 2, i: "4", static: true },
+          { x: 4, y: 1.4, w: 5, h: 2, i: "9", static: true },
+          { x: 8, y: 1.4, w: 5, h: 2, i: "14", static: true },
+          { x: 12, y: 1.4, w: 5, h: 2, i: "19", static: true },
+          { x: 16, y: 1.4, w: 5, h: 2, i: "24", static: true },
+          { x: 20, y: 1.4, w: 5, h: 2, i: "29", static: true },
+
+          { x: 0, y: 2.8, w: 5, h: 2, i: "3", static: true },
+          { x: 4, y: 2.8, w: 5, h: 2, i: "8", static: true },
+          { x: 8, y: 2.8, w: 5, h: 2, i: "13", static: true },
+          { x: 12, y: 2.8, w: 5, h: 2, i: "18", static: true },
+          { x: 16, y: 2.8, w: 5, h: 2, i: "23", static: true },
+          { x: 20, y: 2.8, w: 5, h: 2, i: "28", static: true },
+
+          { x: 0, y: 4.2, w: 5, h: 2, i: "2", static: true },
+          { x: 4, y: 4.2, w: 5, h: 2, i: "7", static: true },
+          { x: 8, y: 4.2, w: 5, h: 2, i: "12", static: true },
+          { x: 12, y: 4.2, w: 5, h: 2, i: "17", static: true },
+          { x: 16, y: 4.2, w: 5, h: 2, i: "22", static: true },
+          { x: 20, y: 4.2, w: 5, h: 2, i: "27", static: true },
+
+          { x: 0, y: 5.6, w: 5, h: 2, i: "1", static: true },
+          { x: 4, y: 5.6, w: 5, h: 2, i: "6", static: true },
+          { x: 8, y: 5.6, w: 5, h: 2, i: "11", static: true },
+          { x: 12, y: 5.6, w: 5, h: 2, i: "16", static: true },
+          { x: 16, y: 5.6, w: 5, h: 2, i: "21", static: true },
+          { x: 20, y: 5.6, w: 5, h: 2, i: "26", static: true },
+        ],
+        layoutBtm: [
+          { x: 0, y: 0, w: 5, h: 2, i: "1", static: true },
+          { x: 4, y: 0, w: 5, h: 2, i: "6", static: true },
+          { x: 8, y: 0, w: 5, h: 2, i: "11", static: true },
+          { x: 12, y: 0, w: 5, h: 2, i: "16", static: true },
+          { x: 16, y: 0, w: 5, h: 2, i: "21", static: true },
+          { x: 20, y: 0, w: 5, h: 2, i: "26", static: true },
+
+          { x: 0, y: 1.4, w: 5, h: 2, i: "2", static: true },
+          { x: 4, y: 1.4, w: 5, h: 2, i: "7", static: true },
+          { x: 8, y: 1.4, w: 5, h: 2, i: "12", static: true },
+          { x: 12, y: 1.4, w: 5, h: 2, i: "17", static: true },
+          { x: 16, y: 1.4, w: 5, h: 2, i: "22", static: true },
+          { x: 20, y: 1.4, w: 5, h: 2, i: "27", static: true },
+
+          { x: 0, y: 2.8, w: 5, h: 2, i: "3", static: true },
+          { x: 4, y: 2.8, w: 5, h: 2, i: "8", static: true },
+          { x: 8, y: 2.8, w: 5, h: 2, i: "13", static: true },
+          { x: 12, y: 2.8, w: 5, h: 2, i: "18", static: true },
+          { x: 16, y: 2.8, w: 5, h: 2, i: "23", static: true },
+          { x: 20, y: 2.8, w: 5, h: 2, i: "28", static: true },
+
+          { x: 0, y: 4.2, w: 5, h: 2, i: "4", static: true },
+          { x: 4, y: 4.2, w: 5, h: 2, i: "9", static: true },
+          { x: 8, y: 4.2, w: 5, h: 2, i: "14", static: true },
+          { x: 12, y: 4.2, w: 5, h: 2, i: "19", static: true },
+          { x: 16, y: 4.2, w: 5, h: 2, i: "24", static: true },
+          { x: 20, y: 4.2, w: 5, h: 2, i: "29", static: true },
+
+          { x: 0, y: 5.6, w: 5, h: 2, i: "5", static: true },
+          { x: 4, y: 5.6, w: 5, h: 2, i: "10", static: true },
+          { x: 8, y: 5.6, w: 5, h: 2, i: "15", static: true },
+          { x: 12, y: 5.6, w: 5, h: 2, i: "20", static: true },
+          { x: 16, y: 5.6, w: 5, h: 2, i: "25", static: true },
+          { x: 20, y: 5.6, w: 5, h: 2, i: "30", static: true },
+        ],
         layoutEsq: [
           { x: 0, y: 0, w: 5, h: 2, i: "5", static: true },
           { x: 4, y: 0, w: 5, h: 2, i: "4", static: true },
@@ -856,6 +997,14 @@ export default {
     };
   },
   computed: {
+    tipoGrid() {
+      if (!this.catalogoQuestoes[this.counter]) return 0;
+      const layout = this.catalogoQuestoes[this.counter].resposta1;
+      let idxList = layout.split("-");
+      const tipoGrid = idxList[0];
+      // h ou v
+      return tipoGrid;
+    },
     turma() {
       if (!this.user) return "";
       return this.user.turma;
@@ -956,49 +1105,37 @@ export default {
     },
   },
   methods: {
-    async exportarPdf() {
-      // this.counter = 0;
-      // this.$refs.chips[this.counter].click();
-      // console.log(hypatiaImg);
-      // const doc = new jsPDF("p", "mm", "a4");
-      // const options = {
-      //   type: "dataURL",
-      //   useCORS: true,
-      //   allowTaint: true,
-      // };
-      // var promises = [];
-      // const n = this.catalogoQuestoes.length;
-      // window.scroll(0, 0);
-      // for (var i = 0; i < n; i++) {
-      //   this.counter = i;
-      //   await this.$nextTick();
-      //   const el = this.$refs.questaoAtual;
-      //   console.log("ELEMENTOoOOOOOOO");
-      //   console.log(el);
-      //   promises.push(
-      //     html2canvas(el, options).then(function(canvas) {
-      //       console.log("finished one!");
-      //       return canvas.toDataURL("image/png");
-      //     })
-      //   );
-      // }
-      // console.log("done calling");
-      // let y = 0;
-      // Promise.all(promises)
-      //   .then((content) => {
-      //     let i = 0;
-      //     for (const canvas of content) {
-      //       if (i === 3) doc.addPage();
-      //       if (i === 3) y = 0;
-      //       doc.addImage(canvas, "png", 0, y, 100, 100);
-      //       y += 100;
-      //       i++;
-      //     }
-      //     doc.save("Download.pdf");
-      //   })
-      //   .catch((e) => console.error(e));
+    async exportarPdf() {},
+    // Grid Horizontal
+    corGridTop(index) {
+      const layout = this.catalogoQuestoes[this.counter].resposta1;
+      let idxList = layout.split("-");
+      const lado = idxList[1];
+
+      idxList = idxList.splice(2);
+
+      if (lado === "c")
+        return idxList.includes(index)
+          ? { background: "#ff6600" }
+          : { background: "#eee" };
+
+      return { background: "#eee" };
     },
-    // Grid
+    corGridBtm(index) {
+      const layout = this.catalogoQuestoes[this.counter].resposta1;
+      let idxList = layout.split("-");
+      const lado = idxList[1];
+
+      idxList = idxList.splice(2);
+
+      if (lado === "b")
+        return idxList.includes(index)
+          ? { background: "#ff6600" }
+          : { background: "#eee" };
+
+      return { background: "#eee" };
+    },
+    // Grid Vertical
     corGridEsq(index) {
       const layout = this.catalogoQuestoes[this.counter].resposta1;
       let idxList = layout.split("-");
@@ -1369,9 +1506,10 @@ export default {
 <style scoped>
 /* Vue-grid-layout */
 
-.vue-grid-layout {
+/* .vue-grid-layout {
   background: #eee;
-}
+} */
+
 .vue-grid-item:not(.vue-grid-placeholder) {
   border: 1px solid black;
 }
