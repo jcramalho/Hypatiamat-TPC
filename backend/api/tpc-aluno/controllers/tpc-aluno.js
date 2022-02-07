@@ -8,16 +8,22 @@ const { parseMultipartData, sanitizeEntity } = require("strapi-utils");
 
 module.exports = {
   async create(ctx) {
+    const codAluno = ctx.request.body.codAluno;
     const existentEntity = await strapi.services["tpc-aluno"].findOne({
-      codAluno: ctx.request.body.codAluno,
+      codAluno,
     });
 
-    if (existentEntity !== null)
-      return sanitizeEntity(existentEntity, {
-        model: strapi.models["tpc-aluno"],
-      });
-
     let entity;
+    // caso o aluno exista (update)
+    if (existentEntity !== null) {
+      entity = await strapi.services["tpc-aluno"].update(
+        { codAluno },
+        ctx.request.body
+      );
+      return sanitizeEntity(entity, { model: strapi.models["tpc-aluno"] });
+    }
+
+    // caso nao exista o aluno (create)
     if (ctx.is("multipart")) {
       const { data, files } = parseMultipartData(ctx);
       entity = await strapi.services["tpc-aluno"].create(data, {

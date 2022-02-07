@@ -79,6 +79,24 @@
                         <b
                           ><span>{{ item.tagname }}</span></b
                         >
+                        <span>
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                v-bind="attrs"
+                                v-on="on"
+                                icon
+                                @click="copyTPC(item.id)"
+                                color="#009263"
+                              >
+                                <v-icon small>
+                                  mdi-content-copy
+                                </v-icon>
+                              </v-btn>
+                            </template>
+                            <span>Copiar TPC</span>
+                          </v-tooltip>
+                        </span>
                       </v-list-item-title>
                       <b
                         ><span style="color:green;">N.º Respostas: </span>
@@ -183,6 +201,12 @@ export default {
     },
     checkTPC(id) {
       this.$router.push({ name: "SeeTPC", params: { id } });
+    },
+    copyTPC(id) {
+      this.$router.push({
+        name: "CreateTpc",
+        params: { id },
+      });
     },
     results(id) {
       this.$router.push({ name: "TheResults", params: { id } });

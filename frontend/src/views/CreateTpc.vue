@@ -897,11 +897,16 @@ export default {
     GridLayout,
     GridItem,
   },
+  props: ["id"],
   created() {
     this.getUserId();
     this.getTurmas();
     this.getTemas();
     this.getQuestoes();
+
+    if (this.id) {
+      this.getTpc(this.id);
+    }
   },
   data() {
     return {
@@ -1166,6 +1171,78 @@ export default {
     },
   },
   methods: {
+    async getTpc() {
+      try {
+        const tpcData = await axios.get(host + "tpcs/" + this.id);
+
+        //info
+        this.titulo = tpcData.data.tagname;
+        this.tentativas = tpcData.data.tentativas;
+
+        // questoes
+        const questoesCod = tpcData.data["tpc_questoes"];
+        for (const q of questoesCod) {
+          const questao = await axios.get(host + "exercicios/" + q.codQuestao);
+
+          this.questoes.push(questao.data);
+        }
+
+        this.questaoSelected(this.questoes[0]);
+        this.addChipIdx = this.questoes.length;
+
+        // turmas
+        const alunos = tpcData.data["tpc_alunos"];
+
+        let turmasTpc = alunos.reduce(function(list, al) {
+          list[al.codTurma] = list[al.codTurma] || [];
+          list[al.codTurma].push({
+            ...al,
+          });
+          return list;
+        }, Object.create(null));
+
+        let turmasProf = await axios.get(
+          host + "turmas/prof/" + tpcData.data.codProf
+        );
+
+        turmasProf = turmasProf.data;
+
+        let filterTurmas = Object.keys(turmasProf)
+          .filter((turma) => Object.keys(turmasTpc).includes(turma))
+          .reduce((obj, turma) => {
+            obj[turma] = turmasProf[turma];
+            return obj;
+          }, {});
+
+        for (const [turma, alunos] of Object.entries(filterTurmas)) {
+          const als = [];
+          alunos.map((al) => {
+            const verify = turmasTpc[turma].find(
+              (aluno) => aluno.codAluno === al.user
+            );
+            al.active = verify ? true : false;
+            als.push({
+              active: al.active,
+              nome: al.nome,
+              numero: al.numero,
+              user: al.user,
+            });
+          });
+          filterTurmas[turma] = als;
+
+          this.allAlunosFlag[turma] = als.find((al) => al.active === false)
+            ? false
+            : true;
+        }
+
+        this.turmasProf = Object.assign(this.turmasProf, filterTurmas);
+        this.turmasSelected = Object.keys(turmasTpc);
+      } catch (err) {
+        const error = new Error(err.message || "Failed to query TPC");
+        throw error;
+      }
+    },
+
     // Grid Horizontal
     corGridTop(index) {
       const layout = this.questoesSelected[this.counter].resposta1;
@@ -1510,7 +1587,7 @@ export default {
 
         if (questao)
           this.counter = this.questoesSelected.findIndex(
-            (el) => el === questao
+            (el) => el.cod === questao.cod
           );
         else this.counter = 0;
 

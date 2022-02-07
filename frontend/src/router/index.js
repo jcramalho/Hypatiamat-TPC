@@ -33,6 +33,7 @@ const routes = [
     path: "/create",
     name: "CreateTpc",
     component: CreateTpc,
+    props: true,
     beforeEnter: (to, from, next) => {
       const userType = localStorage.getItem("userType");
       if (userType === "professor") {
