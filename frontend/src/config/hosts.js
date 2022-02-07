@@ -1,7 +1,7 @@
-module.exports.hostAPI = "https://apitpc.hypatiamat.com/";
-module.exports.hostOffice = "https://backoffice.hypatiamat.com";
-// module.exports.hostAPI = "http://localhost:3052/";
-// module.exports.hostOffice = "http://localhost:8081";
+// module.exports.hostAPI = "https://apitpc.hypatiamat.com/";
+// module.exports.hostOffice = "https://backoffice.hypatiamat.com";
+module.exports.hostAPI = "http://localhost:3052/";
+module.exports.hostOffice = "http://localhost:8081";
 module.exports.storageHosts = [
   // em desenvolvimento local, retirar de comentário
   // {
